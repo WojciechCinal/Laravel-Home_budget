@@ -28,9 +28,17 @@ return new class extends Migration
             $table->foreign('id_subCategory')->references('id_subCategory')->on('SubCategory');
         });
 
+        // Klucz obcy - Category
+        Schema::table('Category', function (Blueprint $table) {
+            $table->unsignedBigInteger('id_user');
+            $table->foreign('id_user')->references('id_user')->on('User');
+        });
+
         // Klucz obcy - SubCategory
         Schema::table('SubCategory', function (Blueprint $table) {
             $table->unsignedBigInteger('id_category');
+            $table->unsignedBigInteger('id_user');
+            $table->foreign('id_user')->references('id_user')->on('User');
             $table->foreign('id_category')->references('id_category')->on('Category');
         });
 
@@ -68,10 +76,19 @@ return new class extends Migration
             $table->dropColumn(['id_user', 'id_category', 'id_subCategory']);
         });
 
+        // Klucz obcy - Category
+        Schema::table('Category', function (Blueprint $table) {
+            $table->dropForeign(['id_user']);
+            $table->dropColumn('id_user');
+        });
+
         // Klucz obcy - SubCategory
         Schema::table('SubCategory', function (Blueprint $table) {
             $table->dropForeign(['id_category']);
             $table->dropColumn('id_category');
+
+            $table->dropForeign(['id_user']);
+            $table->dropColumn('id_user');
         });
 
         // Klucz obcy - Savings_plan
