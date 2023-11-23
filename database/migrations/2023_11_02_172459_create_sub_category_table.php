@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('SubCategory', function (Blueprint $table) {
             $table->id('id_subCategory');
             $table->string('name_subCategory');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
