@@ -53,6 +53,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'monthly_budget' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
         ]);
     }
 
@@ -68,6 +69,8 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'monthly_budget' =>$data['monthly_budget'],
+            'id_role' => 2
         ]);
     }
 }

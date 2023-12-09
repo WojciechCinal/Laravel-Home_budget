@@ -9,6 +9,13 @@ class Priority extends Model
 {
     use HasFactory;
 
+    /**
+     * Nazwa klucza głównego w tabeli.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id_priority';
+
     protected $fillable = ['name_priority'];
 
     public function savingsPlans()

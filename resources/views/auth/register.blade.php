@@ -40,6 +40,20 @@
                         </div>
 
                         <div class="row mb-3">
+                            <label for="monthly_budget" class="col-md-4 col-form-label text-md-end">{{ __('Monthly budget') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="monthly_budget" type="monthly_budget" class="form-control @error('monthly_budget') is-invalid @enderror" name="monthly_budget" value="{{ old('monthly_budget') }}" required autocomplete="monthly_budget">
+
+                                @error('monthly_budget')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
 
                             <div class="col-md-6">

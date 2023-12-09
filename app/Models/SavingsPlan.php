@@ -9,6 +9,13 @@ class SavingsPlan extends Model
 {
     use HasFactory;
 
+    /**
+     * Nazwa klucza głównego w tabeli.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id_savings_plan';
+
     protected $fillable = [
         'name_savings_plan',
         'goal_savings_plan',

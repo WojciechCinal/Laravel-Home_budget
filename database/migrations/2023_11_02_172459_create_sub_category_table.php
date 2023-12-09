@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('SubCategory', function (Blueprint $table) {
+        Schema::create('sub_categories', function (Blueprint $table) {
             $table->id('id_subCategory');
             $table->string('name_subCategory');
             $table->boolean('is_active')->default(true);
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('SubCategory');
+        Schema::dropIfExists('sub_categories');
     }
 };

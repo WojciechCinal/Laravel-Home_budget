@@ -9,6 +9,13 @@ class SubCategory extends Model
 {
     use HasFactory;
 
+    /**
+     * Nazwa klucza głównego w tabeli.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id_subCategory';
+
     protected $fillable = [
         'name_subCategory',
         'id_category',
