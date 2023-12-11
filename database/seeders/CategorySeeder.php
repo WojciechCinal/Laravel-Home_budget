@@ -136,22 +136,22 @@ class CategorySeeder extends Seeder
             ]);
 
             SubCategory::create([
-                'name_subCategory' => 'Nabiał i jajka',
+                'name_subCategory' => 'Obuwie',
                 'id_category' => $clothes->id_category,
                 'id_user' => $userId
             ]);
             SubCategory::create([
-                'name_subCategory' => 'Mięso',
+                'name_subCategory' => 'Bielizna',
                 'id_category' => $clothes->id_category,
                 'id_user' => $userId
             ]);
             SubCategory::create([
-                'name_subCategory' => 'Produkty zbożowe',
+                'name_subCategory' => 'Spodnie',
                 'id_category' => $clothes->id_category,
                 'id_user' => $userId
             ]);
             SubCategory::create([
-                'name_subCategory' => 'Owoce i warzywa',
+                'name_subCategory' => 'Odzież wierzchnia',
                 'id_category' => $clothes->id_category,
                 'id_user' => $userId
             ]);
