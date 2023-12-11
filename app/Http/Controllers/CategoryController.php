@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -26,4 +27,19 @@ class CategoryController extends Controller
 
         return view('category.categoryList', compact('categories', 'subcategories'));
     }
+
+    public function update(Request $request, $id_category)
+    {
+        $category = Category::find($id_category);
+
+        if ($category) {
+            $category->name_category = $request->input('name_category');
+            $category->save();
+
+            return response()->json(['message' => 'Category updated successfully']);
+        }
+
+        return response()->json(['error' => 'Category not found'], 404);
+    }
+
 }

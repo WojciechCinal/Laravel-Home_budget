@@ -24,3 +24,6 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/categoriesList', [CategoryController::class, 'list'])->name('category.list');
+Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);
+
+
