@@ -1,5 +1,15 @@
-@include('layouts.header')
+@extends('layouts.app')
 
-<h2>STRONA GŁÓWNA</h2>
-
-@include('layouts.footer')
+@section('content')
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2>Strona główna</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
