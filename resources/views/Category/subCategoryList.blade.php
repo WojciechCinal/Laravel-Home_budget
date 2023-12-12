@@ -7,7 +7,15 @@
                 <div id="messages"></div>
                 <div class="card">
 
-                    <div class="card-header">{{ __('Moje podkategorie') }}</div>
+                    <div class="card-header d-flex align-items-center">
+                        <span class="align-middle">{{ __('Moje podkategorie') }}</span>
+                        <div class="ms-auto">
+                            <a href="{{ route('category.list') }}" class="btn btn-success btn-sm">
+                                <i class="bi bi-escape align-middle" style="font-size: 1rem;"></i>
+                                Powrót
+                            </a>
+                        </div>
+                    </div>
 
                     <div class="card-body">
                         @foreach ($subCategories as $subCategory)

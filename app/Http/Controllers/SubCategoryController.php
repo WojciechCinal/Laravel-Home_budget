@@ -34,6 +34,7 @@ class SubCategoryController extends Controller
         // Pobranie podkategorii należących do wybranej kategorii
         $subCategories = SubCategory::where('id_user', $user->id_user)
                                     ->where('id_category', $id)
+                                    ->where('is_active', true)
                                     ->get();
 
         return view('category.subCategoryList', compact('subCategories'));

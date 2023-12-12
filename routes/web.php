@@ -28,6 +28,9 @@ Route::get('/categoriesList', [CategoryController::class, 'list'])->name('catego
 Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);
 Route::get('/categories/create', [CategoryController::class, 'create'])->name('create.category');
 Route::post('/category/store', [CategoryController::class, 'store'])->name('category.store');
+Route::get('/archive/category/{id}', [CategoryController::class, 'archive'])->name('archive.category');
+Route::get('/category/archive', [CategoryController::class, 'archiveList'])->name('category.archiveList');
+Route::get('/category/restore/{id}', [CategoryController::class, 'restore'])->name('category.restore');
 
 
 Route::get('/subCategoriesList/{id}', [SubCategoryController::class, 'list'])

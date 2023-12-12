@@ -8,23 +8,7 @@
                     <div class="card-header">{{ __('Dashboard') }}</div>
 
                     <div class="card-body">
-                        @if (session('status'))
-                            <div class="alert alert-success" role="alert">
-                                {{ session('status') }}
-                            </div>
-                        @endif
-
-                    @if (session('message'))
-                        <div class="alert alert-info" role="alert">
-                            {{ session('message') }}
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger" role="alert">
-                            {{ session('error') }}
-                        </div>
-                    @endif
+                        @include('layouts.messages')
 
                         {{ __('You are logged in!') }}
                     </div>
