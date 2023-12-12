@@ -96,27 +96,32 @@
                 <div id="messages"></div>
                 <div class="card">
 
-
-                    <div class="card-header">{{ __('Moje kategorie') }}</div>
+                    <div class="card-header">{{ __('Moje kategorie') }}
+                        <a href="{{ route('create.category') }}" class="btn btn-success btn-sm float-end">
+                            <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;" ></i> Nowa kategoria</a>
+                    </div>
 
                     <div class="card-body">
-                        <table class="table">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Nazwa kategorii</th>
-                                    <th>Opcje</th>
+                                    <th class="col-6 col-sm-4">Nazwa kategorii</th>
+                                    <th class="col-6 col-sm-4">Opcje</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($categories as $category)
                                     <tr>
-                                        <td>{{ $category->name_category }}</td>
-                                        <td>
-                                            <button class="btn btn-primary btn-sm edit-category"
-                                                data-id="{{ $category->id_category }}">Edytuj</button>
-                                            <a class="btn btn-primary btn-sm"
-                                                href="{{ route('subCategory.list', ['id' => $category->id_category]) }}">Pokaż
-                                                podkategorie</a>
+                                        <td class="col-6 col-sm-4  align-middle">{{ $category->name_category }}</td>
+                                        <td class="col-6 col-sm-4">
+                                            <button class="btn btn-warning btn-sm edit-category"
+                                                data-id="{{ $category->id_category }}">
+                                                <i class="bi bi-pencil-square align-middle" style="font-size: 1rem;"></i> Edytuj
+                                            </button>
+
+                                            <a class="btn btn-info btn-sm"
+                                                href="{{ route('subCategory.list', ['id' => $category->id_category]) }}">
+                                                <i class="bi bi-list-task  align-middle" style="font-size: 1rem;"></i> Pokaż podkategorie</a>
                                         </td>
                                     </tr>
                                 @endforeach

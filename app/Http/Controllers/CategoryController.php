@@ -35,12 +35,25 @@ class CategoryController extends Controller
             $category->name_category = $request->input('name_category');
             $category->save();
 
-            Session::flash('message', 'Category updated successfully');
             return redirect()->back();
         }
-
-        Session::flash('error', 'Category not found');
         return redirect()->back()->withInput();
     }
 
+    public function create()
+    {
+        return view('category.categoryNew'); // Zwraca widok formularza do tworzenia nowej kategorii
+    }
+
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+
+        $category = new Category();
+        $category->name_category = $request->input('category_name');
+        $category->id_user = $user->id_user; // Przypisz ID aktualnie zalogowanego użytkownika
+        $category->save();
+
+        return redirect()->route('category.list')->with('success', 'Kategoria została dodana.');
+    }
 }

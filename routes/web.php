@@ -26,6 +26,9 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::get('/categoriesList', [CategoryController::class, 'list'])->name('category.list');
 Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);
+Route::get('/categories/create', [CategoryController::class, 'create'])->name('create.category');
+Route::post('/category/store', [CategoryController::class, 'store'])->name('category.store');
+
 
 Route::get('/subCategoriesList/{id}', [SubCategoryController::class, 'list'])
      ->name('subCategory.list')

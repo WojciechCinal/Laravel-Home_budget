@@ -7,7 +7,7 @@
                 <div id="messages"></div>
                 <div class="card">
 
-                    <div class="card-header">{{ __('Moje kategorie') }}</div>
+                    <div class="card-header">{{ __('Moje podkategorie') }}</div>
 
                     <div class="card-body">
                         @foreach ($subCategories as $subCategory)
