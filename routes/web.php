@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SubCategoryController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +27,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/categoriesList', [CategoryController::class, 'list'])->name('category.list');
 Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);
 
-
+Route::get('/subCategoriesList/{id}', [SubCategoryController::class, 'list'])
+     ->name('subCategory.list')
+     ->middleware('verify.category.access');

@@ -52,7 +52,6 @@
                                 name_category: newCategoryName
                             },
                             success: function(response) {
-                                // Ukrycie okna modalnego po zakończeniu edycji
                                 $('#editCategoryModal').modal('hide');
                                 $('#editCategoryModal').on('hidden.bs.modal', function(
                                     e) {
@@ -64,10 +63,18 @@
                                 // Aktualizacja nazwy na stronie bez odświeżania
                                 $(`.edit-category[data-id="${categoryId}"]`).closest(
                                     'tr').find('td:first').text(newCategoryName);
+
+                                $('#messages').html(
+                                    '<div class="alert alert-success" role="alert">Nazwa kategorii zaktualizowana pomyślnie!</div>'
+                                );
                             },
                             error: function(xhr) {
                                 console.log(xhr.responseText);
+                                $('#messages').html(
+                                    '<div class="alert alert-danger" role="alert">Wystąpił błąd przy edycji nazwy</div>'
+                                );
                             }
+
                         });
                     }
                 });
@@ -83,11 +90,13 @@
         });
     </script>
 
-
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
+                <div id="messages"></div>
                 <div class="card">
+
+
                     <div class="card-header">{{ __('Moje kategorie') }}</div>
 
                     <div class="card-body">
@@ -95,29 +104,19 @@
                             <thead>
                                 <tr>
                                     <th>Nazwa kategorii</th>
-                                    <th>Nazwa początkowa</th>
                                     <th>Opcje</th>
-                                    <th>Podkategorie</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($categories as $category)
                                     <tr>
                                         <td>{{ $category->name_category }}</td>
-                                        <td>{{ $category->name_start }}</td>
                                         <td>
                                             <button class="btn btn-primary btn-sm edit-category"
                                                 data-id="{{ $category->id_category }}">Edytuj</button>
-
-                                        <td>
-                                            @foreach ($subcategories as $subcategory)
-                                                @if ($category->id_category === $subcategory->id_category)
-                                                    <li><a>{{ $subcategory->name_subCategory }}</a>
-                                                    </li>
-                                                @endif
-                                            @endforeach
-                                        </td>
-
+                                            <a class="btn btn-primary btn-sm"
+                                                href="{{ route('subCategory.list', ['id' => $category->id_category]) }}">Pokaż
+                                                podkategorie</a>
                                         </td>
                                     </tr>
                                 @endforeach

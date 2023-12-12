@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\SubCategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class CategoryController extends Controller
 {
@@ -23,9 +23,8 @@ class CategoryController extends Controller
     {
         $user = Auth::user(); // Pobierz zalogowanego użytkownika
         $categories = Category::where('id_user', $user->id_user)->get(); // Pobierz kategorie użytkownika
-        $subcategories = SubCategory::where('id_user', $user->id_user)->get(); // Pobierz podkategorie użytkownika
 
-        return view('category.categoryList', compact('categories', 'subcategories'));
+        return view('category.categoryList', compact('categories'));
     }
 
     public function update(Request $request, $id_category)
@@ -36,10 +35,12 @@ class CategoryController extends Controller
             $category->name_category = $request->input('name_category');
             $category->save();
 
-            return response()->json(['message' => 'Category updated successfully']);
+            Session::flash('message', 'Category updated successfully');
+            return redirect()->back();
         }
 
-        return response()->json(['error' => 'Category not found'], 404);
+        Session::flash('error', 'Category not found');
+        return redirect()->back()->withInput();
     }
 
 }
