@@ -54,7 +54,16 @@
                             success: function(response) {
                                 // Ukrycie okna modalnego po zakończeniu edycji
                                 $('#editCategoryModal').modal('hide');
-                                location.reload();
+                                $('#editCategoryModal').on('hidden.bs.modal', function(
+                                    e) {
+                                    $('#newCategoryName').val('');
+                                    $('#newCategoryName').attr('placeholder',
+                                        '');
+                                });
+
+                                // Aktualizacja nazwy na stronie bez odświeżania
+                                $(`.edit-category[data-id="${categoryId}"]`).closest(
+                                    'tr').find('td:first').text(newCategoryName);
                             },
                             error: function(xhr) {
                                 console.log(xhr.responseText);
@@ -86,6 +95,7 @@
                             <thead>
                                 <tr>
                                     <th>Nazwa kategorii</th>
+                                    <th>Nazwa początkowa</th>
                                     <th>Opcje</th>
                                     <th>Podkategorie</th>
                                 </tr>
@@ -94,6 +104,7 @@
                                 @foreach ($categories as $category)
                                     <tr>
                                         <td>{{ $category->name_category }}</td>
+                                        <td>{{ $category->name_start }}</td>
                                         <td>
                                             <button class="btn btn-primary btn-sm edit-category"
                                                 data-id="{{ $category->id_category }}">Edytuj</button>

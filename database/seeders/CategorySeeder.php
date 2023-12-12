@@ -22,7 +22,8 @@ class CategorySeeder extends Seeder
             // MIESZKANIE
             $home = Category::create([
                 'name_category' => 'Mieszkanie',
-                'id_user' => $userId
+                'id_user' => $userId,
+                'name_start' => 'Mieszkanie'
             ]);
 
             SubCategory::create([
@@ -45,7 +46,8 @@ class CategorySeeder extends Seeder
             // TRANSPORT
             $transport = Category::create([
                 'name_category' => 'Transport',
-                'id_user' => $userId
+                'id_user' => $userId,
+                'name_start' => 'Transport'
             ]);
 
             SubCategory::create([
@@ -73,7 +75,8 @@ class CategorySeeder extends Seeder
             // ROZRYWKA
             $entertainment = Category::create([
                 'name_category' => 'Rozrywka',
-                'id_user' => $userId
+                'id_user' => $userId,
+                'name_start' => 'Rozrywka'
             ]);
 
             SubCategory::create([
@@ -95,7 +98,8 @@ class CategorySeeder extends Seeder
             // ŻYWNOŚĆ
             $food = Category::create([
                 'name_category' => 'Żywność',
-                'id_user' => $userId
+                'id_user' => $userId,
+                'name_start' => 'Żywność'
             ]);
 
             SubCategory::create([
@@ -132,7 +136,8 @@ class CategorySeeder extends Seeder
             // ODZIEŻ
             $clothes = Category::create([
                 'name_category' => 'Odzież',
-                'id_user' => $userId
+                'id_user' => $userId,
+                'name_start' => 'Odzież'
             ]);
 
             SubCategory::create([
@@ -159,7 +164,8 @@ class CategorySeeder extends Seeder
             // ZDROWIE I HIGIENA
             $health = Category::create([
                 'name_category' => 'Zdrowie i higiena',
-                'id_user' => $userId
+                'id_user' => $userId,
+                'name_start' => 'Zdrowie i higiena'
             ]);
 
             SubCategory::create([
@@ -186,7 +192,8 @@ class CategorySeeder extends Seeder
             // HOBBY I REKREACJA
             $hobby = Category::create([
                 'name_category' => 'Hobby i rekreacja',
-                'id_user' => $userId
+                'id_user' => $userId,
+                'name_start' => 'Hobby'
             ]);
         }
     }
