@@ -42,17 +42,19 @@
                         // Aktualizacja stanu checkboxa na podstawie odpowiedzi AJAX
                         $(`.subcategory-status[data-id="${response.id}"]`).prop('checked',
                             response.isActive);
+                        $('#messages').html(
+                            '<div class="alert alert-success" role="alert">Pomyślnie zmieniono status.</div>'
+                        );
                     },
                     error: function(xhr) {
                         console.log(xhr.responseText);
                     }
                 });
             });
-        });
-        $(document).ready(function() {
+
             $('.edit-subcategory').on('click', function() {
                 let subCategoryId = $(this).data('id');
-                let subCategoryName = $(this).closest('tr').find('.subcategory-name').text().trim();
+                let subCategoryName = $(this).closest('tr').find('td:first').text();
 
                 $('#newSubCategoryName').attr('placeholder', subCategoryName !== '' ? subCategoryName :
                     'Aktualna nazwa podkategorii');
