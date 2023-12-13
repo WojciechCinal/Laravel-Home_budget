@@ -6,6 +6,7 @@ use App\Models\SubCategory;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class SubCategoryController extends Controller
 {
@@ -23,8 +24,8 @@ class SubCategoryController extends Controller
     {
         $user = Auth::user();
         $category = Category::where('id_category', $id)
-                            ->where('id_user', $user->id_user)
-                            ->first();
+            ->where('id_user', $user->id_user)
+            ->first();
 
         if (!$category) {
             // Obsługa sytuacji, gdy użytkownik próbuje uzyskać dostęp do kategorii, do której nie ma dostępu
@@ -33,11 +34,43 @@ class SubCategoryController extends Controller
 
         // Pobranie podkategorii należących do wybranej kategorii
         $subCategories = SubCategory::where('id_user', $user->id_user)
-                                    ->where('id_category', $id)
-                                    ->where('is_active', true)
-                                    ->get();
+            ->where('id_category', $id)
+            ->get();
 
-        return view('category.subCategoryList', compact('subCategories'));
+        return view('category.subCategoryList', compact('subCategories', 'category'));
     }
 
+    public function updateSubcategoryStatus(Request $request, $id)
+    {
+        $subCategory = SubCategory::find($id);
+
+        if ($subCategory) {
+            $isActive = $request->input('is_active');
+            $subCategory->is_active = $isActive;
+            $subCategory->save();
+
+            return response()->json([
+                'subCategoryId' => $subCategory->id_subCategory,
+                'isActive' => $subCategory->is_active
+            ]);
+        }
+
+        return response()->json(['error' => 'Nie znaleziono tej podkategorii'], 404);
+    }
+
+    public function updateSubcategoryName(Request $request, $id)
+    {
+        $subCategory = SubCategory::find($id);
+
+        if ($subCategory) {
+            $subCategory->name_subCategory = $request->input('name_subCategory');
+            $subCategory->save();
+
+            // Tutaj możesz zwrócić odpowiedź JSON w razie potrzeby
+            return response()->json(['message' => 'Nazwa podkategorii została zaktualizowana.']);
+        }
+
+        // Obsługa, gdy nie znaleziono podkategorii
+        return response()->json(['error' => 'Nie znaleziono podkategorii.'], 404);
+    }
 }
