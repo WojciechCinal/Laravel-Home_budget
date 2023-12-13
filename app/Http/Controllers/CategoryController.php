@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\SubCategory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -22,14 +23,15 @@ class CategoryController extends Controller
      */
     public function list()
     {
-        $user = Auth::user(); // Pobierz zalogowanego użytkownika
+        $user = Auth::user();
         $categories = Category::where('id_user', $user->id_user)
-            ->where('is_active', true)
-            ->get(); // Pobierz kategorie użytkownika
+            ->withCount(['subCategories' => function (Builder $query) {
+                $query->where('is_active', true);
+            }])
+            ->get();
 
         return view('category.categoryList', compact('categories'));
     }
-
     public function update(Request $request, $id_category)
     {
         $category = Category::find($id_category);

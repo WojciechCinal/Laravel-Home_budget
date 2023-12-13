@@ -55,13 +55,13 @@
 
                             $('#messages').html(
                                 '<div class="alert alert-success" role="alert">Nazwa kategorii zaktualizowana pomyślnie!</div>'
-                                );
+                            );
                         },
                         error: function(xhr) {
                             console.log(xhr.responseText);
                             $('#messages').html(
                                 '<div class="alert alert-danger" role="alert">Wystąpił błąd przy edycji nazwy</div>'
-                                );
+                            );
                         }
                     });
                 }
@@ -73,7 +73,7 @@
 
                 $('#newCategoryName').val(currentCategoryName);
                 $('#editCategoryModal').data('category-id',
-                categoryId); // Przypisanie ID kategorii do modala
+                    categoryId); // Przypisanie ID kategorii do modala
 
                 $('#editCategoryModal').modal('show');
             });
@@ -112,14 +112,18 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th class="col-6 col-sm-4">Nazwa kategorii</th>
-                                    <th class="col-6 col-sm-4 text-center">Opcje</th>
+                                    <th class="col-3 col-sm-3">Nazwa kategorii</th>
+                                    <th class="col-3 col-sm-3 text-center">Aktywne podkategorie</th>
+                                    <th class="col-6 col-sm-6 text-center">Opcje</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($categories as $category)
                                     <tr>
                                         <td class="col-6 col-sm-4 align-middle">{{ $category->name_category }}</td>
+                                        <td class="col-6 col-sm-2 text-center">
+                                            {{ $category->activeSubcategoriesCount() }}/{{ $category->subcategories()->count() }}
+                                        </td>
                                         <td class="col-6 col-sm-4 text-center">
                                             <button class="btn btn-warning btn-sm edit-category"
                                                 data-id="{{ $category->id_category }}">
