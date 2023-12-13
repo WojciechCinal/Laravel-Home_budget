@@ -73,4 +73,48 @@ class SubCategoryController extends Controller
         // Obsługa, gdy nie znaleziono podkategorii
         return response()->json(['error' => 'Nie znaleziono podkategorii.'], 404);
     }
+
+    public function create($categoryId)
+    {
+        $category = Category::findOrFail($categoryId);
+
+        return view('Category.subCategoryNew', compact('category'));
+    }
+
+    // public function store(Request $request)
+    // {
+    //     $user = Auth::user();
+
+    //     $data = $request->validate([
+    //         'name_subCategory' => 'required|string',
+    //         'category_id' => 'required|exists:categories,id_category',
+    //     ]);
+
+    //     SubCategory::create([
+    //         'name_subCategory' => $data['name_subCategory'],
+    //         'id_category' => $data['category_id'],
+    //         'id_user' => $user->id_user
+    //     ]);
+
+    //     return redirect()->route('category.list')->with('success', 'Dodano nową podkategorię.');
+    // }
+
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+
+        $data = $request->validate([
+            'name_subCategory' => 'required|string',
+            'category_id' => 'required|exists:categories,id_category',
+        ]);
+
+        SubCategory::create([
+            'name_subCategory' => $data['name_subCategory'],
+            'id_category' => $data['category_id'],
+            'id_user' => $user->id_user
+        ]);
+
+        return redirect()->route('subCategory.list', ['id' => $data['category_id']])
+            ->with('success', 'Dodano nową podkategorię.');
+    }
 }

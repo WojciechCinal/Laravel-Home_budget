@@ -25,7 +25,7 @@ class VerifyCategoryAccess
             ->first();
 
         if (!$category) {
-            return redirect()->route('home')->with('error', 'Nie masz dostępu do tej kategorii.');
+            return redirect()->route('home')->with('error', 'Nie masz dostępu do tej strony!');
         }
 
         return $next($request);

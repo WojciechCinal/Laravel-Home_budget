@@ -122,6 +122,11 @@
                     <div class="card-header d-flex align-items-center">
                         <span class="align-middle"> Kategoria: {{ $category->name_category }}</span>
                         <div class="ms-auto">
+                            <a href="{{ route('subCategory.new', ['id' => $category->id_category]) }}"
+                                class="btn btn-success btn-sm mx-2">
+                                <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa
+                                podkategoria
+                            </a>
                             <a href="{{ route('category.list') }}" class="btn btn-success btn-sm">
                                 <i class="bi bi-escape align-middle" style="font-size: 1rem;"></i>
                                 Powrót

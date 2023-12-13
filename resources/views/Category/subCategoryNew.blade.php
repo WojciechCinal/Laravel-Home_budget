@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            Dodaj nową kategorię.
+                            Dodaj nową podkategorię do: {{ $category->name_category }}
                         </div>
                         <div>
                             <a href="{{ url()->previous() }}" class="btn btn-success btn-sm">
@@ -18,15 +18,16 @@
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('category.store') }}">
+                        <form action="{{ route('subCategory.store') }}" method="POST">
                             @csrf
+                            <input type="hidden" name="category_id" value="{{ $category->id_category }}">
 
-                            <div class="form-group">
-                                <label for="category_name">Nazwa kategorii:</label>
-                                <input type="text" class="form-control" id="category_name" name="category_name">
+                            <div class="mb-3">
+                                <label for="name_subCategory" class="form-label">Nazwa podkategorii</label>
+                                <input type="text" class="form-control" id="name_subCategory" name="name_subCategory">
                             </div>
 
-                            <button type="submit" class="btn btn-primary">Dodaj kategorię</button>
+                            <button type="submit" class="btn btn-primary">Dodaj</button>
                         </form>
                     </div>
                 </div>
