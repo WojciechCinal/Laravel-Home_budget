@@ -25,39 +25,13 @@
 
     <script>
         $(document).ready(function() {
-            $('.subcategory-status').on('change', function() {
-                let subCategoryId = $(this).data('id');
-                let isActive = $(this).prop('checked') ? 1 : 0;
-
-                $.ajax({
-                    url: `/subcategory/${subCategoryId}/updateStatus`,
-                    type: 'PUT',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        is_active: isActive
-                    },
-                    success: function(response) {
-                        // Aktualizacja stanu checkboxa na podstawie odpowiedzi AJAX
-                        $(`.subcategory-status[data-id="${response.id}"]`).prop('checked',
-                            response.isActive);
-                        $('#messages').html(
-                            '<div class="alert alert-success" role="alert">Pomyślnie zmieniono status.</div>'
-                        );
-                    },
-                    error: function(xhr) {
-                        console.log(xhr.responseText);
-                    }
-                });
-            });
-
             $('.edit-subcategory').on('click', function() {
                 let subCategoryId = $(this).data('id');
                 let subCategoryName = $(this).closest('tr').find('td:first').text();
 
-                $('#newSubCategoryName').attr('placeholder', subCategoryName !== '' ? subCategoryName :
-                    'Aktualna nazwa podkategorii');
+                // Ustawienie wartości pola tekstowego na aktualną nazwę podkategorii
+                $('#newSubCategoryName').val(subCategoryName);
+
                 $('#editSubCategoryModal').modal('show');
 
                 $('#saveSubCategoryChanges').off('click').on('click', function() {
@@ -107,6 +81,33 @@
                     if (e.which == 13) {
                         $('#saveSubCategoryChanges').click();
                         return false;
+                    }
+                });
+            });
+
+            $('.subcategory-status').on('change', function() {
+                let subCategoryId = $(this).data('id');
+                let isActive = $(this).prop('checked') ? 1 : 0;
+
+                $.ajax({
+                    url: `/subcategory/${subCategoryId}/updateStatus`,
+                    type: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        is_active: isActive
+                    },
+                    success: function(response) {
+                        // Aktualizacja stanu checkboxa na podstawie odpowiedzi AJAX
+                        $(`.subcategory-status[data-id="${response.id}"]`).prop('checked',
+                            response.isActive);
+                        $('#messages').html(
+                            '<div class="alert alert-success" role="alert">Pomyślnie zmieniono status.</div>'
+                        );
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
                     }
                 });
             });
