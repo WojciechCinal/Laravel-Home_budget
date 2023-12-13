@@ -195,6 +195,24 @@ class CategorySeeder extends Seeder
                 'id_user' => $userId,
                 'name_start' => 'Hobby'
             ]);
+
+            // EDUKACJA
+            $study = Category::create([
+                'name_category' => 'Edukacja',
+                'id_user' => $userId,
+                'name_start' => 'Edukacja'
+            ]);
+
+            SubCategory::create([
+                'name_subCategory' => 'Kursy',
+                'id_category' => $study->id_category,
+                'id_user' => $userId
+            ]);
+            SubCategory::create([
+                'name_subCategory' => 'Książki',
+                'id_category' => $study->id_category,
+                'id_user' => $userId
+            ]);
         }
     }
 }

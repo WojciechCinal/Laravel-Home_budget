@@ -20,6 +20,7 @@ class Category extends Model
         'name_category',
         'id_user',
         'is_active',
+        'name_start',
     ];
 
     public function user()
