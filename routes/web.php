@@ -48,4 +48,4 @@ Route::post('/subCategory/store', [SubCategoryController::class, 'store'])
 
 Route::get('/shoppingLists/index', [ShoppingListController::class, 'index'])->name('shopping-lists.index');
 Route::get('/shoppingLists/{id}/edit', [ShoppingListController::class, 'edit'])->name('shopping-lists.edit');
-Route::get('/shoppingLists/{id}', [ShoppingListController::class, 'show'])->name('shopping-lists.show');
+Route::post('/shoppingLists/{id}', [ShoppingListController::class, 'destroy'])->name('shopping-lists.destroy');
