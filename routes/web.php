@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\SubCategoryController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -39,7 +40,12 @@ Route::get('/subCategoriesList/{id}', [SubCategoryController::class, 'list'])
 Route::put('/subcategory/{id}/updateStatus', [SubCategoryController::class, 'updateSubcategoryStatus'])->name('subcategory.updateStatus');
 Route::put('/subcategory/{id}/updateName', [SubCategoryController::class, 'updateSubCategoryName'])->name('subcategory.updateName');
 Route::get('/subCategoriesList/{id}/new', [SubCategoryController::class, 'create'])
-->name('subCategory.new')
-->middleware('verify.category.access');
+    ->name('subCategory.new')
+    ->middleware('verify.category.access');
 Route::post('/subCategory/store', [SubCategoryController::class, 'store'])
     ->name('subCategory.store');
+
+
+Route::get('/shoppingLists/index', [ShoppingListController::class, 'index'])->name('shopping-lists.index');
+Route::get('/shoppingLists/{id}/edit', [ShoppingListController::class, 'edit'])->name('shopping-lists.edit');
+Route::get('/shoppingLists/{id}', [ShoppingListController::class, 'show'])->name('shopping-lists.show');

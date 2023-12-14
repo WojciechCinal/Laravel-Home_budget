@@ -60,6 +60,12 @@
                                     </li>
                                 @endif
                             @else
+                                <li class="nav-item">
+                                    <a href="{{ route('shopping-lists.index') }}" class="btn btn-sm nav-link">
+                                        <i class="bi bi-list-task align-middle" style="font-size: 1rem;"></i>
+                                        Listy zakupów
+                                    </a>
+                                </li>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -67,7 +73,8 @@
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{{ route('category.list') }}">{{ __('Moje kategorie') }}</a>
+                                        <a class="dropdown-item"
+                                            href="{{ route('category.list') }}">{{ __('Moje kategorie') }}</a>
 
                                         <a class="dropdown-item" href="{{ route('logout') }}"
                                             onclick="event.preventDefault();
