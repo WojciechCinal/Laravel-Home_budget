@@ -48,4 +48,5 @@ Route::get('/shoppingLists/index', [ShoppingListController::class, 'index'])->na
 Route::post('/shoppingLists/{id}', [ShoppingListController::class, 'destroy'])->name('shopping-lists.destroy');
 Route::get('/shoppingLists/{id}/edit', [ShoppingListController::class, 'edit'])->name('shopping-lists.edit');
 Route::put('/shoppingLists/{id}', [ShoppingListController::class, 'update'])->name('shopping-lists.update');
-
+Route::get('/shoppingLists/index/new', [ShoppingListController::class, 'create'])->name('shopping-lists.new');
+Route::post('/shoppingLists/index/store', [ShoppingListController::class, 'store'])->name('shopping-lists.store');

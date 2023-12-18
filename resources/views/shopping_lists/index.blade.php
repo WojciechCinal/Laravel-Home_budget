@@ -3,7 +3,13 @@
 @section('content')
     @include('shopping_lists.modal')
     <div class="container">
-        <h1>Twoje listy zakupów</h1>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Twoje listy zakupów</h1>
+            <a href="{{ route('shopping-lists.new') }}" class="btn btn-success btn-sm mx-2">
+                <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa
+                lista
+            </a>
+        </div>
         @include('layouts.messages')
         <div id="messages"></div>
         <div class="row">
