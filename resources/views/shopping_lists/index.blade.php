@@ -17,7 +17,8 @@
                         <div class="card-body">
                             <p class="card-text">{{ $list->description_shopping_list }}</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="#" class="btn btn-primary mb-0">Edytuj</a>
+                                <a href="{{ route('shopping-lists.edit', ['id' => $list->id_shopping_list]) }}"
+                                    class="btn btn-primary mb-0">Edytuj</a>
                                 <button class="btn btn-danger deleteButton"
                                     data-list-id="{{ $list->id_shopping_list }}">Usuń</button>
                             </div>
