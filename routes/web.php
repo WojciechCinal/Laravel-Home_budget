@@ -35,13 +35,11 @@ Route::get('/category/restore/{id}', [CategoryController::class, 'restore'])->na
 
 
 Route::get('/subCategoriesList/{id}', [SubCategoryController::class, 'list'])
-    ->name('subCategory.list')
-    ->middleware('verify.category.access');
+    ->name('subCategory.list');
 Route::put('/subcategory/{id}/updateStatus', [SubCategoryController::class, 'updateSubcategoryStatus'])->name('subcategory.updateStatus');
 Route::put('/subcategory/{id}/updateName', [SubCategoryController::class, 'updateSubCategoryName'])->name('subcategory.updateName');
 Route::get('/subCategoriesList/{id}/new', [SubCategoryController::class, 'create'])
-    ->name('subCategory.new')
-    ->middleware('verify.category.access');
+    ->name('subCategory.new');
 Route::post('/subCategory/store', [SubCategoryController::class, 'store'])
     ->name('subCategory.store');
 

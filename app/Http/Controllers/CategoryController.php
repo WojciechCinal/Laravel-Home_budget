@@ -16,11 +16,6 @@ class CategoryController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function list()
     {
         $user = Auth::user();
@@ -49,7 +44,7 @@ class CategoryController extends Controller
 
     public function create()
     {
-        return view('category.categoryNew'); // Zwraca widok formularza do tworzenia nowej kategorii
+        return view('category.categoryNew');
     }
 
     public function store(Request $request)
@@ -58,7 +53,7 @@ class CategoryController extends Controller
 
         $category = new Category();
         $category->name_category = $request->input('category_name');
-        $category->id_user = $user->id_user; // Przypisz ID aktualnie zalogowanego użytkownika
+        $category->id_user = $user->id_user;
         $category->save();
 
         return redirect()->route('category.list')->with('success', "$category->name_category została dodana do listy kategorii.");
@@ -66,28 +61,31 @@ class CategoryController extends Controller
 
     public function archive($id)
     {
-        $category = Category::find($id);
+        $user = Auth::user();
+        $category = Category::where('id_category', $id)
+            ->where('id_user', $user->id_user)
+            ->first();
 
-        if ($category) {
-            $category->is_active = false;
-            $category->save();
-
-            $msg = "Kategoria $category->name_category została przeniesiona do archiwum.";
-            Session::flash('success', $msg);
-
-            // Zmiana is_active dla powiązanych podkategorii
-            $subCategories = SubCategory::where('id_category', $id)->get();
-            foreach ($subCategories as $subCategory) {
-                $subCategory->is_active = false;
-                $subCategory->save();
-            }
-
-            return redirect()->route('category.list');
+        if (!$category) {
+            return redirect()->route('category.list')->with('error', 'Nie masz dostępu do tej kategorii.');
         }
 
-        Session::flash('error', 'Nie znaleziono tej kategorii!');
-        return redirect()->back()->withInput();
+        $category->is_active = false;
+        $category->save();
+
+        $msg = "Kategoria $category->name_category została przeniesiona do archiwum.";
+        Session::flash('success', $msg);
+
+        // Zmiana is_active dla powiązanych podkategorii
+        $subCategories = SubCategory::where('id_category', $id)->get();
+        foreach ($subCategories as $subCategory) {
+            $subCategory->is_active = false;
+            $subCategory->save();
+        }
+
+        return redirect()->route('category.list');
     }
+
 
 
     public function archiveList()

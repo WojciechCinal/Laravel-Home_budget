@@ -15,11 +15,6 @@ class SubCategoryController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function list($id)
     {
         $user = Auth::user();
@@ -28,8 +23,7 @@ class SubCategoryController extends Controller
             ->first();
 
         if (!$category) {
-            // Obsługa sytuacji, gdy użytkownik próbuje uzyskać dostęp do kategorii, do której nie ma dostępu
-            return redirect()->route('home')->with('error', 'Nie masz dostępu do tej kategorii.');
+            return redirect()->route('category.list')->with('error', 'Nie masz dostępu do tej podkategorii.');
         }
 
         // Pobranie podkategorii należących do wybranej kategorii
