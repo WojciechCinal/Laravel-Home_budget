@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Redirect;
 use App\Models\ShoppingList;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class ShoppingListController extends Controller
 {
@@ -19,58 +19,76 @@ class ShoppingListController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $shoppingLists = ShoppingList::all()
-            ->where('id_user', $user->id_user)
-            ->sortByDesc('updated_at')
-            ->map(function ($list) {
-                $list->formatted_updated_at = Carbon::parse($list->updated_at)->translatedFormat('H:i, d M Y');
-                return $list;
-            });
+            $shoppingLists = ShoppingList::where('id_user', $user->id_user)
+                ->orderByDesc('updated_at')
+                ->get()
+                ->map(function ($list) {
+                    $list->formatted_updated_at = Carbon::parse($list->updated_at)->translatedFormat('H:i, d M Y');
+                    return $list;
+                });
 
-        return view('shopping_lists.index', compact('shoppingLists'));
+            return view('shopping_lists.index', compact('shoppingLists'));
+        } catch (\Exception $e) {
+            Log::error('Error while fetching shopping lists: ' . $e->getMessage());
+            return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas pobierania list zakupów.');
+        }
     }
 
     public function destroy($id)
     {
-        $shoppingList = ShoppingList::find($id);
+        try {
+            $shoppingList = ShoppingList::find($id);
 
-        if ($shoppingList) {
-            $shoppingList->delete();
+            if ($shoppingList) {
+                $shoppingList->delete();
 
-            $msg = "Lista zakupów: $shoppingList->title_shopping_list została pomyślnie usunięta.";
-            Session::flash('success', $msg);
+                $msg = "Lista zakupów: $shoppingList->title_shopping_list została pomyślnie usunięta.";
+                Session::flash('success', $msg);
 
-            return redirect()->route('shopping-lists.index')->with('success', "Lista zakupów: $shoppingList->title_shopping_list została pomyślnie usunięta.");
+                return redirect()->route('shopping-lists.index')->with('success', "Lista zakupów: $shoppingList->title_shopping_list została pomyślnie usunięta.");
+            }
+
+            Log::error("Lista zakupów o id $id nie została znaleziona.");
+            return redirect()->route('shopping-lists.index')->with('error', 'Nie znaleziono takiej listy zakupów!');
+        } catch (\Exception $e) {
+            Log::error('Błąd podczas usuwania listy zakupów: ' . $e->getMessage());
+            return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas usuwania listy zakupów!');
         }
-        return redirect()->route('shopping-lists.index')->with('error', 'Nie znaleziono takiej listy zakupów!');
     }
 
     public function edit($id)
     {
-        $user = Auth::user();
-        $shoppingList = ShoppingList::where('id_shopping_list', $id)
-            ->where('id_user', $user->id_user)
-            ->first();
+        try {
+            $user = Auth::user();
+            $shoppingList = ShoppingList::where('id_shopping_list', $id)
+                ->where('id_user', $user->id_user)
+                ->firstOrFail();
 
-        if (!$shoppingList) {
+            return view('shopping_lists.edit', compact('shoppingList'));
+        } catch (\Exception $e) {
+            Log::error('Błąd podczas edycji listy zakupów: ' . $e->getMessage());
             return redirect()->route('shopping-lists.index')->with('error', 'Nie masz dostępu do tej listy zakupów.');
         }
-
-        return view('shopping_lists.edit', compact('shoppingList'));
     }
 
     public function update(Request $request, $id)
     {
-        $shoppingList = ShoppingList::findOrFail($id);
+        try {
+            $shoppingList = ShoppingList::findOrFail($id);
 
-        $shoppingList->update([
-            'title_shopping_list' => $request->input('title'),
-            'description_shopping_list' => $request->input('description')
-        ]);
+            $shoppingList->update([
+                'title_shopping_list' => $request->input('title'),
+                'description_shopping_list' => $request->input('description')
+            ]);
 
-        return redirect()->route('shopping-lists.index')->with('success', 'Lista zakupów została pomyślnie zaktualizowana.');
+            return redirect()->route('shopping-lists.index')->with('success', 'Lista zakupów została pomyślnie zaktualizowana.');
+        } catch (\Exception $e) {
+            Log::error('Błąd podczas aktualizacji listy zakupów: ' . $e->getMessage());
+            return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas aktualizacji listy zakupów.');
+        }
     }
 
     public function create()
@@ -80,23 +98,27 @@ class ShoppingListController extends Controller
 
     public function store(Request $request)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $validatedData = $request->validate([
-            'title_shopping_list' => 'required|max:255',
-            'description_shopping_list' => 'max:500',
-        ]);
+            $validatedData = $request->validate([
+                'title_shopping_list' => 'required|max:255',
+                'description_shopping_list' => 'max:500',
+            ]);
 
-        $shoppingList = ShoppingList::create([
-            'title_shopping_list' => $validatedData['title_shopping_list'],
-            'description_shopping_list' => $validatedData['description_shopping_list'],
-            'id_user' => $user->id_user
-        ]);
+            $shoppingList = ShoppingList::create([
+                'title_shopping_list' => $validatedData['title_shopping_list'],
+                'description_shopping_list' => $validatedData['description_shopping_list'],
+                'id_user' => $user->id_user
+            ]);
 
-        if ($shoppingList) {
-            return redirect()->route('shopping-lists.index')->with('success', 'Pomyślnie dodano nową listę zakupów.');
+            if ($shoppingList) {
+                return redirect()->route('shopping-lists.index')->with('success', 'Pomyślnie dodano nową listę zakupów.');
+            }
+            return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas dodawania listy zakupów.');
+        } catch (\Exception $e) {
+            Log::error('Błąd podczas dodawania listy zakupów: ' . $e->getMessage());
+            return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas dodawania listy zakupów.');
         }
-        return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas dodawania listy zakupów.');
-
     }
 }
