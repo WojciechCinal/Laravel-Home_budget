@@ -9,11 +9,6 @@ class ShoppingList extends Model
 {
     use HasFactory;
 
-    /**
-     * Nazwa klucza głównego w tabeli.
-     *
-     * @var string
-     */
     protected $primaryKey = 'id_shopping_list';
 
     protected $fillable = [

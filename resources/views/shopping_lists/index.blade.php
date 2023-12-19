@@ -10,8 +10,7 @@
                 lista
             </a>
         </div>
-        @include('layouts.messages')
-        <div id="messages"></div>
+        <div id="messages">@include('layouts.messages')</div>
         <div class="row">
             @foreach ($shoppingLists as $list)
                 <div class="col-sm-4 mb-4">

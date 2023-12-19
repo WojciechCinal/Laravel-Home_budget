@@ -5,7 +5,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div id="messages"></div>
+                <div id="messages">@include('layouts.messages')</div>
                 <div class="card">
 
                     <div class="card-header d-flex align-items-center">
@@ -22,7 +22,6 @@
                     </div>
 
                     <div class="card-body">
-                        @include('layouts.messages')
 
                         <table class="table table-hover">
                             <thead>

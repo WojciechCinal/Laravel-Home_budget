@@ -18,9 +18,7 @@
 
 <script>
     $(document).ready(function() {
-        // Obsługa zdarzenia kliknięcia "Zapisz zmiany" poza zdarzeniem dla przycisku "Edytuj"
         $('#saveCategoryChanges').on('click', function() {
-            // Pobranie danych z modala
             let categoryId = $('#editCategoryModal').data('category-id');
             let newCategoryName = $('#newCategoryName').val();
 
@@ -70,7 +68,7 @@
 
             $('#newCategoryName').val(currentCategoryName);
             $('#editCategoryModal').data('category-id',
-                categoryId); // Przypisanie ID kategorii do modala
+                categoryId);
 
             $('#editCategoryModal').modal('show');
         });

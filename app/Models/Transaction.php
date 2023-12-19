@@ -9,11 +9,6 @@ class Transaction extends Model
 {
     use HasFactory;
 
-    /**
-     * Nazwa klucza głównego w tabeli.
-     *
-     * @var string
-     */
     protected $primaryKey = 'id_transaction';
 
     protected $fillable = [

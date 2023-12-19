@@ -20,7 +20,7 @@ class CategoryController extends Controller
     {
         $user = Auth::user();
         $categories = Category::where('id_user', $user->id_user)
-            ->where('is_active', true) // Dodaj warunek is_active
+            ->where('is_active', true)
             ->withCount(['subCategories' => function (Builder $query) {
                 $query->where('is_active', true);
             }])

@@ -48,7 +48,6 @@ class SubCategoryController extends Controller
                 'isActive' => $subCategory->is_active
             ]);
         }
-
         return response()->json(['error' => 'Nie znaleziono tej podkategorii'], 404);
     }
 
@@ -60,11 +59,9 @@ class SubCategoryController extends Controller
             $subCategory->name_subCategory = $request->input('name_subCategory');
             $subCategory->save();
 
-            // Tutaj możesz zwrócić odpowiedź JSON w razie potrzeby
             return response()->json(['message' => 'Nazwa podkategorii została zaktualizowana.']);
         }
 
-        // Obsługa, gdy nie znaleziono podkategorii
         return response()->json(['error' => 'Nie znaleziono podkategorii.'], 404);
     }
 

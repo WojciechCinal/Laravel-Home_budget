@@ -90,7 +90,7 @@ class ShoppingListController extends Controller
         $shoppingList = ShoppingList::create([
             'title_shopping_list' => $validatedData['title_shopping_list'],
             'description_shopping_list' => $validatedData['description_shopping_list'],
-            'id_user' => $user->id_user, // Ustawienie id_user na ID zalogowanego użytkownika
+            'id_user' => $user->id_user
         ]);
 
         if ($shoppingList) {

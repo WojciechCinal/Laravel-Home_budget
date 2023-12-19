@@ -31,7 +31,7 @@
             currentId = id;
 
             $('#confirmButton').data('list-title',
-                listName); // Przekazanie nazwy listy do przycisku potwierdzającego
+                listName);
         });
 
         $('#confirmButton').on('click', function() {

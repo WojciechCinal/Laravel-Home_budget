@@ -9,11 +9,6 @@ class Category extends Model
 {
     use HasFactory;
 
-    /**
-     * Nazwa klucza głównego w tabeli.
-     *
-     * @var string
-     */
     protected $primaryKey = 'id_category';
 
     protected $fillable = [

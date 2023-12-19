@@ -12,11 +12,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * Nazwa klucza głównego w tabeli.
-     *
-     * @var string
-     */
     protected $primaryKey = 'id_user';
 
     /**
@@ -52,9 +47,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    /**
-     * Get the role that the user belongs to.
-     */
     public function role()
     {
         return $this->belongsTo(Role::class, 'id_role');

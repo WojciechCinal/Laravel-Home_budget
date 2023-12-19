@@ -9,11 +9,6 @@ class Role extends Model
 {
     use HasFactory;
 
-    /**
-     * Nazwa klucza głównego w tabeli.
-     *
-     * @var string
-     */
     protected $primaryKey = 'id_role';
 
     protected $fillable = ['name_role'];
