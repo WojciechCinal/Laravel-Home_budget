@@ -49,13 +49,13 @@
                             'td:first').text(newCategoryName);
 
                         $('#messages').html(
-                            '<div class="alert alert-success" role="alert">Nazwa kategorii zaktualizowana pomyślnie!</div>'
+                            '<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong><i class="bi bi-check-circle-fill" style="font-size: 1rem;"></i> Nazwa kategorii zaktualizowana pomyślnie. </strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
                         );
                     },
                     error: function(xhr) {
                         console.log(xhr.responseText);
                         $('#messages').html(
-                            '<div class="alert alert-danger" role="alert">Wystąpił błąd przy edycji nazwy</div>'
+                            '<div class = "alert alert-danger alert-dismissible fade show"role = "alert" ><strong > < i class = "bi bi-exclamation-triangle-fill"style = "font-size: 1rem" > </i> Wystąpił błąd przy zmianie nazwy! </strong ><button type = "button" class = "btn-close" data - bs - dismiss = "alert" aria - label = "Close" > < /button> </div>'
                         );
                     }
                 });

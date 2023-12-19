@@ -49,13 +49,14 @@
                         .remove();
 
                     $('#messages').html(
-                        '<div class="alert alert-success" role="alert">Lista ' +
-                        listName + ' została usunięta.</div>'
+                        '<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong><i class="bi bi-check-circle-fill" style="font-size: 1rem;"></i> Lista ' +
+                        listName +
+                        ' została usunięta. </strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
                     );
 
                 },
-                error: function(error) {
-                    console.error('Wystąpił błąd podczas usuwania listy:', error);
+                error: function(response) {
+                    '<div class = "alert alert-danger alert-dismissible fade show"role = "alert" ><strong > < i class = "bi bi-exclamation-triangle-fill"style = "font-size: 1rem" > </i> Wystąpił błąd podczas usuwania listy! </strong ><button type = "button" class = "btn-close" data - bs - dismiss = "alert" aria - label = "Close" > < /button> </div>'
                 }
             });
         });

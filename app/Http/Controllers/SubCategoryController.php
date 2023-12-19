@@ -23,7 +23,7 @@ class SubCategoryController extends Controller
             ->first();
 
         if (!$category) {
-            return redirect()->route('category.list')->with('error', 'Nie masz dostępu do tej podkategorii.');
+            return redirect()->route('category.list')->with('error', 'Nie masz dostępu do tych podkategorii!');
         }
 
         // Pobranie podkategorii należących do wybranej kategorii

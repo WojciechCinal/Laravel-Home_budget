@@ -86,15 +86,13 @@ class CategoryController extends Controller
         return redirect()->route('category.list');
     }
 
-
-
     public function archiveList()
     {
         $user = Auth::user();
         $archivedCategories = Category::where('id_user', $user->id_user)->where('is_active', false)->get();
 
         if ($archivedCategories->isEmpty()) {
-            return redirect()->back()->with('message', 'Brak zarchiwizowanych kategorii');
+            return redirect()->back()->with('message', 'Brak zarchiwizowanych kategorii.');
         }
 
         return view('category.categoryArchive', compact('archivedCategories'));

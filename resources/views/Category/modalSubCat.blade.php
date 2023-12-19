@@ -24,7 +24,6 @@
             let subCategoryId = $(this).data('id');
             let subCategoryName = $(this).closest('tr').find('td:first').text();
 
-            // Ustawienie wartości pola tekstowego na aktualną nazwę podkategorii
             $('#newSubCategoryName').val(subCategoryName);
 
             $('#editSubCategoryModal').modal('show');
@@ -51,7 +50,6 @@
                         success: function(response) {
                             $('#editSubCategoryModal').modal('hide');
 
-                            // Aktualizacja nazwy wiersza w tabeli
                             $(`.edit-subcategory[data-id="${subCategoryId}"]`)
                                 .closest('tr').find('.subcategory-name').text(
                                     newName);
@@ -61,12 +59,12 @@
                                     'tr').find('td:first').text(newName);
 
                             $('#messages').html(
-                                '<div class="alert alert-success" role="alert">Nazwa podkategorii zaktualizowana pomyślnie!</div>'
+                                '<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong><i class="bi bi-check-circle-fill" style="font-size: 1rem;"></i> Nazwa podkategorii zaktualizowana pomyślnie. </strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
                             );
                         },
 
-                        error: function(xhr) {
-                            console.log(xhr.responseText);
+                        error: function(response) {
+                            '<div class = "alert alert-danger alert-dismissible fade show"role = "alert" ><strong > < i class = "bi bi-exclamation-triangle-fill"style = "font-size: 1rem" > </i> Wystąpił błąd przy zmianie nazwy! </strong ><button type = "button" class = "btn-close" data - bs - dismiss = "alert" aria - label = "Close" > < /button> </div>'
                         }
                     });
                 }
@@ -94,15 +92,14 @@
                     is_active: isActive
                 },
                 success: function(response) {
-                    // Aktualizacja stanu checkboxa na podstawie odpowiedzi AJAX
                     $(`.subcategory-status[data-id="${response.id}"]`).prop('checked',
                         response.isActive);
                     $('#messages').html(
-                        '<div class="alert alert-success" role="alert">Pomyślnie zmieniono status.</div>'
+                        '<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong><i class="bi bi-check-circle-fill" style="font-size: 1rem;"></i> Pomyślnie zmieniono status. </strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
                     );
                 },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
+                error: function(response) {
+                    '<div class = "alert alert-danger alert-dismissible fade show"role = "alert" ><strong > < i class = "bi bi-exclamation-triangle-fill"style = "font-size: 1rem" > </i> Wystąpił błąd przy zmianie statusu! </strong ><button type = "button" class = "btn-close" data - bs - dismiss = "alert" aria - label = "Close" > < /button> </div>'
                 }
             });
         });
