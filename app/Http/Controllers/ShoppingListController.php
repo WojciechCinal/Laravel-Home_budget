@@ -50,11 +50,9 @@ class ShoppingListController extends Controller
 
                 return redirect()->route('shopping-lists.index')->with('success', "Lista zakupów: $shoppingList->title_shopping_list została pomyślnie usunięta.");
             }
-
-            Log::error("Lista zakupów o id $id nie została znaleziona.");
             return redirect()->route('shopping-lists.index')->with('error', 'Nie znaleziono takiej listy zakupów!');
         } catch (\Exception $e) {
-            Log::error('Błąd podczas usuwania listy zakupów: ' . $e->getMessage());
+            Log::error('ShoppingListController. Błąd w metodzie destroy(): ' . $e->getMessage());
             return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas usuwania listy zakupów!');
         }
     }
@@ -69,7 +67,7 @@ class ShoppingListController extends Controller
 
             return view('shopping_lists.edit', compact('shoppingList'));
         } catch (\Exception $e) {
-            Log::error('Błąd podczas edycji listy zakupów: ' . $e->getMessage());
+            Log::error('ShoppingListController. Błąd w metodzie edit():' . $e->getMessage());
             return redirect()->route('shopping-lists.index')->with('error', 'Nie masz dostępu do tej listy zakupów.');
         }
     }
@@ -86,7 +84,7 @@ class ShoppingListController extends Controller
 
             return redirect()->route('shopping-lists.index')->with('success', 'Lista zakupów została pomyślnie zaktualizowana.');
         } catch (\Exception $e) {
-            Log::error('Błąd podczas aktualizacji listy zakupów: ' . $e->getMessage());
+            Log::error('ShoppingListController. Błąd w metodzie update():' . $e->getMessage());
             return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas aktualizacji listy zakupów.');
         }
     }
@@ -115,9 +113,8 @@ class ShoppingListController extends Controller
             if ($shoppingList) {
                 return redirect()->route('shopping-lists.index')->with('success', 'Pomyślnie dodano nową listę zakupów.');
             }
-            return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas dodawania listy zakupów.');
         } catch (\Exception $e) {
-            Log::error('Błąd podczas dodawania listy zakupów: ' . $e->getMessage());
+            Log::error('ShoppingListController. Błąd w metodzie store():' . $e->getMessage());
             return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas dodawania listy zakupów.');
         }
     }

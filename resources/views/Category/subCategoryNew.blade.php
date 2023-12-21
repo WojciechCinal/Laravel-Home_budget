@@ -10,7 +10,8 @@
                             Dodaj nową podkategorię do: {{ $category->name_category }}
                         </div>
                         <div>
-                            <a href="{{ url()->previous() }}" class="btn btn-success btn-sm">
+                            <a href="{{ route('subCategory.list', ['id' => $category->id_category]) }}"
+                                class="btn btn-success btn-sm">
                                 <i class="bi bi-escape align-middle" style="font-size: 1rem;"></i>
                                 Powrót
                             </a>

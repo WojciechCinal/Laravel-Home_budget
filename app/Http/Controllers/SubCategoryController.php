@@ -22,7 +22,11 @@ class SubCategoryController extends Controller
             $user = Auth::user();
             $category = Category::where('id_category', $id)
                 ->where('id_user', $user->id_user)
-                ->firstOrFail();
+                ->first();
+
+            if (!$category) {
+                return redirect()->route('category.list')->with('error', 'Nie masz dostępu do tych podkategorii!');
+            }
 
             // Pobranie podkategorii należących do wybranej kategorii
             $subCategories = SubCategory::where('id_user', $user->id_user)
@@ -31,8 +35,8 @@ class SubCategoryController extends Controller
 
             return view('category.subCategoryList', compact('subCategories', 'category'));
         } catch (\Exception $e) {
-            Log::error('Błąd w metodzie list(): ' . $e->getMessage());
-            return redirect()->route('category.list')->with('error', 'Nie masz dostępu do tych podkategorii!');
+            Log::error('SubCategoryController. Błąd w metodzie list(): ' . $e->getMessage());
+            return redirect()->route('category.list')->with('error', 'Wystąpił błąd prosimy spróbować później.');
         }
     }
 
@@ -50,8 +54,8 @@ class SubCategoryController extends Controller
                 'isActive' => $subCategory->is_active
             ]);
         } catch (\Exception $e) {
-            Log::error('Błąd w metodzie updateSubcategoryStatus(): ' . $e->getMessage());
-            return response()->json(['error' => 'Wystąpił błąd podczas aktualizacji statusu podkategorii!'], 500);
+            Log::error('SubCategoryController. Błąd w metodzie updateSubcategoryStatus(): ' . $e->getMessage());
+            return response()->json(['error' => 'Wystąpił błąd podczas aktualizacji statusu podkategorii.'], 500);
         }
     }
 
@@ -65,8 +69,8 @@ class SubCategoryController extends Controller
 
             return response()->json(['message' => 'Nazwa podkategorii została zaktualizowana.']);
         } catch (\Exception $e) {
-            Log::error('Błąd w metodzie updateSubcategoryName(): ' . $e->getMessage());
-            return response()->json(['error' => 'Wystąpił błąd podczas aktualizacji nazwy podkategorii!'], 500);
+            Log::error('SubCategoryController. Błąd w metodzie updateSubcategoryName(): ' . $e->getMessage());
+            return response()->json(['error' => 'Wystąpił błąd podczas aktualizacji nazwy podkategorii.'], 500);
         }
     }
 
@@ -89,15 +93,26 @@ class SubCategoryController extends Controller
             return redirect()->route('subCategory.list', ['id' => $data['category_id']])
                 ->with('success', 'Dodano nową podkategorię.');
         } catch (\Exception $e) {
-            Log::error('Błąd w metodzie store(): ' . $e->getMessage());
-            return redirect()->route('category.list')->with('error', 'Wystąpił błąd podczas dodawania nowej podkategorii!');
+            Log::error('SubCategoryController. Błąd w metodzie store(): ' . $e->getMessage());
+            return redirect()->route('category.list')->with('error', 'Wystąpił błąd podczas dodawania nowej podkategorii.');
         }
     }
     public function create($categoryId)
     {
-        $category = Category::findOrFail($categoryId);
+        $user = Auth::user();
+        try {
+            $category = Category::where('id_category', $categoryId)
+                ->where('id_user', $user->id)
+                ->first();
 
-        return view('Category.subCategoryNew', compact('category'));
+            if ($category) {
+                return view('Category.subCategoryNew', compact('category'));
+            } else {
+                return redirect()->route('category.list')->with('error', 'Nie masz dostępu do tej kategorii!');
+            }
+        } catch (\Exception $e) {
+            Log::error('SubCategoryController. Błąd w metodzie create(): ' . $e->getMessage());
+            return redirect()->route('category.list')->with('error', 'Wystąpił błąd podczas dodawania nowej podkategorii.');
+        }
     }
-
 }
