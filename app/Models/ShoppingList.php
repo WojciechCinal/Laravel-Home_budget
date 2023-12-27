@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class ShoppingList extends Model
 {
@@ -20,5 +21,9 @@ class ShoppingList extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
+    }
+    public function getFormattedUpdatedAtAttribute()
+    {
+        return Carbon::parse($this->attributes['updated_at'])->translatedFormat('H:i, d M Y');
     }
 }

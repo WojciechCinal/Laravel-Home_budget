@@ -31,7 +31,7 @@ class SubCategoryController extends Controller
             // Pobranie podkategorii należących do wybranej kategorii
             $subCategories = SubCategory::where('id_user', $user->id_user)
                 ->where('id_category', $id)
-                ->get();
+                ->paginate(8);
 
             return view('category.subCategoryList', compact('subCategories', 'category'));
         } catch (\Exception $e) {
@@ -102,7 +102,7 @@ class SubCategoryController extends Controller
         $user = Auth::user();
         try {
             $category = Category::where('id_category', $categoryId)
-                ->where('id_user', $user->id)
+                ->where('id_user', $user->id_user)
                 ->first();
 
             if ($category) {

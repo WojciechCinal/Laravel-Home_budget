@@ -28,9 +28,11 @@ class CategoryController extends Controller
                 ->withCount(['subCategories' => function (Builder $query) {
                     $query->where('is_active', true);
                 }])
-                ->get();
+                ->paginate(8);
 
-            return view('category.categoryList', compact('categories'));
+            return view('category.categoryList', [
+                'categories' => $categories
+            ]);
         } catch (Exception $e) {
             Log::error('CategoryController. Wystąpił błąd w metodzie list(): ' . $e->getMessage());
             return redirect()->back()->with('error', 'Wystąpił błąd podczas pobierania listy kategorii!');

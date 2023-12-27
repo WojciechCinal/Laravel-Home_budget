@@ -41,5 +41,8 @@
                 </div>
             @endforeach
         </div>
+        <div class="nav justify-content-center mt-2">
+            {{ $shoppingLists->links() }}
+        </div>
     </div>
 @endsection

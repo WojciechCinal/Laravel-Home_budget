@@ -24,12 +24,8 @@ class ShoppingListController extends Controller
             $user = Auth::user();
 
             $shoppingLists = ShoppingList::where('id_user', $user->id_user)
-                ->orderByDesc('updated_at')
-                ->get()
-                ->map(function ($list) {
-                    $list->formatted_updated_at = Carbon::parse($list->updated_at)->translatedFormat('H:i, d M Y');
-                    return $list;
-                });
+            ->orderByDesc('updated_at')
+            ->paginate(6);
 
             return view('shopping_lists.index', compact('shoppingLists'));
         } catch (\Exception $e) {
