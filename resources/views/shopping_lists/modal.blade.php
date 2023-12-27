@@ -18,6 +18,22 @@
     </div>
 </div>
 
+<div class="modal fade" id="fullScreenModal" tabindex="-1" role="dialog" aria-labelledby="fullScreenModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><b><span id="fullScreenListName"></span></b></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p style="white-space: pre-line; font-size:18px;" id="fullScreenListDescription"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     $(document).ready(function() {
         var currentId;
@@ -61,10 +77,21 @@
             });
         });
 
-
         $('#cancelButton').on('click', function() {
             $('#deleteModal').modal('hide');
             currentId = null;
         });
+
+        $('.zoomButton').on('click', function() {
+            var id = $(this).data('list-id');
+            var listName = $(this).closest('.card').find('.card-header h5').text();
+            var hiddenDescription = $(this).closest('.card').find('.d-none p').text();
+
+            $('#fullScreenListName').text(listName);
+            $('#fullScreenListDescription').text(hiddenDescription);
+
+            $('#fullScreenModal').modal('show');
+        });
+
     });
 </script>

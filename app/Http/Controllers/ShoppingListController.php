@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use App\Models\ShoppingList;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -63,12 +64,15 @@ class ShoppingListController extends Controller
             $user = Auth::user();
             $shoppingList = ShoppingList::where('id_shopping_list', $id)
                 ->where('id_user', $user->id_user)
-                ->firstOrFail();
+                ->first();
+            if (!$shoppingList) {
+                return redirect()->route('shopping-lists.index')->with('error', 'Nie masz dostępu do tej list zakupów!');
+            }
 
             return view('shopping_lists.edit', compact('shoppingList'));
         } catch (\Exception $e) {
             Log::error('ShoppingListController. Błąd w metodzie edit():' . $e->getMessage());
-            return redirect()->route('shopping-lists.index')->with('error', 'Nie masz dostępu do tej listy zakupów.');
+            return redirect()->route('shopping-lists.index')->with('error', 'Nie udało się zedytować listy. Spróbuj ponownie później.');
         }
     }
 
@@ -101,7 +105,7 @@ class ShoppingListController extends Controller
 
             $validatedData = $request->validate([
                 'title_shopping_list' => 'required|max:255',
-                'description_shopping_list' => 'max:500',
+                'description_shopping_list' => 'max:5000',
             ]);
 
             $shoppingList = ShoppingList::create([
