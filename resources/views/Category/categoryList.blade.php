@@ -49,8 +49,7 @@
 
                                             <a class="btn btn-info btn-sm my-1"
                                                 href="{{ route('subCategory.list', ['id' => $category->id_category]) }}">
-                                                <i class="bi bi-list-task  align-middle" style="font-size: 1rem;"></i> Pokaż
-                                                podkategorie</a>
+                                                <i class="bi bi-list-task  align-middle" style="font-size: 1rem;"></i> Podkategorie</a>
 
                                             <a href="{{ route('archive.category', ['id' => $category->id_category]) }}"
                                                 class="btn btn-secondary btn-sm my-1 ">
@@ -58,13 +57,15 @@
                                                 Archiwizuj
                                             </a>
                                         </td>
-                                        <td>
+                                        <td class="col text-center align-middle">
                                             @if ($category->name_start)
                                                 <button class="btn btn-info btn-sm start-name">
                                                     <i class="bi bi-award" style="font-size: 0.8rem"></i> </button>
+                                            @else
+                                                <i class="bi bi-x-square-fill" style="font-size: 1.5rem; color: red;"></i>
                                             @endif
                                             <div class="d-none">
-                                                {{ $category->name_start}}
+                                                {{ $category->name_start }}
                                             </div>
                                         </td>
                                     </tr>
