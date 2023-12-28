@@ -193,7 +193,7 @@ class CategorySeeder extends Seeder
             $hobby = Category::create([
                 'name_category' => 'Hobby i rekreacja',
                 'id_user' => $userId,
-                'name_start' => 'Hobby'
+                'name_start' => 'Hobby i rekreacja'
             ]);
 
             // EDUKACJA

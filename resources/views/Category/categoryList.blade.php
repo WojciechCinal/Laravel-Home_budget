@@ -28,12 +28,15 @@
                                     <th class="col">Nazwa kategorii</th>
                                     <th class="col text-center">Aktywne podkategorie</th>
                                     <th class="col text-center">Opcje</th>
+                                    <th class="col text-center">Ranking</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($categories as $category)
                                     <tr>
-                                        <td class="col align-middle">{{ $category->name_category }}</td>
+                                        <td class="col align-middle">
+                                            {{ $category->name_category }}
+                                        </td>
                                         <td class="col align-middle text-center">
                                             {{ $category->activeSubcategoriesCount() }}/{{ $category->subcategories()->count() }}
                                         </td>
@@ -54,6 +57,15 @@
                                                 <i class="bi bi-archive align-middle" style="font-size: 1rem;"></i>
                                                 Archiwizuj
                                             </a>
+                                        </td>
+                                        <td>
+                                            @if ($category->name_start)
+                                                <button class="btn btn-info btn-sm start-name">
+                                                    <i class="bi bi-award" style="font-size: 0.8rem"></i> </button>
+                                            @endif
+                                            <div class="d-none">
+                                                {{ $category->name_start}}
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

@@ -29,9 +29,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="description">Opis</label>
-                                <textarea class="form-control" id="description" name="description">{{ $shoppingList->description_shopping_list }}</textarea>
+                                <textarea class="form-control" id="description" name="description" style="height: 183px">{{ $shoppingList->description_shopping_list }}</textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+                            <button type="submit" class="btn btn-primary mt-2">Zapisz zmiany</button>
                         </form>
                     </div>
                 </div>

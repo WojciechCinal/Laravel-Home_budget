@@ -16,6 +16,17 @@
     </div>
 </div>
 
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="nameContent"></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="nameStartContent">
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         $('#saveCategoryChanges').on('click', function() {
@@ -64,7 +75,7 @@
 
         $('.edit-category').on('click', function() {
             let categoryId = $(this).data('id');
-            let currentCategoryName = $(this).closest('tr').find('td:first').text();
+            let currentCategoryName = $(this).closest('tr').find('td:first').text().trim();
 
             $('#newCategoryName').val(currentCategoryName);
             $('#editCategoryModal').data('category-id',
@@ -79,5 +90,28 @@
                 $('#saveCategoryChanges').click();
             }
         });
+
+        function showCategoryToast(categoryStartName, categoryName) {
+            const nameStartContent = `${categoryName}`;
+            $('#nameContent').text(nameStartContent);
+
+            const nameContent = `Uzwględniona w rankingu jako: ${categoryStartName}`;
+            $('#nameStartContent').text(nameContent);
+
+            var toastLiveExample = document.getElementById('liveToast');
+            var toast = new bootstrap.Toast(toastLiveExample, {
+                delay: 4000
+            });
+            toast.show();
+        }
+
+        // Obsługa kliknięcia na każdy przycisk .btn-info
+        $('.start-name').on('click', function() {
+            const categoryStartName = $(this).closest('tr').find('td:last').text().trim();
+            const categoryName = $(this).closest('tr').find('td:first').text().trim();
+
+            showCategoryToast(categoryStartName, categoryName);
+        });
+
     });
 </script>
