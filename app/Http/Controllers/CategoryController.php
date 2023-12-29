@@ -19,20 +19,36 @@ class CategoryController extends Controller
         $this->middleware('auth');
     }
 
-    public function list()
+    public function list(Request $request)
     {
         try {
             $user = Auth::user();
+            $searchTerm = $request->input('search');
+
             $categories = Category::where('id_user', $user->id_user)
-                ->where('is_active', true)
-                ->withCount(['subCategories' => function (Builder $query) {
+                ->withCount(['subcategories' => function (Builder $query) {
                     $query->where('is_active', true);
                 }])
+                ->when(!$searchTerm, function ($query) {
+                    $query->where('is_active', true);
+                })
+                ->when($searchTerm, function ($query, $searchTerm) {
+                    $query->where(function ($query) use ($searchTerm) {
+                        $query->where('name_category', 'like', '%' . $searchTerm . '%')
+                            ->orWhereHas('subcategories', function ($query) use ($searchTerm) {
+                                $query->where('name_subCategory', 'like', '%' . $searchTerm . '%');
+                            });
+                    });
+                })
                 ->paginate(8);
 
-            return view('category.categoryList', [
-                'categories' => $categories
-            ]);
+            if ($categories->isNotEmpty()) {
+                return view('category.categoryList', [
+                    'categories' => $categories
+                ]);
+            } else {
+                return redirect()->route('category.list')->with('message', "Brak rekordów dla frazy: $searchTerm.");
+            }
         } catch (Exception $e) {
             Log::error('CategoryController. Wystąpił błąd w metodzie list(): ' . $e->getMessage());
             return redirect()->back()->with('error', 'Wystąpił błąd podczas pobierania listy kategorii!');

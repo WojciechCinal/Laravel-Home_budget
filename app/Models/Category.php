@@ -32,4 +32,5 @@ class Category extends Model
     {
         return $this->subcategories()->where('is_active', true)->count();
     }
+
 }

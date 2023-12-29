@@ -91,6 +91,8 @@
             }
         });
 
+        let toastInstance = null;
+
         function showCategoryToast(categoryStartName, categoryName) {
             const nameStartContent = `${categoryName}`;
             $('#nameContent').text(nameStartContent);
@@ -98,20 +100,23 @@
             const nameContent = `Uzwględniona w rankingu jako: ${categoryStartName}`;
             $('#nameStartContent').text(nameContent);
 
-            var toastLiveExample = document.getElementById('liveToast');
-            var toast = new bootstrap.Toast(toastLiveExample, {
-                delay: 4000
-            });
-            toast.show();
+            if (!toastInstance) {
+                var toastLiveExample = document.getElementById('liveToast');
+                toastInstance = new bootstrap.Toast(toastLiveExample, {
+                    delay: 4000
+                });
+            }
+
+            toastInstance.show();
         }
 
-        // Obsługa kliknięcia na każdy przycisk .btn-info
         $('.start-name').on('click', function() {
             const categoryStartName = $(this).closest('tr').find('td:last').text().trim();
             const categoryName = $(this).closest('tr').find('td:first').text().trim();
 
             showCategoryToast(categoryStartName, categoryName);
         });
+
 
     });
 </script>

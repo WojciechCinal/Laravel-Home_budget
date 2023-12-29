@@ -22,6 +22,17 @@
                     </div>
 
                     <div class="card-body">
+
+                        <form class="d-flex justify-content-center" role="search" action="{{ route('category.list') }}"
+                            method="GET">
+                            <input class="form-control" type="search" name="search"
+                                placeholder="Podaj nazwę kategorii lub podkategorii..." aria-label="Search"
+                                style="width: 60%">
+                            <button class="btn btn-success ms-2" type="submit">
+                                <i class="bi bi-search align-middle" style="font-size: 1rem;"></i> Szukaj
+                            </button>
+                        </form>
+
                         <table class="table table-hover">
                             <thead>
                                 <tr>
@@ -33,41 +44,56 @@
                             </thead>
                             <tbody>
                                 @foreach ($categories as $category)
-                                    <tr>
-                                        <td class="col align-middle">
-                                            {{ $category->name_category }}
-                                        </td>
-                                        <td class="col align-middle text-center">
-                                            {{ $category->activeSubcategoriesCount() }}/{{ $category->subcategories()->count() }}
-                                        </td>
-                                        <td class="col text-center">
+                                    @if ($category->is_active == false)
+                                        <tr class="table-danger">
+                                        @else
+                                        <tr>
+                                    @endif
+                                    <td class="col align-middle">
+                                        {{ $category->name_category }}
+                                    </td>
+                                    <td class="col align-middle text-center">
+                                        {{ $category->activeSubcategoriesCount() }}/{{ $category->subcategories()->count() }}
+                                    </td>
+                                    <td class="col text-center">
+                                        @if ($category->is_active == false)
+                                            Kategoria archiwalna!
+                                            <a href="{{ route('category.restore', ['id' => $category->id_category]) }}"
+                                                class="btn btn-warning btn-sm mx-2">
+                                                <i class="bi bi-box-arrow-up align-middle" style="font-size: 1rem;"></i>
+                                                Przywróć
+                                            </a>
+                                        @else
                                             <button class="btn btn-warning btn-sm edit-category my-1"
-                                                data-id="{{ $category->id_category }}">
+                                                style="min-width: 112px" data-id="{{ $category->id_category }}">
                                                 <i class="bi bi-pencil-square align-middle" style="font-size: 1rem;"></i>
                                                 Edytuj
                                             </button>
 
                                             <a class="btn btn-info btn-sm my-1"
                                                 href="{{ route('subCategory.list', ['id' => $category->id_category]) }}">
-                                                <i class="bi bi-list-task  align-middle" style="font-size: 1rem;"></i> Podkategorie</a>
+                                                <i class="bi bi-list-task  align-middle" style="font-size: 1rem;"></i>
+                                                Podkategorie</a>
 
                                             <a href="{{ route('archive.category', ['id' => $category->id_category]) }}"
-                                                class="btn btn-secondary btn-sm my-1 ">
+                                                class="btn btn-secondary btn-sm my-1" style="min-width: 112px">
                                                 <i class="bi bi-archive align-middle" style="font-size: 1rem;"></i>
                                                 Archiwizuj
                                             </a>
-                                        </td>
-                                        <td class="col text-center align-middle">
-                                            @if ($category->name_start)
-                                                <button class="btn btn-info btn-sm start-name">
-                                                    <i class="bi bi-award" style="font-size: 0.8rem"></i> </button>
-                                            @else
-                                                <i class="bi bi-x-square-fill" style="font-size: 1.5rem; color: red;"></i>
-                                            @endif
-                                            <div class="d-none">
-                                                {{ $category->name_start }}
-                                            </div>
-                                        </td>
+                                        @endif
+                                    </td>
+                                    <td class="col text-center align-middle">
+                                        @if ($category->name_start)
+                                            <button class="btn btn-info btn-sm start-name">
+                                                <i class="bi bi-award" style="font-size: 0.8rem"></i> </button>
+                                        @else
+                                            <i class="bi bi-x-square-fill" style="font-size: 1.5rem; color: red;"
+                                                title="Kategoria NIE jest uwzględniana w rankingu."></i>
+                                        @endif
+                                        <div class="d-none">
+                                            {{ $category->name_start }}
+                                        </div>
+                                    </td>
                                     </tr>
                                 @endforeach
                             </tbody>

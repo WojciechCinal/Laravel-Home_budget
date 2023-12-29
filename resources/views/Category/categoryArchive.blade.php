@@ -30,8 +30,8 @@
                                         <td class="col-6 col-sm-4 align-middle">{{ $category->name_category }}</td>
                                         <td class="col-6 col-sm-4 text-center">
                                             <a href="{{ route('category.restore', ['id' => $category->id_category]) }}"
-                                                class="btn btn-success btn-sm">
-                                                <i class="bi bi-arrow-clockwise align-middle" style="font-size: 1rem;"></i>
+                                                class="btn btn-warning btn-sm">
+                                                <i class="bi bi-box-arrow-up align-middle" style="font-size: 1rem;"></i>
                                                 Przywróć
                                             </a>
                                         </td>
