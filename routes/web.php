@@ -53,3 +53,5 @@ Route::get('/shoppingLists/index/new', [ShoppingListController::class, 'create']
 Route::post('/shoppingLists/index/store', [ShoppingListController::class, 'store'])->name('shopping-lists.store');
 
 Route::get('/savingsPlans/index', [SavingsPlansController::class, 'index'])->name('savings-plans.index');
+Route::post('/savingsPlans/{id}', [SavingsPlansController::class, 'destroy'])->name('savings-plans.destroy');
+

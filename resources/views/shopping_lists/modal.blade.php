@@ -61,7 +61,7 @@
                 success: function(response) {
                     $('#deleteModal').modal('hide');
 
-                    $(`.deleteButton[data-list-id="${currentId}"]`).closest('.col-sm-4')
+                    $(`.deleteButton[data-list-id="${currentId}"]`).closest('.col-xl-4')
                         .remove();
 
                     $('#messages').html(

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class SavingsPlan extends Model
 {
@@ -29,5 +30,15 @@ class SavingsPlan extends Model
     public function priority()
     {
         return $this->belongsTo(Priority::class, 'id_priority');
+    }
+
+    public function getFormattedCreatedAtAttribute()
+    {
+        return Carbon::parse($this->attributes['created_at'])->translatedFormat('d M Y');
+    }
+
+    public function getFormattedEndDateSavingsPlanAttribute()
+    {
+        return Carbon::parse($this->attributes['end_date_savings_plan'])->translatedFormat('d M Y');
     }
 }
