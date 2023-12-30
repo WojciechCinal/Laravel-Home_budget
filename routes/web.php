@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\SubCategoryController;
+use App\Http\Controllers\SavingsPlansController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -50,3 +51,5 @@ Route::get('/shoppingLists/{id}/edit', [ShoppingListController::class, 'edit'])-
 Route::put('/shoppingLists/{id}', [ShoppingListController::class, 'update'])->name('shopping-lists.update');
 Route::get('/shoppingLists/index/new', [ShoppingListController::class, 'create'])->name('shopping-lists.new');
 Route::post('/shoppingLists/index/store', [ShoppingListController::class, 'store'])->name('shopping-lists.store');
+
+Route::get('/savingsPlans/index', [SavingsPlansController::class, 'index'])->name('savings-plans.index');

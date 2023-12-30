@@ -29,7 +29,7 @@ class ShoppingListController extends Controller
 
             return view('shopping_lists.index', compact('shoppingLists'));
         } catch (\Exception $e) {
-            Log::error('Error while fetching shopping lists: ' . $e->getMessage());
+            Log::error('ShoppingListController. Błąd w metodzie index(): ' . $e->getMessage());
             return redirect()->route('shopping-lists.index')->with('error', 'Wystąpił błąd podczas pobierania list zakupów.');
         }
     }

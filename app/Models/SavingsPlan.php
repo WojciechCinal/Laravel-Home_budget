@@ -17,7 +17,8 @@ class SavingsPlan extends Model
         'amount_savings_plan',
         'end_date_savings_plan',
         'id_user',
-        'id_priority'
+        'id_priority',
+        'is_completed'
     ];
 
     public function user()
