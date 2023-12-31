@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('id_savings_plan');
             $table->string('name_savings_plan');
             $table->float('goal_savings_plan', 10, 2);
-            $table->float('amount_savings_plan', 10, 2);
+            $table->float('amount_savings_plan', 10, 2)->default(0);
             $table->date('end_date_savings_plan');
             $table->timestamps();
         });

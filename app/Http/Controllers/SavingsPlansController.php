@@ -52,4 +52,32 @@ class SavingsPlansController extends Controller
             return redirect()->route('savings-plans.index')->with('error', 'Wystąpił błąd podczas usuwania planu oszczędnościowego!');
         }
     }
+
+    public function create()
+    {
+        $priorities = Priority::all();
+        return view('savingsPlan.new', compact('priorities'));
+    }
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name_savings_plan' => 'required|string',
+            'goal_savings_plan' => 'required|numeric',
+            'end_date_savings_plan' => 'required|date',
+            'priority_id' => 'required|exists:priorities,id_priority'
+        ]);
+
+
+        $savingsPlan = SavingsPlan::create([
+            'name_savings_plan' => $validatedData['name_savings_plan'],
+            'goal_savings_plan' => $validatedData['goal_savings_plan'],
+            'end_date_savings_plan' => $validatedData['end_date_savings_plan'],
+            'id_user' => auth()->id(),
+            'id_priority' => $validatedData['priority_id'],
+            'is_completed' => false
+        ]);
+
+        return redirect()->route('savings-plans.index')->with('success', 'Nowy cel oszczędnościowy został dodany!');
+    }
 }

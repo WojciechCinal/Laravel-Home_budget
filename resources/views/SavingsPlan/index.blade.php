@@ -6,10 +6,9 @@
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div id="messages">@include('layouts.messages')</div>
-                Tutaj będą plany oszczędnościowe!
                 <div class="row">
                     @foreach ($savingsPlans as $savingsPlan)
-                        <div class="col-lg-6 mt-4" id="SPlan">
+                        <div class="col-xl-6 mt-4" id="SPlan">
                             <div class="card border-dark">
                                 <div class="card-header text-bg-secondary text-light">
                                     <h5 class="card-title" style="font-weight: 800; text-align: center;">
@@ -76,6 +75,13 @@
                 </div>
                 <div class="nav justify-content-center mt-2">
                     {{ $savingsPlans->links() }}
+                </div>
+                <div class="position-fixed bottom-0 end-0 p-3 mb-5 me-3">
+                    <a href="{{ route('savings-plans.new') }}">
+                        <button class="btn btn-info rounded-circle" style="font-size: 20px; height:3.2rem; width:3.2rem; font-weight:bold;">
+                        +
+                        </button>
+                    </a>
                 </div>
             </div>
         </div>
