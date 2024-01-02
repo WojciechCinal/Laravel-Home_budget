@@ -17,55 +17,6 @@ class SavingsPlansController extends Controller
         $this->middleware('auth');
     }
 
-    // public function index()
-    // {
-    //     try {
-    //         $user = Auth::user();
-
-    //         $savingsPlans = SavingsPlan::where('id_user', $user->id_user)
-    //             ->orderBy('id_priority')
-    //             ->orderBy('end_date_savings_plan')
-    //             ->paginate(6);
-
-    //         foreach ($savingsPlans as $plan) {
-    //             if ($plan->is_completed == 1) {
-    //                 $plan->months_remaining = "-";
-    //                 $plan->monthly_deposit_needed = "-";
-    //             } else {
-    //                 $endDate = Carbon::parse($plan->end_date_savings_plan);
-    //                 $monthsRemaining = $endDate->diffInMonths(Carbon::now());
-
-    //                 if (($endDate->diffInDays(Carbon::now(), false)) * -1 <= 0) {
-    //                     $remainingAmount = max(0, $plan->goal_savings_plan - $plan->amount_savings_plan);
-    //                     $monthlyDeposit = $remainingAmount / max(1, $monthsRemaining);
-
-
-    //                     $plan->months_remaining = $monthsRemaining;
-    //                     $plan->deadline = "Przekroczono termin o " . $endDate->diffInDays(Carbon::now()) . " dni!";
-    //                     $plan->monthly_deposit_needed = round($monthlyDeposit, 2);
-    //                 } else {
-    //                     $remainingAmount = max(0, $plan->goal_savings_plan - $plan->amount_savings_plan);
-    //                     $monthlyDeposit = $remainingAmount / max(1, $monthsRemaining);
-
-    //                     if ($monthsRemaining == 1) {
-    //                         $monthsRemaining = $endDate->diffInDays(Carbon::now());
-    //                         $plan->months_remaining = $monthsRemaining . " dni";
-    //                     } else {
-    //                         $plan->months_remaining = $monthsRemaining . " mies.";
-    //                     }
-
-    //                     $plan->monthly_deposit_needed = round($monthlyDeposit, 2);
-    //                 }
-    //             }
-    //         }
-
-    //         return view('SavingsPlan.index', compact('savingsPlans'));
-    //     } catch (\Exception $e) {
-    //         Log::error('SavingsPlansController. Błąd w metodzie index(): ' . $e->getMessage());
-    //         return redirect()->route('savings-plans.index')->with('error', 'Wystąpił błąd podczas pobierania planów oszczędnościowych.');
-    //     }
-    // }
-
     public function index()
     {
         try {
@@ -88,15 +39,12 @@ class SavingsPlansController extends Controller
                     if ($endDate->isPast()) {
                         $daysOverdue = $endDate->diffInDays(Carbon::now());
                         $plan->deadline = "Przekroczono termin o " . $daysOverdue . " dni!";
-                    } elseif ($daysRemaining < 30) {
+                    } elseif ($daysRemaining < 31) {
                         $plan->months_remaining = $daysRemaining . " dni";
                     } else {
-                        if ($monthsRemaining == 1) {
-                            $daysRemaining = $endDate->diffInDays(Carbon::now());
-                            $plan->months_remaining = $daysRemaining . " dni";
-                        } else {
+
                             $plan->months_remaining = $monthsRemaining . " mies.";
-                        }
+
                     }
 
                     $remainingAmount = max(0, $plan->goal_savings_plan - $plan->amount_savings_plan);
