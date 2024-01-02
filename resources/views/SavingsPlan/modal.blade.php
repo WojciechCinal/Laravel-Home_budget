@@ -1,18 +1,12 @@
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Potwierdzenie usunięcia</h5>
-            </div>
             <div class="modal-body">
-                Czy na pewno chcesz usunąć listę <span id="listName"></span>?
+                <h5> Czy na pewno chcesz usunąć listę <b><span id="listName"></span></b> ?</h5>
             </div>
             <div class="modal-footer">
-                <div class="modal-footer">
-                    <button id="cancelButton" type="button" class="btn btn-secondary"
-                        data-dismiss="modal">Anuluj</button>
-                    <button id="confirmButton" type="button" class="btn btn-danger">Usuń</button>
-                </div>
+                <button id="cancelButton" type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+                <button id="confirmButton" type="button" class="btn btn-danger">Usuń</button>
             </div>
         </div>
     </div>
@@ -46,7 +40,7 @@
                     $(`.deleteButton[data-list-id="${currentId}"]`).closest('#SPlan')
                         .remove();
 
-                        $('#messages').html(
+                    $('#messages').html(
                         '<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong><i class="bi bi-check-circle-fill" style="font-size: 1rem;"></i> Plan oszczędnościowy: ' +
                         listName +
                         ' została usunięty. </strong><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
