@@ -55,4 +55,6 @@ Route::post('/shoppingLists/index/store', [ShoppingListController::class, 'store
 Route::get('/savingsPlans/index', [SavingsPlansController::class, 'index'])->name('savings-plans.index');
 Route::post('/savingsPlans/{id}', [SavingsPlansController::class, 'destroy'])->name('savings-plans.destroy');
 Route::get('/savingsPlans/index/new', [SavingsPlansController::class, 'create'])->name('savings-plans.new');
-Route::post('savings-plans/store', [SavingsPlansController::class, 'store'])->name('savings-plans.store');
+Route::post('savingsPlans/store', [SavingsPlansController::class, 'store'])->name('savings-plans.store');
+Route::get('/savingsPlans/{id}/edit', [SavingsPlansController::class, 'edit'])->name('savings-plans.edit');
+Route::put('/savingsPlans/{id}/update', [SavingsPlansController::class, 'update'])->name('savings-plans.update');

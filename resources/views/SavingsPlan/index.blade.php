@@ -3,9 +3,70 @@
 @section('content')
     @include('SavingsPlan.modal')
     <div class="container">
+
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <div id="messages">@include('layouts.messages')</div>
+                <div class="container mt-4">
+                    <form action="{{ route('savings-plans.index') }}" method="GET">
+                        <div class="row justify-content-end">
+                            <div class="col-md-3 mb-3">
+                                <label for="sort_end_date">Data zakończenia:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" value="asc" id="sort_end_date_asc"
+                                        name="sort_end_date"
+                                        {{ request('sort_end_date') === 'asc' || !request()->has('sort_end_date') ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="sort_end_date_asc">Rosnąco</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" value="desc" id="sort_end_date_desc"
+                                        name="sort_end_date" {{ request('sort_end_date') === 'desc' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="sort_end_date_desc">Malejąco</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="sort_priority">Priorytet:</label>
+                                @foreach ([1, 2, 3, 4, 5] as $priority)
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ $priority }}"
+                                            id="sort_priority_{{ $priority }}" name="sort_priority[]"
+                                            {{ in_array($priority, request('sort_priority', [1, 2, 3, 4, 5])) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="sort_priority_{{ $priority }}">
+                                            @if ($priority === 1)
+                                                Bardzo wysoki
+                                            @elseif ($priority === 2)
+                                                Wysoki
+                                            @elseif ($priority === 3)
+                                                Średni
+                                            @elseif ($priority === 4)
+                                                Mały
+                                            @elseif ($priority === 5)
+                                                Brak
+                                            @endif
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="sort_completed">Zakończony:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" value="1" id="sort_completed_true"
+                                        name="sort_completed" {{ request()->query('sort_completed') === '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="sort_completed_true">Tak</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" value="0" id="sort_completed_false"
+                                        name="sort_completed" {{ !request()->query('sort_completed') || request()->query('sort_completed') === '0' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="sort_completed_false">Nie</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <button type="submit" class="btn btn-primary">Sortuj</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
                 <div class="row">
                     @foreach ($savingsPlans as $savingsPlan)
                         <div class="col-xl-6 mt-4" id="SPlan">
@@ -101,9 +162,11 @@
                                                 <i class="bi bi-info-square align-middle" style="font-size: 1rem;"></i>
                                                 Szczegóły
                                             </button>
-                                            <a href="{{ route('savings-plans.index', ['id' => $savingsPlan->id_savings_plan]) }}"
-                                                class="btn btn-primary me-2"><i class="bi bi-pencil-square align-middle"
-                                                    style="font-size: 1rem;"></i> Edytuj</a>
+                                            <a href="{{ route('savings-plans.edit', ['id' => $savingsPlan->id_savings_plan]) }}"
+                                                class="btn btn-primary me-2">
+                                                <i class="bi bi-pencil-square align-middle" style="font-size: 1rem;"></i>
+                                                Edytuj
+                                            </a>
                                             <button class="btn btn-danger deleteButton"
                                                 data-list-id="{{ $savingsPlan->id_savings_plan }}"><i
                                                     class="bi bi-trash3-fill align-middle" style="font-size: 1rem;"></i>
