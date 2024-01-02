@@ -12,9 +12,9 @@
                             <div class="card border-dark">
                                 <div class="card-header text-bg-secondary text-light">
 
-                                        <h5 class="card-title" style="font-weight: 800; text-align: center;">
-                                            {{ $savingsPlan->name_savings_plan }}
-                                        </h5>
+                                    <h5 class="card-title" style="font-weight: 800; text-align: center;">
+                                        {{ $savingsPlan->name_savings_plan }}
+                                    </h5>
 
                                 </div>
                                 <div class="card-body">
@@ -25,41 +25,44 @@
                                                 {{ $savingsPlan->priority->name_priority }}
                                             </td>
                                         </tr>
-                                        <tr class="table-secondary">
+                                        <tr class="d-none">
                                             <th>Planowana data zakończenia:</th>
                                             <td style="text-align: right;">
                                                 {{ $savingsPlan->formatted_end_date_savings_plan }}</td>
                                         </tr>
-                                        <tr>
+                                        <tr class="table-secondary">
                                             <th>Kwota / cel:</th>
                                             <td style="text-align: right;">{{ $savingsPlan->amount_savings_plan }} /
                                                 {{ $savingsPlan->goal_savings_plan }} PLN </td>
                                         </tr>
-                                        <tr class="table-secondary">
+                                        <tr class="d-none">
                                             <th>Data rozpoczęcia:</th>
                                             <td style="text-align: right;"> {{ $savingsPlan->formatted_created_at }}
                                             </td>
                                         </tr>
                                         @if ($savingsPlan->months_remaining == 0)
                                             <tr class="table-danger">
-                                                <th >Pozostało:</th>
-                                                <td style="text-align: right; color: red; font-weight: bold;">{{ $savingsPlan->deadline }}
+                                                <th>Pozostało:</th>
+                                                <td style="text-align: right; color: red; font-weight: bold;">
+                                                    {{ $savingsPlan->deadline }}
                                                 </td>
                                             </tr>
-                                            <tr class="table-secondary">
+                                            <tr class="d-none">
                                                 <th>Proponowana wpłata miesięczna:</th>
-                                                <td style="text-align: right; color: red; font-weight: bold;"> {{ $savingsPlan->monthly_deposit_needed }} PLN
+                                                <td style="text-align: right; color: red; font-weight: bold;">
+                                                    {{ $savingsPlan->monthly_deposit_needed }} PLN
                                                 </td>
                                             </tr>
-                                            @else
+                                        @else
                                             <tr>
                                                 <th>Pozostało:</th>
                                                 <td style="text-align: right;"> {{ $savingsPlan->months_remaining }}
                                                 </td>
                                             </tr>
-                                            <tr class="table-secondary">
+                                            <tr class="d-none">
                                                 <th>Proponowana wpłata miesięczna:</th>
-                                                <td style="text-align: right;"> {{ $savingsPlan->monthly_deposit_needed }} PLN
+                                                <td style="text-align: right;"> {{ $savingsPlan->monthly_deposit_needed }}
+                                                    PLN
                                                 </td>
                                             </tr>
                                         @endif
@@ -93,6 +96,11 @@
                                 <div class="card-footer">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
+                                            <button type="button" class="btn btn-info me-2" data-bs-toggle="modal"
+                                                data-bs-target="#savingsPlanDetails{{ $savingsPlan->id_savings_plan }}">
+                                                <i class="bi bi-info-square align-middle" style="font-size: 1rem;"></i>
+                                                Szczegóły
+                                            </button>
                                             <a href="{{ route('savings-plans.index', ['id' => $savingsPlan->id_savings_plan]) }}"
                                                 class="btn btn-primary me-2"><i class="bi bi-pencil-square align-middle"
                                                     style="font-size: 1rem;"></i> Edytuj</a>

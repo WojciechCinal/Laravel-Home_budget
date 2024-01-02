@@ -12,6 +12,73 @@
     </div>
 </div>
 
+@foreach ($savingsPlans as $savingsPlan)
+    <div class="modal fade" id="savingsPlanDetails{{ $savingsPlan->id_savings_plan }}" tabindex="-1"
+        aria-labelledby="savingsPlanDetails{{ $savingsPlan->id_savings_plan }}Label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header text-bg-secondary text-light">
+                    <h5 class="modal-title" id="savingsPlanDetails{{ $savingsPlan->id_savings_plan }}Label">
+                       <b> {{ $savingsPlan->name_savings_plan }}</b></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <tr>
+                            <th>Priorytet:</th>
+                            <td style="text-align: right;">
+                                {{ $savingsPlan->priority->name_priority }}
+                            </td>
+                        </tr>
+                        <tr class="table-secondary">
+                            <th>Planowana data zakończenia:</th>
+                            <td style="text-align: right;">
+                                {{ $savingsPlan->formatted_end_date_savings_plan }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kwota / cel:</th>
+                            <td style="text-align: right;">{{ $savingsPlan->amount_savings_plan }} /
+                                {{ $savingsPlan->goal_savings_plan }} PLN </td>
+                        </tr>
+                        <tr class="table-secondary">
+                            <th>Data rozpoczęcia:</th>
+                            <td style="text-align: right;"> {{ $savingsPlan->formatted_created_at }}
+                            </td>
+                        </tr>
+                        @if ($savingsPlan->months_remaining == 0)
+                            <tr class="table-danger">
+                                <th >Pozostało:</th>
+                                <td style="text-align: right; color: red; font-weight: bold;">{{ $savingsPlan->deadline }}
+                                </td>
+                            </tr>
+                            <tr class="table-secondary">
+                                <th>Proponowana wpłata miesięczna:</th>
+                                <td style="text-align: right; color: red; font-weight: bold;"> {{ $savingsPlan->monthly_deposit_needed }} PLN
+                                </td>
+                            </tr>
+                            @else
+                            <tr>
+                                <th>Pozostało:</th>
+                                <td style="text-align: right;"> {{ $savingsPlan->months_remaining }}
+                                </td>
+                            </tr>
+                            <tr class="table-secondary">
+                                <th>Proponowana wpłata miesięczna:</th>
+                                <td style="text-align: right;"> {{ $savingsPlan->monthly_deposit_needed }} PLN
+                                </td>
+                            </tr>
+                        @endif
+
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
+
 <script>
     $(document).ready(function() {
         $('.deleteButton').on('click', function() {
@@ -58,6 +125,10 @@
         $('#cancelButton').on('click', function() {
             $('#deleteModal').modal('hide');
             currentId = null;
+        });
+
+        $('.detailsButton').on('click', function() {
+            $('#detailsModal').modal('show');
         });
 
     });
