@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- @include('shopping_lists.modal') --}}
+    @include('Transaction.modal')
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
             <h1>Historia transakcji.</h1>
@@ -37,10 +37,15 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('transactions.edit', $transaction->id_transaction ) }}"
-                                    class="btn btn-primary btn-sm">
-                                    Edytuj
+                                <a href="{{ route('transactions.edit', $transaction->id_transaction) }}"
+                                    class="btn btn-primary">
+                                    <i class="bi bi-pencil-square align-middle" style="font-size: 1rem;"></i> Edytuj
                                 </a>
+                                <button type="button" class="btn btn-danger deleteButton"
+                                    data-transaction-id="{{ $transaction->id_transaction }}">
+                                    <i class="bi bi-trash3-fill align-middle" style="font-size: 1rem;"></i>
+                                    Usuń
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -58,18 +63,4 @@
             </button>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
-            popovers.forEach(function(popover) {
-                new bootstrap.Popover(popover, {
-                    placement: popover.dataset.bsPlacement,
-                    title: popover.dataset.bsTitle ? popover.dataset.bsTitle : '',
-                    content: function() {
-                        return popover.dataset.bsContent;
-                    },
-                });
-            });
-        });
-    </script>
 @endsection

@@ -96,59 +96,6 @@ class TransactionController extends Controller
         }
     }
 
-    // public function edit(Transaction $transaction)
-    // {
-
-    //     $user = Auth::user();
-    //     if (!$transaction) {
-    //         return redirect()->route('transactions.index')->with('error', 'Transakcja nie istnieje!');
-    //     }
-    //     // Sprawdź, czy transakcja należy do bieżącego użytkownika
-    //     if ($transaction->id_user !== $user->id_user) {
-    //         return redirect()->route('transactions.index')->with('error', 'Nie masz dostępu do tej transakcji!');
-    //     }
-
-    //     $categories = Category::where('id_user', $user->id_user)->where('is_active', true)->get();
-
-    //     $subcategoriesByCategory = [];
-
-    //     foreach ($categories as $category) {
-    //         $subcategories = SubCategory::where('id_category', $category->id_category)->where('is_active', true)->get();
-    //         $subcategoriesByCategory[$category->id_category] = $subcategories;
-    //     }
-
-    //     return view('Transaction.edit', [
-    //         'transaction' => $transaction,
-    //         'categories' => $categories,
-    //         'subcategoriesByCategory' => $subcategoriesByCategory,
-    //     ]);
-    // }
-
-    // public function update(Request $request, Transaction $transaction)
-    // {
-    //     try {
-    //         $data = $request->validate([
-    //             'name_transaction' => 'required|string',
-    //             'amount_transaction' => 'required|numeric',
-    //             'date_transaction' => 'required|date',
-    //             'category_id' => 'required|exists:categories,id_category',
-    //             'subcategory_id' => 'nullable|exists:sub_categories,id_subCategory',
-    //         ]);
-
-    //         $transaction->name_transaction = $data['name_transaction'];
-    //         $transaction->amount_transaction = $data['amount_transaction'];
-    //         $transaction->date_transaction = $data['date_transaction'];
-    //         $transaction->id_category = $data['category_id'];
-    //         $transaction->id_subCategory = $data['subcategory_id'];
-
-    //         $transaction->save();
-
-    //         return redirect()->route('transactions.index')->with('success', 'Transakcja została zaktualizowana.');
-    //     } catch (\Exception $e) {
-    //         Log::error('TransactionController. Błąd w metodzie update(): ' . $e->getMessage());
-    //         return redirect()->route('transactions.edit', $transaction->id_transaction)->with('error', 'Wystąpił błąd podczas aktualizacji transakcji.');
-    //     }
-    // }
     public function edit($id)
     {
         try {
@@ -212,6 +159,25 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             Log::error('TransactionController. Błąd w metodzie update():' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas aktualizacji transakcji.');
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $transaction = Transaction::find($id);
+
+            if ($transaction) {
+                $transaction->delete();
+
+                $msg = "Transakcja została pomyślnie usunięta.";
+                return response()->json(['success' => $msg], 200);
+            }
+
+            return response()->json(['error' => 'Nie znaleziono takiej transakcji!'], 404);
+        } catch (\Exception $e) {
+            Log::error('TransactionsController. Błąd w metodzie destroy(): ' . $e->getMessage());
+            return response()->json(['error' => 'Wystąpił błąd podczas usuwania transakcji!'], 500);
         }
     }
 }

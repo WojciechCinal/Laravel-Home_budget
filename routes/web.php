@@ -65,3 +65,4 @@ Route::get('/transactions/create', [TransactionController::class, 'create'])->na
 Route::post('/transactions/store', [TransactionController::class, 'store'])->name('transactions.store');
 Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
 Route::put('/transactions/{transaction}/update', [TransactionController::class, 'update'])->name('transactions.update');
+Route::post('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
