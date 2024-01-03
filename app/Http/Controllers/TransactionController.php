@@ -28,7 +28,17 @@ class TransactionController extends Controller
                 ->orderByDesc('date_transaction')
                 ->paginate(15);
 
-            return view('Transaction.index', compact('transactions'));
+            // Wylicz sumę wydatków z bieżącego miesiąca
+            $expensesThisMonth = Transaction::where('id_user', $user->id_user)
+                ->whereYear('date_transaction', now()->year)
+                ->whereMonth('date_transaction', now()->month)
+                ->sum('amount_transaction');
+
+            $monthlyBudget = $user->monthly_budget;
+
+            $remainingFunds = $monthlyBudget - $expensesThisMonth;
+
+            return view('Transaction.index', compact('transactions', 'expensesThisMonth', 'monthlyBudget', 'remainingFunds'));
         } catch (\Exception $e) {
             Log::error('TransactionController. Błąd w metodzie index(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas pobierania list zakupów.');
@@ -38,13 +48,12 @@ class TransactionController extends Controller
     public function create()
     {
         $user = Auth::user();
-        $categories = Category::where('id_user', $user->id_user)->get(); // Pobieranie kategorii przypisanych do użytkownika
+        $categories = Category::where('id_user', $user->id_user)->where('is_active', true)->get();
 
         $subcategoriesByCategory = [];
 
-        // Pobieranie podkategorii dla każdej kategorii
         foreach ($categories as $category) {
-            $subcategories = SubCategory::where('id_category', $category->id_category)->get();
+            $subcategories = SubCategory::where('id_category', $category->id_category)->where('is_active', true)->get();
             $subcategoriesByCategory[$category->id_category] = $subcategories;
         }
 
@@ -54,33 +63,26 @@ class TransactionController extends Controller
         ]);
     }
 
-
-
-
     public function store(Request $request)
     {
         try {
             $user = Auth::user();
-            // Walidacja danych
             $data = $request->validate([
                 'name_transaction' => 'required|string',
                 'amount_transaction' => 'required|numeric',
                 'date_transaction' => 'required|date',
-                'category_id' => 'required|exists:categories,id_category', // Walidacja kategorii
-                'subcategory_id' => 'nullable|exists:sub_categories,id_subCategory', // Walidacja podkategorii (opcjonalna)
-                // Dodaj walidację i zapisz inne pola z formularza
+                'category_id' => 'required|exists:categories,id_category',
+                'subcategory_id' => 'nullable|exists:sub_categories,id_subCategory',
             ]);
 
-            // Zapisanie transakcji do bazy danych
             $transactionData = [
                 'name_transaction' => $data['name_transaction'],
                 'amount_transaction' => $data['amount_transaction'],
                 'date_transaction' => $data['date_transaction'],
-                'id_user' => $user->id_user, // Przypisanie ID zalogowanego użytkownika
+                'id_user' => $user->id_user,
                 'id_category' => $data['category_id'],
             ];
 
-            // Dodanie id_subCategory tylko jeśli zostało przesłane w formularzu
             if (isset($data['subcategory_id'])) {
                 $transactionData['id_subCategory'] = $data['subcategory_id'];
             }
@@ -91,6 +93,125 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             Log::error('TransactionController. Błąd w metodzie store(): ' . $e->getMessage());
             return redirect()->route('transactions.create')->with('error', 'Wystąpił błąd podczas dodawania transakcji.');
+        }
+    }
+
+    // public function edit(Transaction $transaction)
+    // {
+
+    //     $user = Auth::user();
+    //     if (!$transaction) {
+    //         return redirect()->route('transactions.index')->with('error', 'Transakcja nie istnieje!');
+    //     }
+    //     // Sprawdź, czy transakcja należy do bieżącego użytkownika
+    //     if ($transaction->id_user !== $user->id_user) {
+    //         return redirect()->route('transactions.index')->with('error', 'Nie masz dostępu do tej transakcji!');
+    //     }
+
+    //     $categories = Category::where('id_user', $user->id_user)->where('is_active', true)->get();
+
+    //     $subcategoriesByCategory = [];
+
+    //     foreach ($categories as $category) {
+    //         $subcategories = SubCategory::where('id_category', $category->id_category)->where('is_active', true)->get();
+    //         $subcategoriesByCategory[$category->id_category] = $subcategories;
+    //     }
+
+    //     return view('Transaction.edit', [
+    //         'transaction' => $transaction,
+    //         'categories' => $categories,
+    //         'subcategoriesByCategory' => $subcategoriesByCategory,
+    //     ]);
+    // }
+
+    // public function update(Request $request, Transaction $transaction)
+    // {
+    //     try {
+    //         $data = $request->validate([
+    //             'name_transaction' => 'required|string',
+    //             'amount_transaction' => 'required|numeric',
+    //             'date_transaction' => 'required|date',
+    //             'category_id' => 'required|exists:categories,id_category',
+    //             'subcategory_id' => 'nullable|exists:sub_categories,id_subCategory',
+    //         ]);
+
+    //         $transaction->name_transaction = $data['name_transaction'];
+    //         $transaction->amount_transaction = $data['amount_transaction'];
+    //         $transaction->date_transaction = $data['date_transaction'];
+    //         $transaction->id_category = $data['category_id'];
+    //         $transaction->id_subCategory = $data['subcategory_id'];
+
+    //         $transaction->save();
+
+    //         return redirect()->route('transactions.index')->with('success', 'Transakcja została zaktualizowana.');
+    //     } catch (\Exception $e) {
+    //         Log::error('TransactionController. Błąd w metodzie update(): ' . $e->getMessage());
+    //         return redirect()->route('transactions.edit', $transaction->id_transaction)->with('error', 'Wystąpił błąd podczas aktualizacji transakcji.');
+    //     }
+    // }
+    public function edit($id)
+    {
+        try {
+            $user = Auth::user();
+            $transaction = Transaction::where('id_transaction', $id)
+                ->where('id_user', $user->id_user)
+                ->first();
+
+            if (!$transaction) {
+                return redirect()->route('transactions.index')->with('error', 'Nie masz dostępu do tej transakcji!');
+            }
+
+            $categories = Category::where('id_user', $user->id_user)->where('is_active', true)->get();
+
+            $subcategoriesByCategory = [];
+
+            foreach ($categories as $category) {
+                $subcategories = SubCategory::where('id_category', $category->id_category)->where('is_active', true)->get();
+                $subcategoriesByCategory[$category->id_category] = $subcategories;
+            }
+
+            return view('Transaction.edit', [
+                'transaction' => $transaction,
+                'categories' => $categories,
+                'subcategoriesByCategory' => $subcategoriesByCategory,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('TransactionController. Błąd w metodzie edit():' . $e->getMessage());
+            return redirect()->route('transactions.index')->with('error', 'Nie udało się zedytować transakcji. Spróbuj ponownie później.');
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $user = Auth::user();
+            $transaction = Transaction::findOrFail($id);
+
+            // Sprawdź, czy transakcja należy do bieżącego użytkownika
+            if ($transaction->id_user !== $user->id_user) {
+                return redirect()->route('transactions.index')->with('error', 'Nie masz dostępu do tej transakcji!');
+            }
+
+            $data = $request->validate([
+                'name_transaction' => 'required|string',
+                'amount_transaction' => 'required|numeric',
+                'date_transaction' => 'required|date',
+                'category_id' => 'required|exists:categories,id_category',
+                'subcategory_id' => 'nullable|exists:sub_categories,id_subCategory',
+            ]);
+
+            $transaction->name_transaction = $data['name_transaction'];
+            $transaction->amount_transaction = $data['amount_transaction'];
+            $transaction->date_transaction = $data['date_transaction'];
+            $transaction->id_category = $data['category_id'];
+            $transaction->id_subCategory = $data['subcategory_id'];
+
+            $transaction->save();
+
+            return redirect()->route('transactions.index')->with('success', 'Transakcja została zaktualizowana.');
+        } catch (\Exception $e) {
+            Log::error('TransactionController. Błąd w metodzie update():' . $e->getMessage());
+            return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas aktualizacji transakcji.');
         }
     }
 }

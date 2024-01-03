@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             'name' => 'Tom',
             'email' => 'tom@mydomain.com',
             'password' => 12345678,
-            'monthly_budget' => 22,
+            'monthly_budget' => 3459,
             'id_role' => 2
         ]);
 
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             'name' => 'Woj',
             'email' => 'woj@mydomain.com',
             'password' => 12345678,
-            'monthly_budget' => 965,
+            'monthly_budget' => 4300,
             'id_role' => 2
         ]);
     }
