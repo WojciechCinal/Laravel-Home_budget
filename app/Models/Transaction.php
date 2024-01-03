@@ -32,6 +32,6 @@ class Transaction extends Model
 
     public function subcategory()
     {
-        return $this->belongsTo(Subcategory::class, 'id_subCategory');
+        return $this->belongsTo(SubCategory::class, 'id_subCategory');
     }
 }

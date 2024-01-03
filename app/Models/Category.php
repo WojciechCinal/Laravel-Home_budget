@@ -25,7 +25,7 @@ class Category extends Model
 
     public function subcategories()
     {
-        return $this->hasMany(Subcategory::class, 'id_category');
+        return $this->hasMany(SubCategory::class, 'id_category');
     }
 
     public function activeSubcategoriesCount()

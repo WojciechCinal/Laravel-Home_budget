@@ -72,12 +72,18 @@
                                     </li>
                                 @endif
                             @else
-                            <li class="nav-item">
-                                <a href="{{ route('savings-plans.index') }}" class="btn btn-sm nav-link">
-                                    <i class="bi bi-piggy-bank align-middle" style="font-size: 1rem;"></i>
-                                    Plany oszczędnościowe
-                                </a>
-                            </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('transactions.index') }}" class="btn btn-sm nav-link">
+                                        <i class="bi bi-cash-coin align-middle" style="font-size: 1rem;"></i>
+                                        Transakcje
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('savings-plans.index') }}" class="btn btn-sm nav-link">
+                                        <i class="bi bi-piggy-bank align-middle" style="font-size: 1rem;"></i>
+                                        Plany oszczędnościowe
+                                    </a>
+                                </li>
                                 <li class="nav-item">
                                     <a href="{{ route('shopping-lists.index') }}" class="btn btn-sm nav-link">
                                         <i class="bi bi-list-task align-middle" style="font-size: 1rem;"></i>

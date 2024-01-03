@@ -4,6 +4,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\SavingsPlansController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -58,3 +59,7 @@ Route::get('/savingsPlans/index/new', [SavingsPlansController::class, 'create'])
 Route::post('savingsPlans/store', [SavingsPlansController::class, 'store'])->name('savings-plans.store');
 Route::get('/savingsPlans/{id}/edit', [SavingsPlansController::class, 'edit'])->name('savings-plans.edit');
 Route::put('/savingsPlans/{id}/update', [SavingsPlansController::class, 'update'])->name('savings-plans.update');
+
+Route::get('/transactions/index', [TransactionController::class, 'index'])->name('transactions.index');
+Route::get('/transactions/create', [TransactionController::class, 'create'])->name('transactions.create');
+Route::post('/transactions/store', [TransactionController::class, 'store'])->name('transactions.store');

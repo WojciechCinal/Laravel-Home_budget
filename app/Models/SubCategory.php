@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SubCategory extends Model
 {
+    protected $table = 'sub_categories';
+
     use HasFactory;
 
     protected $primaryKey = 'id_subCategory';
