@@ -7,14 +7,20 @@
     "file": "assets/bootstrap-icons-5b2dd4d4.woff2",
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
+  "resources/js/app.css": {
+    "file": "assets/app-7fffe3cb.css",
+    "src": "resources/js/app.css"
+  },
   "resources/js/app.js": {
-    "file": "assets/app-39dcccdc.js",
+    "assets": [
+      "assets/bootstrap-icons-5b2dd4d4.woff2",
+      "assets/bootstrap-icons-d0346eea.woff"
+    ],
+    "css": [
+      "assets/app-7fffe3cb.css"
+    ],
+    "file": "assets/app-7645bbc5.js",
     "isEntry": true,
     "src": "resources/js/app.js"
-  },
-  "resources/sass/app.scss": {
-    "file": "assets/app-7fffe3cb.css",
-    "isEntry": true,
-    "src": "resources/sass/app.scss"
   }
 }

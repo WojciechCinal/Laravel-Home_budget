@@ -8,188 +8,213 @@
             <div class="col-lg-10">
                 <div id="messages">@include('layouts.messages')</div>
                 <div class="container mt-4">
-                    <form action="{{ route('savings-plans.index') }}" method="GET">
-                        <div class="row justify-content-end">
-                            <div class="col-md-3 mb-3">
-                                <label for="sort_end_date">Data zakończenia:</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" value="asc" id="sort_end_date_asc"
-                                        name="sort_end_date"
-                                        {{ request('sort_end_date') === 'asc' || !request()->has('sort_end_date') ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="sort_end_date_asc">Rosnąco</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" value="desc" id="sort_end_date_desc"
-                                        name="sort_end_date" {{ request('sort_end_date') === 'desc' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="sort_end_date_desc">Malejąco</label>
+                    <div class="accordion" id="accordionForm">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseForm" aria-expanded="true" aria-controls="collapseForm">
+                                    Rozwiń/Zwiń formularz
+                                </button>
+                            </h2>
+                            <div id="collapseForm" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                                data-bs-parent="#accordionForm">
+                                <div class="accordion-body">
+                                    <form action="{{ route('savings-plans.index') }}" method="GET">
+                                        <div class="row justify-content-end">
+                                            <div class="col-md-3 mb-3">
+                                                <label for="sort_end_date">Data zakończenia:</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" value="asc"
+                                                        id="sort_end_date_asc" name="sort_end_date"
+                                                        {{ request('sort_end_date') === 'asc' || !request()->has('sort_end_date') ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="sort_end_date_asc">Rosnąco</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" value="desc"
+                                                        id="sort_end_date_desc" name="sort_end_date"
+                                                        {{ request('sort_end_date') === 'desc' ? 'checked' : '' }}>
+                                                    <label class="form-check-label"
+                                                        for="sort_end_date_desc">Malejąco</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label for="sort_priority">Priorytet:</label>
+                                                @foreach ([1, 2, 3, 4, 5] as $priority)
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox"
+                                                            value="{{ $priority }}"
+                                                            id="sort_priority_{{ $priority }}" name="sort_priority[]"
+                                                            {{ in_array($priority, request('sort_priority', [1, 2, 3, 4, 5])) ? 'checked' : '' }}>
+                                                        <label class="form-check-label"
+                                                            for="sort_priority_{{ $priority }}">
+                                                            @if ($priority === 1)
+                                                                Bardzo wysoki
+                                                            @elseif ($priority === 2)
+                                                                Wysoki
+                                                            @elseif ($priority === 3)
+                                                                Średni
+                                                            @elseif ($priority === 4)
+                                                                Mały
+                                                            @elseif ($priority === 5)
+                                                                Brak
+                                                            @endif
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            <div class="col-md-3 mb-3">
+                                                <label for="sort_completed">Zakończony:</label>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" value="1"
+                                                        id="sort_completed_true" name="sort_completed"
+                                                        {{ request()->query('sort_completed') === '1' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="sort_completed_true">Tak</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" value="0"
+                                                        id="sort_completed_false" name="sort_completed"
+                                                        {{ !request()->query('sort_completed') || request()->query('sort_completed') === '0' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="sort_completed_false">Nie</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2 mb-3">
+                                                <button type="submit" class="btn btn-primary">Sortuj</button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="sort_priority">Priorytet:</label>
-                                @foreach ([1, 2, 3, 4, 5] as $priority)
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="{{ $priority }}"
-                                            id="sort_priority_{{ $priority }}" name="sort_priority[]"
-                                            {{ in_array($priority, request('sort_priority', [1, 2, 3, 4, 5])) ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="sort_priority_{{ $priority }}">
-                                            @if ($priority === 1)
-                                                Bardzo wysoki
-                                            @elseif ($priority === 2)
-                                                Wysoki
-                                            @elseif ($priority === 3)
-                                                Średni
-                                            @elseif ($priority === 4)
-                                                Mały
-                                            @elseif ($priority === 5)
-                                                Brak
-                                            @endif
-                                        </label>
+                            <div class="row">
+                                @foreach ($savingsPlans as $savingsPlan)
+                                    <div class="col-xl-6 mt-4" id="SPlan">
+                                        <div class="card border-dark">
+                                            <div class="card-header text-bg-secondary text-light">
+
+                                                <h5 class="card-title" style="font-weight: 800; text-align: center;">
+                                                    {{ $savingsPlan->name_savings_plan }}
+                                                </h5>
+
+                                            </div>
+                                            <div class="card-body">
+                                                <table class="table">
+                                                    <tr>
+                                                        <th>Priorytet:</th>
+                                                        <td style="text-align: right;">
+                                                            {{ $savingsPlan->priority->name_priority }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="d-none">
+                                                        <th>Planowana data zakończenia:</th>
+                                                        <td style="text-align: right;">
+                                                            {{ $savingsPlan->formatted_end_date_savings_plan }}</td>
+                                                    </tr>
+                                                    <tr class="table-secondary">
+                                                        <th>Kwota / cel:</th>
+                                                        <td style="text-align: right;">
+                                                            {{ $savingsPlan->amount_savings_plan }} /
+                                                            {{ $savingsPlan->goal_savings_plan }} PLN </td>
+                                                    </tr>
+                                                    <tr class="d-none">
+                                                        <th>Data rozpoczęcia:</th>
+                                                        <td style="text-align: right;">
+                                                            {{ $savingsPlan->formatted_created_at }}
+                                                        </td>
+                                                    </tr>
+                                                    @if ($savingsPlan->months_remaining == 0)
+                                                        <tr class="table-danger">
+                                                            <th>Pozostało:</th>
+                                                            <td style="text-align: right; color: red; font-weight: bold;">
+                                                                {{ $savingsPlan->deadline }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="d-none">
+                                                            <th>Proponowana wpłata miesięczna:</th>
+                                                            <td style="text-align: right; color: red; font-weight: bold;">
+                                                                {{ $savingsPlan->monthly_deposit_needed }} PLN
+                                                            </td>
+                                                        </tr>
+                                                    @else
+                                                        <tr>
+                                                            <th>Pozostało:</th>
+                                                            <td style="text-align: right;">
+                                                                {{ $savingsPlan->months_remaining }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="d-none">
+                                                            <th>Proponowana wpłata miesięczna:</th>
+                                                            <td style="text-align: right;">
+                                                                {{ $savingsPlan->monthly_deposit_needed }}
+                                                                PLN
+                                                            </td>
+                                                        </tr>
+                                                    @endif
+
+                                                </table>
+                                                @if ($savingsPlan->is_completed == 1)
+                                                    <div class="progress mt-3">
+                                                        <div class="progress-bar bg-success" role="progressbar"
+                                                            style="width: 100%; font-size:14px; font-weight: bold;">
+                                                            Ukończony!
+                                                        </div>
+                                                    </div>
+                                                @elseif ($savingsPlan->amount_savings_plan == 0)
+                                                    <div class="progress mt-3">
+                                                        <div class="progress-bar bg-secondary" role="progressbar"
+                                                            style="width: 100%; font-size:14px; font-weight: bold;">
+                                                            0 %
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="progress mt-3">
+                                                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                            role="progressbar"
+                                                            style="width: {{ ($savingsPlan->amount_savings_plan / $savingsPlan->goal_savings_plan) * 100 }}%; font-size:14px; font-weight: bold;">
+                                                            {{ number_format(($savingsPlan->amount_savings_plan / $savingsPlan->goal_savings_plan) * 100, 1) }}%
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            <div class="card-footer">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        <button type="button" class="btn btn-info me-2"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#savingsPlanDetails{{ $savingsPlan->id_savings_plan }}">
+                                                            <i class="bi bi-info-square align-middle"
+                                                                style="font-size: 1rem;"></i>
+                                                            Szczegóły
+                                                        </button>
+                                                        <a href="{{ route('savings-plans.edit', ['id' => $savingsPlan->id_savings_plan]) }}"
+                                                            class="btn btn-primary me-2">
+                                                            <i class="bi bi-pencil-square align-middle"
+                                                                style="font-size: 1rem;"></i>
+                                                            Edytuj
+                                                        </a>
+                                                        <button class="btn btn-danger deleteButton"
+                                                            data-list-id="{{ $savingsPlan->id_savings_plan }}"><i
+                                                                class="bi bi-trash3-fill align-middle"
+                                                                style="font-size: 1rem;"></i>
+                                                            Usuń</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="sort_completed">Zakończony:</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" value="1" id="sort_completed_true"
-                                        name="sort_completed" {{ request()->query('sort_completed') === '1' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="sort_completed_true">Tak</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" value="0" id="sort_completed_false"
-                                        name="sort_completed" {{ !request()->query('sort_completed') || request()->query('sort_completed') === '0' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="sort_completed_false">Nie</label>
-                                </div>
+                            <div class="nav justify-content-center mt-2">
+                                {{ $savingsPlans->links() }}
                             </div>
-                            <div class="col-md-2 mb-3">
-                                <button type="submit" class="btn btn-primary">Sortuj</button>
+                            <div class="position-fixed bottom-0 end-0 p-3 mb-5 me-3">
+                                <a href="{{ route('savings-plans.new') }}">
+                                    <button class="btn btn-info rounded-circle"
+                                        style="font-size: 20px; height:3.2rem; width:3.2rem; font-weight:bold;">
+                                        +
+                                    </button>
+                                </a>
                             </div>
                         </div>
-                    </form>
-
+                    </div>
                 </div>
-                <div class="row">
-                    @foreach ($savingsPlans as $savingsPlan)
-                        <div class="col-xl-6 mt-4" id="SPlan">
-                            <div class="card border-dark">
-                                <div class="card-header text-bg-secondary text-light">
-
-                                    <h5 class="card-title" style="font-weight: 800; text-align: center;">
-                                        {{ $savingsPlan->name_savings_plan }}
-                                    </h5>
-
-                                </div>
-                                <div class="card-body">
-                                    <table class="table">
-                                        <tr>
-                                            <th>Priorytet:</th>
-                                            <td style="text-align: right;">
-                                                {{ $savingsPlan->priority->name_priority }}
-                                            </td>
-                                        </tr>
-                                        <tr class="d-none">
-                                            <th>Planowana data zakończenia:</th>
-                                            <td style="text-align: right;">
-                                                {{ $savingsPlan->formatted_end_date_savings_plan }}</td>
-                                        </tr>
-                                        <tr class="table-secondary">
-                                            <th>Kwota / cel:</th>
-                                            <td style="text-align: right;">{{ $savingsPlan->amount_savings_plan }} /
-                                                {{ $savingsPlan->goal_savings_plan }} PLN </td>
-                                        </tr>
-                                        <tr class="d-none">
-                                            <th>Data rozpoczęcia:</th>
-                                            <td style="text-align: right;"> {{ $savingsPlan->formatted_created_at }}
-                                            </td>
-                                        </tr>
-                                        @if ($savingsPlan->months_remaining == 0)
-                                            <tr class="table-danger">
-                                                <th>Pozostało:</th>
-                                                <td style="text-align: right; color: red; font-weight: bold;">
-                                                    {{ $savingsPlan->deadline }}
-                                                </td>
-                                            </tr>
-                                            <tr class="d-none">
-                                                <th>Proponowana wpłata miesięczna:</th>
-                                                <td style="text-align: right; color: red; font-weight: bold;">
-                                                    {{ $savingsPlan->monthly_deposit_needed }} PLN
-                                                </td>
-                                            </tr>
-                                        @else
-                                            <tr>
-                                                <th>Pozostało:</th>
-                                                <td style="text-align: right;"> {{ $savingsPlan->months_remaining }}
-                                                </td>
-                                            </tr>
-                                            <tr class="d-none">
-                                                <th>Proponowana wpłata miesięczna:</th>
-                                                <td style="text-align: right;"> {{ $savingsPlan->monthly_deposit_needed }}
-                                                    PLN
-                                                </td>
-                                            </tr>
-                                        @endif
-
-                                    </table>
-                                    @if ($savingsPlan->is_completed == 1)
-                                        <div class="progress mt-3">
-                                            <div class="progress-bar bg-success" role="progressbar"
-                                                style="width: 100%; font-size:14px; font-weight: bold;">
-                                                Ukończony!
-                                            </div>
-                                        </div>
-                                    @elseif ($savingsPlan->amount_savings_plan == 0)
-                                        <div class="progress mt-3">
-                                            <div class="progress-bar bg-secondary" role="progressbar"
-                                                style="width: 100%; font-size:14px; font-weight: bold;">
-                                                0 %
-                                            </div>
-                                        </div>
-                                    @else
-                                        <div class="progress mt-3">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                                role="progressbar"
-                                                style="width: {{ ($savingsPlan->amount_savings_plan / $savingsPlan->goal_savings_plan) * 100 }}%; font-size:14px; font-weight: bold;">
-                                                {{ number_format(($savingsPlan->amount_savings_plan / $savingsPlan->goal_savings_plan) * 100, 1) }}%
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="card-footer">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <button type="button" class="btn btn-info me-2" data-bs-toggle="modal"
-                                                data-bs-target="#savingsPlanDetails{{ $savingsPlan->id_savings_plan }}">
-                                                <i class="bi bi-info-square align-middle" style="font-size: 1rem;"></i>
-                                                Szczegóły
-                                            </button>
-                                            <a href="{{ route('savings-plans.edit', ['id' => $savingsPlan->id_savings_plan]) }}"
-                                                class="btn btn-primary me-2">
-                                                <i class="bi bi-pencil-square align-middle" style="font-size: 1rem;"></i>
-                                                Edytuj
-                                            </a>
-                                            <button class="btn btn-danger deleteButton"
-                                                data-list-id="{{ $savingsPlan->id_savings_plan }}"><i
-                                                    class="bi bi-trash3-fill align-middle" style="font-size: 1rem;"></i>
-                                                Usuń</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="nav justify-content-center mt-2">
-                    {{ $savingsPlans->links() }}
-                </div>
-                <div class="position-fixed bottom-0 end-0 p-3 mb-5 me-3">
-                    <a href="{{ route('savings-plans.new') }}">
-                        <button class="btn btn-info rounded-circle"
-                            style="font-size: 20px; height:3.2rem; width:3.2rem; font-weight:bold;">
-                            +
-                        </button>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
+            @endsection

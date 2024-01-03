@@ -101,13 +101,13 @@ class SavingsPlansController extends Controller
                 ->first();
 
             if (!$savingsPlan) {
-                return redirect()->route('SavingsPlan.index')->with('error', 'Nie masz dostępu do tego planu oszczędnościowego!');
+                return redirect()->route('savings-plans.index')->with('error', 'Nie masz dostępu do tego planu oszczędnościowego!');
             }
 
             return view('SavingsPlan.edit', compact('savingsPlan'));
         } catch (\Exception $e) {
             Log::error('SavingsPlanController. Błąd w metodzie edit():' . $e->getMessage());
-            return redirect()->route('SavingsPlan.index')->with('error', 'Nie udało się zedytować planu oszczędnościowego. Spróbuj ponownie później.');
+            return redirect()->route('savings-plans.index')->with('error', 'Nie udało się zedytować planu oszczędnościowego. Spróbuj ponownie później.');
         }
     }
 
