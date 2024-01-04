@@ -97,7 +97,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/savingsPlans/' + currentId,
+                url: '/savingsPlans/delete/' + currentId,
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },

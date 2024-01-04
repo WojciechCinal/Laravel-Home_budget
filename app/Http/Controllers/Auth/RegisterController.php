@@ -274,5 +274,12 @@ class RegisterController extends Controller
             'id_category' => $study->id_category,
             'id_user' => $userId
         ]);
+
+
+        $savings = Category::create([
+            'name_category' => 'Plany oszczędnościowe',
+            'id_user' => $userId,
+            'name_start' => 'Plany oszczędnościowe'
+        ]);
     }
 }
