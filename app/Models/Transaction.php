@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Transaction extends Model
 {
@@ -33,5 +34,10 @@ class Transaction extends Model
     public function subcategory()
     {
         return $this->belongsTo(SubCategory::class, 'id_subCategory');
+    }
+
+    public function getFormattedDateTransactionAttribute()
+    {
+        return Carbon::parse($this->attributes['date_transaction'])->translatedFormat('d M Y');
     }
 }

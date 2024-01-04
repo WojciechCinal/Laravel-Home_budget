@@ -11,8 +11,8 @@
                     <div class="accordion" id="accordionForm">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseForm" aria-expanded="true" aria-controls="collapseForm">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseForm" aria-controls="collapseForm">
                                     Opcje sortowania / filtrowania.
                                 </button>
                             </h2>

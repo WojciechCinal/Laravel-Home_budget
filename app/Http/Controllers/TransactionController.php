@@ -19,26 +19,70 @@ class TransactionController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
             $user = Auth::user();
+            $categories = Category::where('id_user', $user->id_user)->get();
+            $transactions = Transaction::where('id_user', $user->id_user);
 
-            $transactions = Transaction::where('id_user', $user->id_user)
-                ->orderByDesc('date_transaction')
-                ->paginate(15);
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+            $selectedCategories = $categories->pluck('id_category')->toArray();
 
-            // Wylicz sumę wydatków z bieżącego miesiąca
+            if ($startDate && $endDate && ($startDate > $endDate)) {
+                return redirect()->route('transactions.index')->with('error', 'Niepoprawny zakres dat!');
+            }
+
+            if ($startDate == null && $endDate == null) {
+                $startDate = now()->startOfMonth()->toDateString();
+                $endDate = now()->toDateString();
+            } elseif ($endDate == null) {
+                $endDate = now()->toDateString();
+            }
+
+            switch (true) {
+                case ($endDate && $startDate == null):
+                    $transactions->where('date_transaction', '<=', $endDate);
+                    break;
+                case ($startDate && $endDate):
+                    $transactions->whereBetween('date_transaction', [$startDate, $endDate]);
+                    break;
+                default:
+                    $transactions->whereYear('date_transaction', now()->year)
+                        ->whereMonth('date_transaction', now()->month);
+                    break;
+            }
+
+            if ($request->has('categories')) {
+                $selectedCategories = $request->input('categories');
+                $transactions->whereIn('id_category', $selectedCategories);
+            }
+
+            if ($request->has('sort_ratio') && in_array($request->input('sort_ratio'), ['asc', 'desc'])) {
+                $sortRatio = $request->input('sort_ratio');
+                $transactions->orderBy('amount_transaction', $sortRatio);
+            }
+
+            if ($request->has('search')) {
+                $searchTerm = $request->input('search');
+                $transactions->where('name_transaction', 'LIKE', '%' . $searchTerm . '%');
+            }
+
+            $transactions = $transactions->orderByDesc('date_transaction')->paginate(15);
+
             $expensesThisMonth = Transaction::where('id_user', $user->id_user)
                 ->whereYear('date_transaction', now()->year)
                 ->whereMonth('date_transaction', now()->month)
                 ->sum('amount_transaction');
 
-            $monthlyBudget = $user->monthly_budget;
+            $expensesThisMonth = $expensesThisMonth ?? 0;
 
+            $dateNow = now()->monthName . " " . now()->year;
+            $monthlyBudget = $user->monthly_budget;
             $remainingFunds = $monthlyBudget - $expensesThisMonth;
 
-            return view('Transaction.index', compact('transactions', 'expensesThisMonth', 'monthlyBudget', 'remainingFunds'));
+            return view('Transaction.index', compact('transactions', 'expensesThisMonth', 'monthlyBudget', 'remainingFunds', 'dateNow', 'categories', 'selectedCategories'));
         } catch (\Exception $e) {
             Log::error('TransactionController. Błąd w metodzie index(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas pobierania list zakupów.');

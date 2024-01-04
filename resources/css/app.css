@@ -1,0 +1,6 @@
+.scrollable-checkboxes { /* Wykorzystane w filtrowaniu kategorii w Transakcje */
+    max-height: 95px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
