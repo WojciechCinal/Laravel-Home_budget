@@ -4,6 +4,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
+                <div id="messages">@include('layouts.messages')</div>
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
@@ -43,7 +44,7 @@
                             <div class="mb-3">
                                 <label for="priority_id" class="form-label">Priorytet</label>
                                 <select class="form-select" id="priority_id" name="priority_id">
-                                    @foreach($priorities as $priority)
+                                    @foreach ($priorities as $priority)
                                         <option value="{{ $priority->id_priority }}">{{ $priority->name_priority }}</option>
                                     @endforeach
                                 </select>

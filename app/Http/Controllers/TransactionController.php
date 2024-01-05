@@ -131,6 +131,20 @@ class TransactionController extends Controller
                 $transactionData['id_subCategory'] = $data['subcategory_id'];
             }
 
+            // Oblicz sumę wydatków w bieżącym miesiącu
+            $expensesThisMonth = Transaction::where('id_user', $user->id_user)
+                ->whereYear('date_transaction', now()->year)
+                ->whereMonth('date_transaction', now()->month)
+                ->sum('amount_transaction');
+
+            $remainingFunds = $user->monthly_budget - $expensesThisMonth;
+            $expensesThisMonth += $data['amount_transaction']; // Dodaj nową transakcję do sumy
+
+            // Sprawdź, czy nie przekracza to miesięcznego budżetu
+            if ($expensesThisMonth > $user->monthly_budget) {
+
+                return redirect()->route('transactions.create')->with('error', 'Dodanie tej transakcji przekroczy miesięczny budżet! Środków do wydania pozostało: ' . $remainingFunds . ' PLN.');
+            }
             $transaction = Transaction::create($transactionData);
 
             return redirect()->route('transactions.index')->with('success', 'Transakcja została dodana pomyślnie.');
@@ -182,6 +196,7 @@ class TransactionController extends Controller
             if ($transaction->id_user !== $user->id_user) {
                 return redirect()->route('transactions.index')->with('error', 'Nie masz dostępu do tej transakcji!');
             }
+            $remainingFunds = $user->monthly_budget - $transaction->amount_transaction;
 
             $data = $request->validate([
                 'name_transaction' => 'required|string',
@@ -196,6 +211,23 @@ class TransactionController extends Controller
             $transaction->date_transaction = $data['date_transaction'];
             $transaction->id_category = $data['category_id'];
             $transaction->id_subCategory = $data['subcategory_id'];
+
+            // Oblicz sumę wydatków w bieżącym miesiącu bez edytowanej transakcji
+            $expensesThisMonth = Transaction::where('id_user', $user->id_user)
+                ->whereYear('date_transaction', now()->year)
+                ->whereMonth('date_transaction', now()->month)
+                ->where('id_transaction', '!=', $id) // Wyklucz edytowaną transakcję
+                ->sum('amount_transaction');
+
+            $remainingFunds -= $expensesThisMonth;
+
+            $expensesThisMonth += $data['amount_transaction']; // Dodaj zmodyfikowaną transakcję do sumy
+
+            // Sprawdź, czy nie przekracza to miesięcznego budżetu
+            if ($expensesThisMonth > $user->monthly_budget) {
+
+                return redirect()->route('transactions.edit', $id)->with('error', 'Po edycji tej transakcji zostanie przekroczy miesięczny budżet! Pozostało: ' . $remainingFunds . ' PLN.');
+            }
 
             $transaction->save();
 

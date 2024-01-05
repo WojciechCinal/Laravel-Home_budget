@@ -4,7 +4,11 @@
     @include('Transaction.modal')
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
-            <h1>Historia transakcji.</h1>
+            <h3>Historia transakcji.</h3>
+            {{ request()->input('start_date')? \Carbon\Carbon::parse(request()->input('start_date'))->locale('pl')->isoFormat('D MMM YYYY'): \Carbon\Carbon::now()->startOfMonth()->locale('pl')->isoFormat('D MMM YYYY') }}
+            -
+            {{ request()->input('end_date')? \Carbon\Carbon::parse(request()->input('end_date'))->locale('pl')->isoFormat('D MMM YYYY'): \Carbon\Carbon::now()->locale('pl')->isoFormat('D MMM YYYY') }}
+
             <a href="{{ route('transactions.create') }}" class="btn btn-success btn-sm mx-2">
                 <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa transakcja
             </a>
@@ -27,11 +31,12 @@
                             <div class="col-md-2">
                                 <label for="start_date"><b>Data początkowa:</b></label>
                                 <input type="date" id="start_date" name="start_date" class="form-control"
-                                    autocomplete="off" value="{{ $startDate ??now()->startOfMonth()->toDateString() }}" />
+                                    autocomplete="off"
+                                    value="{{ $startDate ??request()->input('start_date',now()->startOfMonth()->toDateString()) }}" />
 
                                 <label for="end_date"><b>Data końcowa:</b></label>
                                 <input type="date" id="end_date" name="end_date" class="form-control" autocomplete="off"
-                                    value="{{ $endDate ?? now()->toDateString() }}" />
+                                    value="{{ $endDate ?? request()->input('end_date', now()->toDateString()) }}" />
                             </div>
 
                             <!-- Check boxy z nazwami kategorii -->
@@ -58,7 +63,8 @@
                                     </option>
                                     <option value="asc" {{ request('sort_ratio') === 'asc' ? 'selected' : '' }}>Rosnąco
                                     </option>
-                                    <option value="desc" {{ request('sort_ratio') === 'desc' ? 'selected' : '' }}>Malejąco
+                                    <option value="desc" {{ request('sort_ratio') === 'desc' ? 'selected' : '' }}>
+                                        Malejąco
                                     </option>
                                 </select>
                             </div>

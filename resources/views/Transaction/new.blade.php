@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="container">
+        <div id="messages">@include('layouts.messages')</div>
         <h1>Nowa transakcja</h1>
         <form action="{{ route('transactions.store') }}" method="POST">
             @csrf
@@ -52,7 +53,8 @@
 
             if (categoryId in subcategoriesByCategory) {
                 subcategoriesByCategory[categoryId].forEach(sub_categories => {
-                    subcategorySelect.innerHTML += '<option value="' + sub_categories.id_subCategory + '">' +
+                    subcategorySelect.innerHTML += '<option value="' + sub_categories.id_subCategory +
+                        '">' +
                         sub_categories.name_subCategory + '</option>';
                 });
             }
