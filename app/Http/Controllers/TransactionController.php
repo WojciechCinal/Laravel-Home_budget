@@ -131,10 +131,10 @@ class TransactionController extends Controller
                 $transactionData['id_subCategory'] = $data['subcategory_id'];
             }
 
-            // Oblicz sumę wydatków w bieżącym miesiącu
+            // Oblicz sumę wydatków w miesiącu transakcji
             $expensesThisMonth = Transaction::where('id_user', $user->id_user)
-                ->whereYear('date_transaction', now()->year)
-                ->whereMonth('date_transaction', now()->month)
+                ->whereYear('date_transaction', date('Y', strtotime($data['date_transaction'])))
+                ->whereMonth('date_transaction', date('m', strtotime($data['date_transaction'])))
                 ->sum('amount_transaction');
 
             $remainingFunds = $user->monthly_budget - $expensesThisMonth;
@@ -212,10 +212,12 @@ class TransactionController extends Controller
             $transaction->id_category = $data['category_id'];
             $transaction->id_subCategory = $data['subcategory_id'];
 
-            // Oblicz sumę wydatków w bieżącym miesiącu bez edytowanej transakcji
+            $transactionDate = $data['date_transaction'];
+
+            // Oblicz sumę wydatków w miesiącu danej transakcji, wykluczając edytowaną transakcję
             $expensesThisMonth = Transaction::where('id_user', $user->id_user)
-                ->whereYear('date_transaction', now()->year)
-                ->whereMonth('date_transaction', now()->month)
+                ->whereYear('date_transaction', date('Y', strtotime($transactionDate)))
+                ->whereMonth('date_transaction', date('m', strtotime($transactionDate)))
                 ->where('id_transaction', '!=', $id) // Wyklucz edytowaną transakcję
                 ->sum('amount_transaction');
 
