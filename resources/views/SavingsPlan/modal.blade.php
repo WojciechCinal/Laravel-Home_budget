@@ -18,8 +18,10 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header text-bg-secondary text-light">
-                    <h5 class="modal-title" id="savingsPlanDetails{{ $savingsPlan->id_savings_plan }}Label">
-                       <b> {{ $savingsPlan->name_savings_plan }}</b></h5>
+                    <h5 class="modal-title overflow-ellipsis"
+                        id="savingsPlanDetails{{ $savingsPlan->id_savings_plan }}Label">
+                        <b> {{ $savingsPlan->name_savings_plan }}</b>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -47,16 +49,18 @@
                         </tr>
                         @if ($savingsPlan->months_remaining == 0)
                             <tr class="table-danger">
-                                <th >Pozostało:</th>
-                                <td style="text-align: right; color: red; font-weight: bold;">{{ $savingsPlan->deadline }}
+                                <th>Pozostało:</th>
+                                <td style="text-align: right; color: red; font-weight: bold;">
+                                    {{ $savingsPlan->deadline }}
                                 </td>
                             </tr>
                             <tr class="table-secondary">
                                 <th>Proponowana wpłata miesięczna:</th>
-                                <td style="text-align: right; color: red; font-weight: bold;"> {{ $savingsPlan->monthly_deposit_needed }} PLN
+                                <td style="text-align: right; color: red; font-weight: bold;">
+                                    {{ $savingsPlan->monthly_deposit_needed }} PLN
                                 </td>
                             </tr>
-                            @else
+                        @else
                             <tr>
                                 <th>Pozostało:</th>
                                 <td style="text-align: right;"> {{ $savingsPlan->months_remaining }}
@@ -68,12 +72,39 @@
                                 </td>
                             </tr>
                         @endif
-
+                        <tr class="table-info">
+                            <th>Brakująca kwota:</th>
+                            <td style="text-align: right;">
+                                {{ $savingsPlan->goal_savings_plan - $savingsPlan->amount_savings_plan}} PLN </td>
+                        </tr>
                     </table>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                <div class="modal-footer d-flex justify-content-between">
+                    <form method="POST"
+                        action="{{ route('savings-plans.update-amount', ['id' => $savingsPlan->id_savings_plan]) }}">
+                        @csrf
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="increaseAmount" name="increase_amount"
+                                required>
+                            <button type="submit" class="btn btn-primary ms-2">Wpłać</button>
+                        </div>
+                    </form>
+
+                    <div>
+                        <a href="{{ route('savings-plans.edit', ['id' => $savingsPlan->id_savings_plan]) }}"
+                            class="btn btn-primary me-2">
+                            <i class="bi bi-pencil-square align-middle" style="font-size: 1rem;"></i>
+                            Edytuj
+                        </a>
+                        <button class="btn btn-danger deleteButton" data-list-id="{{ $savingsPlan->id_savings_plan }}"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="bi bi-trash3-fill align-middle" style="font-size: 1rem;"></i>
+                            Usuń
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -83,13 +114,13 @@
     $(document).ready(function() {
         $('.deleteButton').on('click', function() {
             var id = $(this).data('list-id');
-            var listName = $(this).closest('.card').find('.card-header h5').text();
-
+            var modalId = $(this).closest('.modal').attr('id'); // Pobieramy ID aktualnego modala
+            var listName = $('#' + modalId + ' .modal-title').text(); // Pobieramy tekst z tytułu modala
             $('#listName').text(listName);
             $('#deleteModal').modal('show');
             currentId = id;
-
-            $('#confirmButton').data('list-title', listName);
+            $('#confirmButton').data('list-title',
+                listName); // Aktualizacja nazwy dla potwierdzenia usunięcia
         });
 
         $('#confirmButton').on('click', function() {
@@ -104,8 +135,7 @@
                 success: function(response) {
                     $('#deleteModal').modal('hide');
 
-                    $(`.deleteButton[data-list-id="${currentId}"]`).closest('#SPlan')
-                        .remove();
+                    $(`#SPlan-${currentId}`).remove();
 
                     $('#messages').html(
                         '<div class="alert alert-success alert-dismissible fade show" role="alert"> <strong><i class="bi bi-check-circle-fill" style="font-size: 1rem;"></i> Plan oszczędnościowy: ' +

@@ -87,14 +87,19 @@
                         </div>
                         <div class="row">
                             @foreach ($savingsPlans as $savingsPlan)
-                                <div class="col-xl-6 mt-4" id="SPlan">
+                                <div class="col-xl-6 mt-4" id="SPlan-{{ $savingsPlan->id_savings_plan }}">
                                     <div class="card border-dark">
-                                        <div class="card-header text-bg-secondary text-light">
-
-                                            <h5 class="card-title" style="font-weight: 800; text-align: center;">
+                                        <div
+                                            class="card-header text-bg-secondary text-light d-flex justify-content-between align-items-center">
+                                            <h5 class="card-title m-0 overflow-ellipsis"
+                                                style="font-weight: 800;  flex: 1; white-space: nowrap;">
                                                 {{ $savingsPlan->name_savings_plan }}
                                             </h5>
-
+                                            <div class="me-2" style="font-weight: 600;">{{ number_format(($savingsPlan->amount_savings_plan / $savingsPlan->goal_savings_plan) * 100, 1) }} %</div>
+                                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                                data-bs-target="#savingsPlanDetails{{ $savingsPlan->id_savings_plan }}">
+                                                <i class="bi bi-info-square align-middle px-0 py-0" style="font-size: 0.8rem;"></i>
+                                            </button>
                                         </div>
                                         <div class="card-body">
                                             <table class="table">
@@ -174,31 +179,6 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                        </div>
-
-                                        <div class="card-footer">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div class="d-flex align-items-center">
-                                                    <button type="button" class="btn btn-info me-2"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#savingsPlanDetails{{ $savingsPlan->id_savings_plan }}">
-                                                        <i class="bi bi-info-square align-middle"
-                                                            style="font-size: 1rem;"></i>
-                                                        Szczegóły
-                                                    </button>
-                                                    <a href="{{ route('savings-plans.edit', ['id' => $savingsPlan->id_savings_plan]) }}"
-                                                        class="btn btn-primary me-2">
-                                                        <i class="bi bi-pencil-square align-middle"
-                                                            style="font-size: 1rem;"></i>
-                                                        Edytuj
-                                                    </a>
-                                                    <button class="btn btn-danger deleteButton"
-                                                        data-list-id="{{ $savingsPlan->id_savings_plan }}"><i
-                                                            class="bi bi-trash3-fill align-middle"
-                                                            style="font-size: 1rem;"></i>
-                                                        Usuń</button>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

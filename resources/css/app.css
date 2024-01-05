@@ -4,3 +4,8 @@
     border: 1px solid #ccc;
     padding: 5px;
 }
+
+.overflow-ellipsis { /* Jeśli nazwa planu oszczędnościowego jest zbyt długa */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

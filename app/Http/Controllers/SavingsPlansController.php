@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\SavingsPlan;
 use App\Models\Priority;
+use App\Models\Transaction;
+use App\Models\Category;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -137,6 +139,62 @@ class SavingsPlansController extends Controller
         }
     }
 
+    public function updateAmount(Request $request, $id)
+    {
+        try {
+            $user = Auth::user();
+            $savingsPlan = SavingsPlan::where('id_savings_plan', $id)
+                ->where('id_user', $user->id_user)
+                ->first();
+
+            if (!$savingsPlan) {
+                return redirect()->route('savings-plans.index')->with('error', 'Nie masz dostępu do tego planu oszczędnościowego!');
+            }
+
+            $increaseAmount = $request->input('increase_amount');
+
+            // Pobierz kategorię "Plany oszczędnościowe" przypisaną do użytkownika
+            $category = Category::where('id_user', $user->id_user)
+                ->where('name_start', 'Plany oszczędnościowe')
+                ->first();
+
+            if (!$category) {
+                return redirect()->route('savings-plans.index')->with('error', 'Nie znaleziono kategorii oszczędnościowej!');
+            }
+
+            // Oblicz aktualne wydatki w kategorii "Plany oszczędnościowe" w bieżącym miesiącu
+            $expensesThisMonth = Transaction::where('id_user', $user->id_user)
+                ->whereYear('date_transaction', date('Y'))
+                ->whereMonth('date_transaction', date('m'))
+                ->sum('amount_transaction');
+
+            // Oblicz dostępną kwotę do wydania w tym miesiącu
+            $remainingFunds = $user->monthly_budget - $expensesThisMonth;
+
+            // Sprawdź, czy dodanie wpłacanej kwoty nie przekroczy miesięcznego budżetu
+            if ($increaseAmount > $remainingFunds) {
+                return redirect()->route('savings-plans.index')->with('error', 'Dodanie tej kwoty przekroczy miesięczny budżet! Środków do wydania pozostało: ' . $remainingFunds . ' PLN.');
+            }
+
+            // Dodaj wpłacaną kwotę do oszczędności
+            $savingsPlan->amount_savings_plan += $increaseAmount;
+            $savingsPlan->save();
+
+            // Tworzenie nowej transakcji
+            $transaction = Transaction::create([
+                'name_transaction' => 'Wpłata do planu oszczędnościowego',
+                'amount_transaction' => $increaseAmount,
+                'date_transaction' => now(), // Dzisiejsza data
+                'id_user' => $user->id_user,
+                'id_category' => $user->category->id_category, // Załóżmy, że kategoria oszczędności jest przypisana do użytkownika
+            ]);
+
+            return redirect()->route('savings-plans.index')->with('success', 'Kwota oszczędności została zwiększona pomyślnie!');
+        } catch (\Exception $e) {
+            Log::error('SavingsPlansController. Błąd w metodzie updateAmount(): ' . $e->getMessage());
+            return redirect()->route('savings-plans.index')->with('error', 'Nie udało się zwiększyć kwoty oszczędnościowej. Spróbuj ponownie później.');
+        }
+    }
 
     public function destroy($id)
     {
