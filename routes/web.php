@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\SavingsPlansController;
@@ -67,3 +68,5 @@ Route::post('/transactions/store', [TransactionController::class, 'store'])->nam
 Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
 Route::put('/transactions/{transaction}/update', [TransactionController::class, 'update'])->name('transactions.update');
 Route::post('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+
+Route::get('/generate/report', [ReportController::class, 'generateYearlyReport'] )->name('generate.yearly.report');

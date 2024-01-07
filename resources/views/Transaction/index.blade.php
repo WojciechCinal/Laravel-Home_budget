@@ -9,6 +9,9 @@
             -
             {{ request()->input('end_date')? \Carbon\Carbon::parse(request()->input('end_date'))->locale('pl')->isoFormat('D MMM YYYY'): \Carbon\Carbon::now()->locale('pl')->isoFormat('D MMM YYYY') }}
 
+            <a href="#" class="btn btn-primary btn-sm mx-2" data-bs-toggle="modal" data-bs-target="#generateReportModal">
+                Generuj raport
+            </a>
             <a href="{{ route('transactions.create') }}" class="btn btn-success btn-sm mx-2">
                 <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa transakcja
             </a>
@@ -85,8 +88,6 @@
                 </div>
             </div>
         </div>
-
-
 
         <div class="justify-content-center">
             <table class="table table-sm">

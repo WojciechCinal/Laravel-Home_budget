@@ -14,6 +14,62 @@
     </div>
 </div>
 
+<div class="modal fade" id="generateReportModal" tabindex="-1" role="dialog"
+    aria-labelledby="generateReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h1>Rodzaj raportu</h1>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#yearlyReportModal">Roczny</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#monthlyReportModal">Miesięczny</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#weeklyReportModal">Tygodniowy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal dla raportu rocznego -->
+<div class="modal fade" id="yearlyReportModal" tabindex="-1" aria-labelledby="yearlyReportModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="yearlyReportModalLabel">Roczny raport</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('generate.yearly.report') }}" method="GET">
+                    <div class="mb-3">
+                        <label for="start_year" class="form-label">Rok początkowy:</label>
+                        <input type="number" class="form-control" id="start_year" name="start_year" min="2000"
+                            max="2100" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="end_year" class="form-label">Rok końcowy:</label>
+                        <input type="number" class="form-control" id="end_year" name="end_year" min="2000"
+                            max="2100" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generuj raport</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal dla raportu miesięcznego -->
+<div class="modal fade" id="monthlyReportModal" tabindex="-1" aria-labelledby="monthlyReportModalLabel"
+    aria-hidden="true">
+    <!-- Kod formularza dla raportu miesięcznego -->
+</div>
+
+<!-- Modal dla raportu tygodniowego -->
+<div class="modal fade" id="weeklyReportModal" tabindex="-1" aria-labelledby="weeklyReportModalLabel"
+    aria-hidden="true">
+    <!-- Kod formularza dla raportu tygodniowego -->
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -26,6 +82,16 @@
                     return popover.dataset.bsContent;
                 },
             });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var myModal = new bootstrap.Modal(document.getElementById('generateReportModal'), {
+            keyboard: false
+        });
+
+        $('#generateReportModal').on('show.bs.modal', function() {
+            myModal.hide();
         });
     });
 
