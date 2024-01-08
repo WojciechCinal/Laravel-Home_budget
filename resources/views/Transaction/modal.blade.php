@@ -45,12 +45,16 @@
                     <div class="mb-3">
                         <label for="start_year" class="form-label">Rok początkowy:</label>
                         <input type="number" class="form-control" id="start_year" name="start_year" min="2000"
-                            max="2100" required>
+                            max="2100"
+                            value="{{ request()->input('start_date') ? \Carbon\Carbon::parse(request()->input('start_date'))->format('Y') : now()->year }}"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="end_year" class="form-label">Rok końcowy:</label>
                         <input type="number" class="form-control" id="end_year" name="end_year" min="2000"
-                            max="2100" required>
+                            max="2100"
+                            value="{{ request()->input('end_date') ? \Carbon\Carbon::parse(request()->input('end_date'))->format('Y') : now()->year }}"
+                            required>
                     </div>
                     <button type="submit" class="btn btn-primary">Generuj raport</button>
                 </form>
