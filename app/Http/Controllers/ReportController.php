@@ -20,24 +20,29 @@ class ReportController extends Controller
         $this->middleware('auth');
     }
 
-    private function fetchDataForYearlyReport($startYear, $endYear)
+    private function fetchDataForYearlyReport($startYear, $endYear, $selectedCategories)
     {
         $transactionsQuery = Transaction::where('id_user', Auth::id())
             ->whereYear('date_transaction', '>=', $startYear)
-            ->whereYear('date_transaction', '<=', $endYear)
-            ->get();
+            ->whereYear('date_transaction', '<=', $endYear);
 
+        if (!empty($selectedCategories)) {
+            $transactionsQuery->whereIn('id_category', $selectedCategories);
+        }
+
+        $transactions = $transactionsQuery->get();
         $yearlyExpenses = [];
         $monthlyTotalExpenses = [];
         $categoryYearlyTotal = [];
-        $categories = Category::where('id_user', Auth::id())->get();
+        $categories = Category::where('id_user', Auth::id())
+            ->whereIn('id_category', $selectedCategories)
+            ->get();
 
-        foreach ($transactionsQuery as $transaction) {
+        foreach ($transactions as $transaction) {
             $date = Carbon::parse($transaction->date_transaction);
             $year = $date->format('Y');
             $month = $date->format('m');
             $category = $transaction->category->name_category;
-
 
             if (!isset($yearlyExpenses[$year][$month][$category])) {
                 $yearlyExpenses[$year][$month][$category] = 0;
@@ -73,12 +78,13 @@ class ReportController extends Controller
         try {
             $startYear = $request->input('start_year');
             $endYear = $request->input('end_year');
+            $selectedCategories = $request->input('categories', []);
 
             if ($startYear > $endYear) {
                 throw new \Exception('Niepoprawny zakres dat!');
             }
 
-            $data = $this->fetchDataForYearlyReport($startYear, $endYear);
+            $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
 
             return view('Report.yearReport', $data);
         } catch (\Exception $e) {
@@ -86,7 +92,6 @@ class ReportController extends Controller
             return redirect()->route('transactions.index')->with('error', $e->getMessage());
         }
     }
-
     // public function generateYearlyPDF(Request $request)
     // {
     //     try {

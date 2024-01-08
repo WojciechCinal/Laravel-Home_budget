@@ -48,13 +48,26 @@
                             max="2100"
                             value="{{ request()->input('start_date') ? \Carbon\Carbon::parse(request()->input('start_date'))->format('Y') : now()->year }}"
                             required>
-                    </div>
-                    <div class="mb-3">
+
                         <label for="end_year" class="form-label">Rok końcowy:</label>
                         <input type="number" class="form-control" id="end_year" name="end_year" min="2000"
                             max="2100"
                             value="{{ request()->input('end_date') ? \Carbon\Carbon::parse(request()->input('end_date'))->format('Y') : now()->year }}"
                             required>
+                    </div>
+                    <!-- Check boxy z nazwami kategorii -->
+                    <div class="col-md-12">
+                        <label><b>Kategorie:</b></label>
+                        <div class="scrollable-checkboxes">
+                            @foreach ($categories as $category)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="categories[]"
+                                        value="{{ $category->id_category }}"
+                                        {{ in_array($category->id_category, $selectedCategories) ? 'checked' : '' }}>
+                                    <label class="form-check-label">{{ $category->name_category }}</label>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Generuj raport</button>
                 </form>

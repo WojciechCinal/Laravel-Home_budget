@@ -43,44 +43,42 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    <!-- Opcjonalnie, tutaj umieść wykresy -->
                     <canvas id="categoryYearlyChart_{{ $year }}"></canvas>
                 </div>
             </div>
 
             <script type="module">
                 document.addEventListener('DOMContentLoaded', function() {
-
                     var ctx_{{ $year }} = document.getElementById('categoryYearlyChart_{{ $year }}')
                         .getContext('2d');
                     var labels_{{ $year }} = @json($categories->pluck('name_category')); // Pobierz nazwy kategorii
                     var data_{{ $year }} =
                         @json($categoryYearlyTotal[$year] ?? []); // Pobierz dane wydatków na kategorie w roku
 
-                    var totalExpenses_{{ $year }} = Object.values(data_{{ $year }}).reduce((a, b) => a +
-                        b,
-                        0); // Całkowite wydatki w roku
+                    // var totalExpenses_{{ $year }} = Object.values(data_{{ $year }}).reduce((a, b) => a +
+                    //     b, 0); // Całkowite wydatki w roku
 
                     var datasetData_{{ $year }} = labels_{{ $year }}.map(function(label) {
                         var categoryExpense = data_{{ $year }}[label] || 0;
                         return categoryExpense;
                     });
 
-                    var colors_{{ $year }} = ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.8)',
-                        'rgba(255, 206, 86, 0.8)',
-                        'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)',
-                        'rgba(255, 99, 132, 0.8)', 'rgba(75, 192, 192, 0.8)',
-                        'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)',
-                        'rgba(153, 102, 255, 0.8)',
-                        'rgba(255, 159, 64, 0.8)'
+                    var colors_{{ $year }} = [
+                        'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)',
+                        'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)', 'rgba(255, 99, 132, 0.8)',
+                        'rgba(75, 192, 192, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)'
                     ];
+
+                    var totalExpenses_{{ $year }} = Object.values(data_{{ $year }}).reduce((a, b) => a +
+                        b, 0);
 
                     var chart_{{ $year }} = new Chart(ctx_{{ $year }}, {
                         type: 'bar',
                         data: {
                             labels: labels_{{ $year }},
                             datasets: [{
-                                label: 'Wydatki kategorii',
+                                label: 'Łącznie',
                                 data: datasetData_{{ $year }},
                                 backgroundColor: colors_{{ $year }},
                                 borderWidth: 1
@@ -92,10 +90,9 @@
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Kwota wydatków'
+                                        text: 'Kwota wydatków (PLN)'
                                     }
                                 }
-
                             },
                             plugins: {
                                 legend: {
@@ -115,15 +112,15 @@
                                             if (meta && meta.data) {
                                                 meta.data.forEach(function(bar, index) {
                                                     var data = dataset.data[index];
-                                                    var label = (data /
-                                                        totalExpenses_{{ $year }} *
-                                                        100).toFixed(2) + '%';
+                                                    var percentage = ((data /
+                                                        {{ $monthlyTotalExpenses[$year][$monthKey] ?? 0 }}
+                                                        ) * 100).toFixed(2) + '%';
                                                     ctx.fillStyle = 'black';
                                                     ctx.fillText(data.toLocaleString('pl-PL', {
                                                             style: 'currency',
                                                             currency: 'PLN'
-                                                        }) + ' (' + label + ')', bar.x, bar
-                                                        .y - 5);
+                                                        }) + ' (' + percentage + ')', bar.x,
+                                                        bar.y - 5);
                                                 });
                                             }
                                         });
@@ -132,6 +129,7 @@
                             }
                         }
                     });
+
                 });
             </script>
         @endforeach
