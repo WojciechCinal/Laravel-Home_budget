@@ -69,7 +69,7 @@ class TransactionController extends Controller
                 $transactions->where('name_transaction', 'LIKE', '%' . $searchTerm . '%');
             }
 
-            $transactions = $transactions->orderByDesc('date_transaction')->paginate(15);
+            $transactions = $transactions->orderByDesc('date_transaction')->paginate(12);
 
             $expensesThisMonth = Transaction::where('id_user', $user->id_user)
                 ->whereYear('date_transaction', now()->year)

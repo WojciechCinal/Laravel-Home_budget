@@ -136,7 +136,7 @@
             </table>
         </div>
         <div class="nav justify-content-center mt-2">
-            {{ $transactions->links() }}
+            {{ $transactions->appends(request()->except('page'))->links() }}
         </div>
         <div class="position-fixed bottom-0 start-0 p-3 mb-4">
             <button type="button" class="btn btn-info" data-bs-toggle="popover" data-bs-placement="right"

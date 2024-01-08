@@ -185,7 +185,7 @@
                             @endforeach
                         </div>
                         <div class="nav justify-content-center mt-2">
-                            {{ $savingsPlans->links() }}
+                            {{ $savingsPlans->appends(request()->except('page'))->links() }}
                         </div>
                         <div class="position-fixed bottom-0 end-0 p-3 mb-5 me-3">
                             <a href="{{ route('savings-plans.new') }}">

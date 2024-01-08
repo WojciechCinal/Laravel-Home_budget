@@ -66,12 +66,6 @@ class ReportController extends Controller
             $categoryYearlyTotal[$year][$category] += $transaction->amount_transaction;
 
             $categoryName = $transaction->category->name_category;
-            $categoryStartName = $transaction->category->name_start;
-
-            // Sprawdzenie warunku, czy nazwa startowa kategorii to "Plany oszczędnościowe"
-            // if ($categoryStartName === 'Plany oszczędnościowe') {
-            //     continue; // Pomijamy tworzenie wykresu kołowego dla tej kategorii
-            // }
 
             $subcategory = $transaction->subcategory;
             $subcategoryName = $subcategory ? $subcategory->name_subCategory : 'Brak podkategorii';
