@@ -69,18 +69,21 @@ class ReportController extends Controller
             $categoryStartName = $transaction->category->name_start;
 
             // Sprawdzenie warunku, czy nazwa startowa kategorii to "Plany oszczędnościowe"
-            if ($categoryStartName === 'Plany oszczędnościowe') {
-                continue; // Pomijamy tworzenie wykresu kołowego dla tej kategorii
-            }
+            // if ($categoryStartName === 'Plany oszczędnościowe') {
+            //     continue; // Pomijamy tworzenie wykresu kołowego dla tej kategorii
+            // }
 
             $subcategory = $transaction->subcategory;
-            $subcategoryName = $subcategory ? $subcategory->name_subCategory : 'Nie wskazano pokategorii';
+            $subcategoryName = $subcategory ? $subcategory->name_subCategory : 'Brak podkategorii';
 
             if (!isset($subcategoryYearlyTotal[$year][$categoryName][$subcategoryName])) {
                 $subcategoryYearlyTotal[$year][$categoryName][$subcategoryName] = 0;
             }
 
-            $subcategoryYearlyTotal[$year][$categoryName][$subcategoryName] += $transaction->amount_transaction;
+            // Dodajemy wartość do podkategorii tylko, jeśli nie jest pusta ani równa zero
+            if ($transaction->amount_transaction > 0) {
+                $subcategoryYearlyTotal[$year][$categoryName][$subcategoryName] += $transaction->amount_transaction;
+            }
         }
 
         return [
