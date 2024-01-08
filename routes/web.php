@@ -69,4 +69,4 @@ Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'e
 Route::put('/transactions/{transaction}/update', [TransactionController::class, 'update'])->name('transactions.update');
 Route::post('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 
-Route::get('/generate/report', [ReportController::class, 'generateYearlyReport'] )->name('generate.yearly.report');
+Route::get('/generate/report/year', [ReportController::class, 'generateYearlyReport'] )->name('generate.yearly.report');

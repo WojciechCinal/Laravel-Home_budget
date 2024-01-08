@@ -58,7 +58,7 @@
                     <!-- Check boxy z nazwami kategorii -->
                     <div class="col-md-12">
                         <label><b>Kategorie:</b></label>
-                        <div class="scrollable-checkboxes">
+                        <div class="scrollable-checkboxes-year">
                             @foreach ($categories as $category)
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="categories[]"

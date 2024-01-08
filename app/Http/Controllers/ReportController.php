@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Models\Transaction;
 use App\Models\Category;
+use App\Models\SubCategory;
 
 class ReportController extends Controller
 {
@@ -38,6 +39,8 @@ class ReportController extends Controller
             ->whereIn('id_category', $selectedCategories)
             ->get();
 
+        $subcategoryYearlyTotal = [];
+
         foreach ($transactions as $transaction) {
             $date = Carbon::parse($transaction->date_transaction);
             $year = $date->format('Y');
@@ -61,6 +64,23 @@ class ReportController extends Controller
             }
 
             $categoryYearlyTotal[$year][$category] += $transaction->amount_transaction;
+
+            $categoryName = $transaction->category->name_category;
+            $categoryStartName = $transaction->category->name_start;
+
+            // Sprawdzenie warunku, czy nazwa startowa kategorii to "Plany oszczędnościowe"
+            if ($categoryStartName === 'Plany oszczędnościowe') {
+                continue; // Pomijamy tworzenie wykresu kołowego dla tej kategorii
+            }
+
+            $subcategory = $transaction->subcategory;
+            $subcategoryName = $subcategory ? $subcategory->name_subCategory : 'Nie wskazano pokategorii';
+
+            if (!isset($subcategoryYearlyTotal[$year][$categoryName][$subcategoryName])) {
+                $subcategoryYearlyTotal[$year][$categoryName][$subcategoryName] = 0;
+            }
+
+            $subcategoryYearlyTotal[$year][$categoryName][$subcategoryName] += $transaction->amount_transaction;
         }
 
         return [
@@ -70,6 +90,7 @@ class ReportController extends Controller
             'endYear' => $endYear,
             'monthlyTotalExpenses' => $monthlyTotalExpenses,
             'categoryYearlyTotal' => $categoryYearlyTotal,
+            'subcategoryYearlyTotal' => $subcategoryYearlyTotal,
         ];
     }
 
@@ -89,56 +110,7 @@ class ReportController extends Controller
             return view('Report.yearReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportControllerr. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
-            return redirect()->route('transactions.index')->with('error', $e->getMessage());
+            return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
         }
     }
-    // public function generateYearlyPDF(Request $request)
-    // {
-    //     try {
-    //         $startYear = $request->input('start_year');
-    //         $endYear = $request->input('end_year');
-
-    //         if ($startYear > $endYear) {
-    //             throw new \Exception('Niepoprawny zakres dat!');
-    //         }
-
-    //         $data = $this->fetchDataForYearlyReport($startYear, $endYear);
-
-    //         $options = new Options();
-    //         $options->set('defaultFont', 'DejaVu Sans');
-
-    //         $pdf = new PDF($options);
-
-    //         $lava = new Lavacharts;
-    //         $datatable = $lava->DataTable();
-
-    //         // Przygotowanie danych do wykresu
-    //         $datatable->addStringColumn('Category')
-    //             ->addNumberColumn('Expense');
-
-    //         foreach ($data['categories'] as $category) {
-    //             // Dostosuj te linie do swoich danych
-    //             $datatable->addRow([$category->name_category, $category->total_expense]);
-    //         }
-
-    //         $chart = $lava->BarChart('categoryYearlyChart', $datatable);
-
-    //         $html = view('Report.yearPdf', [
-    //             'yearlyExpenses' => $data['yearlyExpenses'], // Dodaj tę linię, aby przekazać $yearlyExpenses do widoku
-    //             'data' => $data,
-    //             'categories' => $data['categories'],
-    //             'chart' => $chart
-    //         ])->render();
-
-    //         $pdf->loadHtml($html);
-    //         $pdf->setPaper('A4', 'landscape');
-    //         //$pdf->render();
-
-    //         return $pdf->stream("Budżet {$startYear}-{$endYear} " . now()->format('Ymd') . '.pdf');
-    //     } catch (\Exception $e) {
-    //         Log::error('ReportControllerr. Błąd w metodzie generateYearlyPDF(): ' . $e->getMessage());
-    //         return redirect()->route('transactions.index')->with('error', $e->getMessage());
-    //     }
-    // }
-
 }
