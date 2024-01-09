@@ -81,13 +81,18 @@ class SavingsPlansController extends Controller
                 }
             }
             if ($isEmpty) {
-                $msg = "Brak planów oszczędnościowych spełniających kryteria.";
-                Session::flash('message', $msg);
+                if (SavingsPlan::where('id_user', $user->id_user)->count() == 0) {
+                    $msg = "Brak planów oszczędnościowych - utwórz nowy.";
+                    session()->flash('sortSavingsPlans', $msg);
+                } else {
 
-                return view('SavingsPlan.index', compact('savingsPlans'));
-            } else {
-                return view('SavingsPlan.index', compact('savingsPlans'));
+                    $msg = "Brak planów oszczędnościowych spełniających kryteria filtrowania.";
+                    session()->flash('sortSavingsPlans', $msg);
+                }
             }
+
+
+            return view('SavingsPlan.index', compact('savingsPlans'));
         } catch (\Exception $e) {
             Log::error('SavingsPlansController. Błąd w metodzie index(): ' . $e->getMessage());
             return redirect()->route('savings-plans.index')->with('error', 'Wystąpił błąd podczas pobierania planów oszczędnościowych.');
@@ -173,23 +178,44 @@ class SavingsPlansController extends Controller
 
             // Sprawdź, czy dodanie wpłacanej kwoty nie przekroczy miesięcznego budżetu
             if ($increaseAmount > $remainingFunds) {
-                return redirect()->route('savings-plans.index')->with('error', 'Dodanie tej kwoty przekroczy miesięczny budżet! Środków do wydania pozostało: ' . $remainingFunds . ' PLN.');
+                $message = 'Dodanie tej kwoty przekroczy miesięczny budżet! Środków do wydania pozostało: ' . $remainingFunds . ' PLN.';
+                session()->flash('warning', $message);
             }
 
             // Dodaj wpłacaną kwotę do oszczędności
-            $savingsPlan->amount_savings_plan += $increaseAmount;
-            $savingsPlan->save();
+            $newAmount = $savingsPlan->amount_savings_plan + $increaseAmount;
 
-            // Tworzenie nowej transakcji
-            $transaction = Transaction::create([
-                'name_transaction' => 'Wpłata do planu oszczędnościowego',
-                'amount_transaction' => $increaseAmount,
-                'date_transaction' => now(), // Dzisiejsza data
-                'id_user' => $user->id_user,
-                'id_category' => $user->category->id_category, // Załóżmy, że kategoria oszczędności jest przypisana do użytkownika
-            ]);
+            if ($newAmount > $savingsPlan->goal_savings_plan) {
+                return redirect()->route('savings-plans.index')->with('warning', 'Wpłacana kwota przekroczyłaby cel!');
+            } elseif ($newAmount == $savingsPlan->goal_savings_plan) {
+                $savingsPlan->amount_savings_plan = $newAmount;
+                $savingsPlan->is_completed = 1;
+                $savingsPlan->save();
 
-            return redirect()->route('savings-plans.index')->with('success', 'Kwota oszczędności została zwiększona pomyślnie!');
+                $transaction = Transaction::create([
+                    'name_transaction' => 'Wpłata do planu oszczędnościowego ' . $savingsPlan->name_savings_plan,
+                    'amount_transaction' => $increaseAmount,
+                    'date_transaction' => now(), // Dzisiejsza data
+                    'id_user' => $user->id_user,
+                    'id_category' => $category->id_category,
+                ]);
+
+                return redirect()->route('savings-plans.index')->with('success', "Plan oszczędnościowy '$savingsPlan->name_savings_plan' został zrealizowany!");
+            } else {
+                $savingsPlan->amount_savings_plan = $newAmount;
+                $savingsPlan->save();
+
+                // Tworzenie nowej transakcji
+                $transaction = Transaction::create([
+                    'name_transaction' => 'Wpłata do planu oszczędnościowego ' . $savingsPlan->name_savings_plan,
+                    'amount_transaction' => $increaseAmount,
+                    'date_transaction' => now(), // Dzisiejsza data
+                    'id_user' => $user->id_user,
+                    'id_category' => $category->id_category,
+                ]);
+
+                return redirect()->route('savings-plans.index')->with('success', 'Kwota oszczędności została zwiększona pomyślnie!');
+            }
         } catch (\Exception $e) {
             Log::error('SavingsPlansController. Błąd w metodzie updateAmount(): ' . $e->getMessage());
             return redirect()->route('savings-plans.index')->with('error', 'Nie udało się zwiększyć kwoty oszczędnościowej. Spróbuj ponownie później.');

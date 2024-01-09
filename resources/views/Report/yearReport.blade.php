@@ -2,6 +2,10 @@
 
 @section('content')
     <div class="container">
+        <div id="messages">
+            @include('layouts.messages')
+        </div>
+
         @foreach ($yearlyExpenses as $year => $yearData)
             <div class="accordion mt-3" id="accordion_{{ $year }}">
                 <div class="accordion-item">
@@ -9,7 +13,7 @@
                         <button class="accordion-button bg-info" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTable_{{ $year }}" aria-expanded="true"
                             aria-controls="collapseTable_{{ $year }}">
-                           <h4><b> {{ $year }} - Roczne zestawienie wydatków. </b></h4>
+                            <h4><b> {{ $year }} - Roczne zestawienie wydatków. </b></h4>
                         </button>
                     </h2>
                     <div id="collapseTable_{{ $year }}" class="accordion-collapse collapse show"
@@ -64,10 +68,11 @@
 
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingCharts_{{ $year }}">
-                        <button class="accordion-button collapsed text-bg-secondary" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseCharts_{{ $year }}" aria-expanded="false"
-                            aria-controls="collapseCharts_{{ $year }}">
-                            <h5><b>Wykresy - zobrazowanie rocznych wydatków pod względem kategorii oraz podkategorii.<b></h5>
+                        <button class="accordion-button collapsed text-bg-secondary" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapseCharts_{{ $year }}"
+                            aria-expanded="false" aria-controls="collapseCharts_{{ $year }}">
+                            <h5><b>Wykresy - zobrazowanie rocznych wydatków pod względem kategorii oraz podkategorii.<b>
+                            </h5>
                         </button>
                     </h2>
                     <div id="collapseCharts_{{ $year }}" class="accordion-collapse collapse"

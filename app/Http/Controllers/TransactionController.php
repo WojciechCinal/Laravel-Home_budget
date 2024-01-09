@@ -142,9 +142,8 @@ class TransactionController extends Controller
 
             // Sprawdź, czy nie przekracza to miesięcznego budżetu
             if ($expensesThisMonth > $user->monthly_budget) {
-
-                return redirect()->route('transactions.create')->with('error', 'Dodanie tej transakcji przekroczy miesięczny budżet! Środków do wydania pozostało: ' . $remainingFunds . ' PLN.');
-            }
+                $message = 'Nowa transakcja przekroczyła miesięczny budżet!';
+                session()->flash('error', $message);            }
             $transaction = Transaction::create($transactionData);
 
             return redirect()->route('transactions.index')->with('success', 'Transakcja została dodana pomyślnie.');
@@ -227,8 +226,8 @@ class TransactionController extends Controller
 
             // Sprawdź, czy nie przekracza to miesięcznego budżetu
             if ($expensesThisMonth > $user->monthly_budget) {
-
-                return redirect()->route('transactions.edit', $id)->with('error', 'Po edycji tej transakcji zostanie przekroczy miesięczny budżet! Pozostało: ' . $remainingFunds . ' PLN.');
+                $message = 'Kwota transakcji po edycji przekroczyła miesięczny budżet!';
+                session()->flash('error', $message);
             }
 
             $transaction->save();

@@ -9,6 +9,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Khill\Lavacharts\Lavacharts;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Models\Transaction;
 use App\Models\Category;
@@ -80,6 +81,26 @@ class ReportController extends Controller
             }
         }
 
+        // Tworzymy tablicę z wszystkimi latami w zakresie
+        $allYears = range($startYear, $endYear);
+        $messages = [];
+
+        // Sprawdzamy każdy rok z zakresu
+        foreach ($allYears as $year) {
+            $transactionsForYear = $transactions->filter(function ($transaction) use ($year) {
+                return Carbon::parse($transaction->date_transaction)->format('Y') == $year;
+            });
+
+            if ($transactionsForYear->isEmpty()) {
+                $msg = "$year - brak transakcji spełniających kryteria.";
+                $messages[] = $msg;
+            }
+        }
+
+        // Zapisujemy wszystkie komunikaty w sesji
+        if (!empty($messages)) {
+            session()->put('yearReportMessages', $messages);
+        }
         return [
             'yearlyExpenses' => $yearlyExpenses,
             'categories' => $categories,

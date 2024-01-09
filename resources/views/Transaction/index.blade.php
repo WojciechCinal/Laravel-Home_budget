@@ -9,9 +9,11 @@
             -
             {{ request()->input('end_date')? \Carbon\Carbon::parse(request()->input('end_date'))->locale('pl')->isoFormat('D MMM YYYY'): \Carbon\Carbon::now()->locale('pl')->isoFormat('D MMM YYYY') }}
 
+            @if(count($transactions)>0)
             <a href="#" class="btn btn-primary btn-sm mx-2" data-bs-toggle="modal" data-bs-target="#generateReportModal">
                 Generuj raport
             </a>
+            @endif
             <a href="{{ route('transactions.create') }}" class="btn btn-success btn-sm mx-2">
                 <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa transakcja
             </a>
@@ -139,11 +141,19 @@
             {{ $transactions->appends(request()->except('page'))->links() }}
         </div>
         <div class="position-fixed bottom-0 start-0 p-3 mb-4">
+            @if($remainingFunds > 0)
             <button type="button" class="btn btn-info" data-bs-toggle="popover" data-bs-placement="right"
                 title="{{ $dateNow }}" data-bs-html="true"
                 data-bs-content="Wydatki w bieżącym miesiącu: {{ $expensesThisMonth }} zł <br> Budżet miesięczny: {{ $monthlyBudget }} zł <br> Pozostało: {{ $remainingFunds }} zł">
                 <i class="bi bi-journal-bookmark-fill align-middle" style="font-size: 2rem;"></i>
             </button>
+            @else
+            <button type="button" class="btn btn-danger" data-bs-toggle="popover" data-bs-placement="right"
+            title="{{ $dateNow }}" data-bs-html="true"
+            data-bs-content="Wydatki w bieżącym miesiącu: {{ $expensesThisMonth }} zł <br> Budżet miesięczny: {{ $monthlyBudget }} zł <br> Pozostało: <b>{{ $remainingFunds }} zł</b>">
+            <i class="bi bi-journal-bookmark-fill align-middle" style="font-size: 2rem;"></i>
+        </button>
+            @endif
         </div>
     </div>
 @endsection

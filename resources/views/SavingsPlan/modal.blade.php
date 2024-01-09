@@ -80,6 +80,7 @@
                     </table>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
+                    @if($savingsPlan->is_completed == 0)
                     <form method="POST"
                         action="{{ route('savings-plans.update-amount', ['id' => $savingsPlan->id_savings_plan]) }}">
                         @csrf
@@ -89,13 +90,15 @@
                             <button type="submit" class="btn btn-primary ms-2">Wpłać</button>
                         </div>
                     </form>
-
+                    @endif
                     <div>
+                        @if($savingsPlan->is_completed == 0)
                         <a href="{{ route('savings-plans.edit', ['id' => $savingsPlan->id_savings_plan]) }}"
                             class="btn btn-primary me-2">
                             <i class="bi bi-pencil-square align-middle" style="font-size: 1rem;"></i>
                             Edytuj
                         </a>
+                        @endif()
                         <button class="btn btn-danger deleteButton" data-list-id="{{ $savingsPlan->id_savings_plan }}"
                             data-bs-toggle="modal" data-bs-target="#deleteModal">
                             <i class="bi bi-trash3-fill align-middle" style="font-size: 1rem;"></i>

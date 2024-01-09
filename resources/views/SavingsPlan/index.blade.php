@@ -3,10 +3,12 @@
 @section('content')
     @include('SavingsPlan.modal')
     <div class="container">
-
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <div id="messages">@include('layouts.messages')</div>
+
+                <div id="messages">
+                    @include('layouts.messages')
+                </div>
                 <div class="container mt-4">
                     <div class="accordion" id="accordionForm">
                         <div class="accordion-item">
@@ -95,10 +97,13 @@
                                                 style="font-weight: 800;  flex: 1; white-space: nowrap;">
                                                 {{ $savingsPlan->name_savings_plan }}
                                             </h5>
-                                            <div class="me-2" style="font-weight: 600;">{{ number_format(($savingsPlan->amount_savings_plan / $savingsPlan->goal_savings_plan) * 100, 1) }} %</div>
+                                            <div class="me-2" style="font-weight: 600;">
+                                                {{ number_format(($savingsPlan->amount_savings_plan / $savingsPlan->goal_savings_plan) * 100, 1) }}
+                                                %</div>
                                             <button type="button" class="btn btn-info" data-bs-toggle="modal"
                                                 data-bs-target="#savingsPlanDetails{{ $savingsPlan->id_savings_plan }}">
-                                                <i class="bi bi-info-square align-middle px-0 py-0" style="font-size: 0.8rem;"></i>
+                                                <i class="bi bi-info-square align-middle px-0 py-0"
+                                                    style="font-size: 0.8rem;"></i>
                                             </button>
                                         </div>
                                         <div class="card-body">
