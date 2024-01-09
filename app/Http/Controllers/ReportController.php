@@ -141,15 +141,17 @@ class ReportController extends Controller
         $startDate = Carbon::create($selectedYear, $startMonth, 1);
         $endDate = Carbon::create($selectedYear, $endMonth, 1)->endOfMonth();
 
+
         // Sprawdź czy miesiąc końcowy jest większy bądź równy miesiącowi startowemu
         if ($endDate->gte($startDate)) {
             $transactions = Transaction::whereBetween('date_transaction', [$startDate, $endDate])
                 ->where('id_user', Auth::id())
+                ->orderBy('date_transaction', 'asc')
                 ->get();
 
             // Podziel transakcje na miesiące
             $transactionsByMonth = $transactions->groupBy(function ($transaction) {
-                return Carbon::parse($transaction->date_transaction)->format('Y-m');
+                return Carbon::parse($transaction->date_transaction)->format('m');
             });
 
 
@@ -166,6 +168,24 @@ class ReportController extends Controller
             foreach ($transactionsByWeek as $month => $weeks) {
                 foreach ($weeks as $week => $transactionsInWeek) {
                     $weekTotals[$month][$week] = $transactionsInWeek->sum('amount_transaction');
+                }
+            }
+            // Dodanie informacji o zakresie dat dla każdego tygodnia do istniejącej struktury danych
+            foreach ($transactionsByWeek as $month => $weeks) {
+                foreach ($weeks as $week => $transactionsInWeek) {
+                    $startOfWeek = Carbon::create($selectedYear)->isoWeekYear($selectedYear)->isoWeek($week)->startOfWeek();
+                    $endOfWeek = $startOfWeek->copy()->endOfWeek();
+
+                    if ($startOfWeek->Format('m') < $month) {
+                        $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->startOfMonth()->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
+                    } elseif ($endOfWeek->Format('m') > $month) {
+                        $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfMonth()->isoFormat('D MMM');
+                    } else {
+                        $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
+                    }
+
+                    //$transactionsByWeek[$month][$week]['week_number'] = "$week tydzień";
+
                 }
             }
 

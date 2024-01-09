@@ -13,8 +13,8 @@
                                 <thead>
                                     <tr>
                                         <th>Kategoria</th>
-                                        @foreach ($transactionsByWeek[$month] as $week => $transactions)
-                                            <th>{{ $week }} tydzień</th>
+                                        @foreach ($transactionsByWeek[$month] as $week)
+                                            <th>{{ $week['week_dates'] }}</th>
                                         @endforeach
                                     </tr>
                                 </thead>
