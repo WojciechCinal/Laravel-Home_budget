@@ -79,7 +79,67 @@
 <!-- Modal dla raportu miesięcznego -->
 <div class="modal fade" id="monthlyReportModal" tabindex="-1" aria-labelledby="monthlyReportModalLabel"
     aria-hidden="true">
-    <!-- Kod formularza dla raportu miesięcznego -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="monthlyReportModalLabel">Miesięczny raport</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('generate.monthly.report') }}" method="GET">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="selected_year" class="form-label">Wybierz rok:</label>
+                            <input type="number" class="form-control" id="selected_year" name="selected_year"
+                                min="2019" max="2100"
+                                value="{{ request()->input('selected_year') ? request()->input('selected_year') : now()->year }}"
+                                required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="selected_month_year_start" class="form-label">Miesiąc początkowy:</label>
+                            <select class="form-select" id="selected_month_year_start" name="start_date" required>
+                                <option value="" disabled selected>Wybierz miesiąc</option>
+                                @for ($month = 1; $month <= 12; $month++)
+                                    <option value="{{ $month }}"
+                                        {{ request()->input('start_date') == $month ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::create(null, $month, 1)->locale('pl')->isoFormat('MMMM') }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="selected_month_year_end" class="form-label">Miesiąc końcowy:</label>
+                            <select class="form-select" id="selected_month_year_end" name="end_date" required>
+                                <option value="" disabled selected>Wybierz miesiąc</option>
+                                @for ($month = 1; $month <= 12; $month++)
+                                    <option value="{{ $month }}"
+                                        {{ request()->input('end_date') == $month ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::create(null, $month, 1)->locale('pl')->isoFormat('MMMM') }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Check boxy z nazwami kategorii -->
+                    <div class="col-md-12">
+                        <label><b>Kategorie:</b></label>
+                        <div class="scrollable-checkboxes-year">
+                            @foreach ($categories as $category)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="categories[]"
+                                        value="{{ $category->id_category }}"
+                                        {{ in_array($category->id_category, $selectedCategories) ? 'checked' : '' }}>
+                                    <label class="form-check-label">{{ $category->name_category }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generuj raport</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal dla raportu tygodniowego -->

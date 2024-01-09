@@ -131,4 +131,51 @@ class ReportController extends Controller
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
         }
     }
+
+    public function generateMonthlyReport(Request $request)
+    {
+        $selectedYear = $request->input('selected_year');
+        $startMonth = $request->input('start_date');
+        $endMonth = $request->input('end_date');
+
+        $startDate = Carbon::create($selectedYear, $startMonth, 1);
+        $endDate = Carbon::create($selectedYear, $endMonth, 1)->endOfMonth();
+
+        // Sprawdź czy miesiąc końcowy jest większy bądź równy miesiącowi startowemu
+        if ($endDate->gte($startDate)) {
+            $transactions = Transaction::whereBetween('date_transaction', [$startDate, $endDate])
+                ->where('id_user', Auth::id())
+                ->get();
+
+            // Podziel transakcje na miesiące
+            $transactionsByMonth = $transactions->groupBy(function ($transaction) {
+                return Carbon::parse($transaction->date_transaction)->format('Y-m');
+            });
+
+
+            // Podział transakcji na tygodnie w poszczególnych miesiącach
+            $transactionsByWeek = [];
+            foreach ($transactionsByMonth as $month => $transactions) {
+                $transactionsByWeek[$month] = $transactions->groupBy(function ($transaction) {
+                    return Carbon::parse($transaction->date_transaction)->format('W');
+                });
+            }
+
+            // Obliczenie sumy kwot dla kategorii w danym tygodniu
+            $weekTotals = [];
+            foreach ($transactionsByWeek as $month => $weeks) {
+                foreach ($weeks as $week => $transactionsInWeek) {
+                    $weekTotals[$month][$week] = $transactionsInWeek->sum('amount_transaction');
+                }
+            }
+
+            return view('Report.monthReport', [
+                'transactionsByMonth' => $transactionsByMonth,
+                'transactionsByWeek' => $transactionsByWeek,
+                'weekTotals' => $weekTotals,
+            ]);
+        } else {
+            return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
+        }
+    }
 }

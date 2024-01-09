@@ -144,14 +144,14 @@
             @if($remainingFunds > 0)
             <button type="button" class="btn btn-info" data-bs-toggle="popover" data-bs-placement="right"
                 title="{{ $dateNow }}" data-bs-html="true"
-                data-bs-content="Wydatki w bieżącym miesiącu: {{ $expensesThisMonth }} zł <br> Budżet miesięczny: {{ $monthlyBudget }} zł <br> Pozostało: {{ $remainingFunds }} zł">
+                data-bs-content="Wydatki w bieżącym miesiącu: {{ $expensesThisMonth }} zł <br> Budżet miesięczny: {{ $monthlyBudget }} zł <h5> Pozostało: <b>{{ $remainingFunds }} zł</b></h5>">
                 <i class="bi bi-journal-bookmark-fill align-middle" style="font-size: 2rem;"></i>
             </button>
             @else
             <button type="button" class="btn btn-danger" data-bs-toggle="popover" data-bs-placement="right"
             title="{{ $dateNow }}" data-bs-html="true"
-            data-bs-content="Wydatki w bieżącym miesiącu: {{ $expensesThisMonth }} zł <br> Budżet miesięczny: {{ $monthlyBudget }} zł <br> Pozostało: <b>{{ $remainingFunds }} zł</b>">
-            <i class="bi bi-journal-bookmark-fill align-middle" style="font-size: 2rem;"></i>
+            data-bs-content="Wydatki w bieżącym miesiącu: {{ $expensesThisMonth }} zł <br> Budżet miesięczny: {{ $monthlyBudget }} zł">
+            <i class="bi bi-journal-bookmark-fill align-middle" style="font-size: 2rem;"></i> <h5 style="color:white">Przekroczono o: <b>{{ $remainingFunds * (-1) }} zł !</b></h5>
         </button>
             @endif
         </div>
