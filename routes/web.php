@@ -70,4 +70,5 @@ Route::put('/transactions/{transaction}/update', [TransactionController::class, 
 Route::post('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
 
 Route::get('/generate/report/year', [ReportController::class, 'generateYearlyReport'] )->name('generate.yearly.report');
+Route::get('/generate/report/year/pdf', [ReportController::class, 'yearlyReportPDF'] )->name('generate.yearly.report.pdf');
 Route::get('/generate/report/month', [ReportController::class, 'generateMonthlyReport'] )->name('generate.monthly.report');

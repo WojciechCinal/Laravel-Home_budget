@@ -48,12 +48,12 @@ class ReportController extends Controller
             $month = $date->format('m');
             $category = $transaction->category->name_category;
 
+
             if (!isset($yearlyExpenses[$year][$month][$category])) {
                 $yearlyExpenses[$year][$month][$category] = 0;
             }
 
             $yearlyExpenses[$year][$month][$category] += $transaction->amount_transaction;
-
             if (!isset($monthlyTotalExpenses[$year][$month])) {
                 $monthlyTotalExpenses[$year][$month] = 0;
             }
@@ -69,7 +69,7 @@ class ReportController extends Controller
             $categoryName = $transaction->category->name_category;
 
             $subcategory = $transaction->subcategory;
-            $subcategoryName = $subcategory ? $subcategory->name_subCategory : 'Brak podkategorii';
+            $subcategoryName = $subcategory ? $subcategory->name_subCategory : 'Nie podano podkategorii';
 
             if (!isset($subcategoryYearlyTotal[$year][$categoryName][$subcategoryName])) {
                 $subcategoryYearlyTotal[$year][$categoryName][$subcategoryName] = 0;
@@ -101,6 +101,7 @@ class ReportController extends Controller
         if (!empty($messages)) {
             session()->put('yearReportMessages', $messages);
         }
+
         return [
             'yearlyExpenses' => $yearlyExpenses,
             'categories' => $categories,
@@ -111,6 +112,7 @@ class ReportController extends Controller
             'subcategoryYearlyTotal' => $subcategoryYearlyTotal,
         ];
     }
+
 
     public function generateYearlyReport(Request $request)
     {
@@ -124,12 +126,29 @@ class ReportController extends Controller
             }
 
             $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
+            dump($data);
 
             return view('Report.yearReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportControllerr. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
         }
+    }
+
+    public function yearlyReportPDF(Request $request)
+    {
+        $startYear = $request->input('start_year');
+        $endYear = $request->input('end_year');
+        $selectedCategories = $request->input('categories', []);
+
+        $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
+
+
+        $name = "Home budget: $startYear-$endYear";
+
+        $pdf = PDF::loadView('Report.yearReportPDF', $data)->setPaper('a4', 'portrait');
+        //return $pdf->download("$name.pdf");
+        return view('Report.yearReportPDF', $data);
     }
 
     public function generateMonthlyReport(Request $request)
