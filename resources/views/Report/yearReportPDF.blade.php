@@ -123,7 +123,7 @@
 
     @foreach ($yearlyExpenses as $year => $yearData)
         <div>
-            <h1>{{ $year }} r. - zestawienie roczne</h1>
+            <h1>{{ $year }} r. - zestawienie roczne.</h1>
             <hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
             <h3>{{ $year }} - zestawienie kategorii i podkategorii.</h3>
@@ -177,7 +177,7 @@
 
         <div class="page-break"></div>
         {{-- Pierwsza tabela miesiace 1-6 --}}
-        <h1>{{ $year }} r. - zestawienie roczne</h1>
+        <h1>{{ $year }} r. - zestawienie roczne.</h1>
         <hr style="height:2px;border-width:0;color:gray;background-color:gray">
         <h3>{{ $year }} - I połowa roku - miesięczne zestawienie kategorii.</h3>
         <table class="month-table">
@@ -236,7 +236,7 @@
         </table>
         <div class="page-break"></div>
         {{-- Druga tabela dla miesiecy 7-12 --}}
-        <h1>{{ $year }} r. - zestawienie roczne</h1>
+        <h1>{{ $year }} r. - zestawienie roczne.</h1>
         <hr style="height:2px;border-width:0;color:gray;background-color:gray">
         <h3>{{ $year }} - II połowa roku - miesięczne zestawienie kategorii.</h3>
         <table class="month-table">
