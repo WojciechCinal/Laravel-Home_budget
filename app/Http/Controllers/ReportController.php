@@ -41,6 +41,7 @@ class ReportController extends Controller
             ->get();
 
         $subcategoryYearlyTotal = [];
+        $yearlyTotal = [];
 
         foreach ($transactions as $transaction) {
             $date = Carbon::parse($transaction->date_transaction);
@@ -48,6 +49,11 @@ class ReportController extends Controller
             $month = $date->format('m');
             $category = $transaction->category->name_category;
 
+            if (!isset($yearlyTotal[$year])) {
+                $yearlyTotal[$year] = 0;
+            }
+
+            $yearlyTotal[$year] += $transaction->amount_transaction;
 
             if (!isset($yearlyExpenses[$year][$month][$category])) {
                 $yearlyExpenses[$year][$month][$category] = 0;
@@ -110,6 +116,7 @@ class ReportController extends Controller
             'monthlyTotalExpenses' => $monthlyTotalExpenses,
             'categoryYearlyTotal' => $categoryYearlyTotal,
             'subcategoryYearlyTotal' => $subcategoryYearlyTotal,
+            'yearlyTotal' => $yearlyTotal,
         ];
     }
 
@@ -126,7 +133,6 @@ class ReportController extends Controller
             }
 
             $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
-            dump($data);
 
             return view('Report.yearReport', $data);
         } catch (\Exception $e) {
@@ -142,13 +148,10 @@ class ReportController extends Controller
         $selectedCategories = $request->input('categories', []);
 
         $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
-
-
-        $name = "Home budget: $startYear-$endYear";
+        $name = "Budżet domowy - zestawienie roczne: $startYear-$endYear";
 
         $pdf = PDF::loadView('Report.yearReportPDF', $data)->setPaper('a4', 'portrait');
-        //return $pdf->download("$name.pdf");
-        return view('Report.yearReportPDF', $data);
+        return $pdf->download("$name.pdf");
     }
 
     public function generateMonthlyReport(Request $request)
