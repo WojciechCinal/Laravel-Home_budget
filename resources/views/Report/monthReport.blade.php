@@ -19,11 +19,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($transactionsInMonth->pluck('category.name_category')->unique() as $category)
+                                    @foreach ($categories as $category)
                                         <tr>
-                                            <td>{{ $category }}</td>
+                                            <td>{{ $category->name_category }}</td>
                                             @foreach ($transactionsByWeek[$month] as $week => $transactionsInWeek)
-                                                <td>{{ $transactionsInWeek->where('category.name_category', $category)->sum('amount_transaction') }}
+                                                <td>
+                                                    {{ $transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
+                                                        0 }}
                                                 </td>
                                             @endforeach
                                         </tr>

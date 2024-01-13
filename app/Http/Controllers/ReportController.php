@@ -153,18 +153,20 @@ class ReportController extends Controller
         return $pdf->download("$name.pdf");
     }
 
-    private function fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate)
+    private function fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories)
     {
-        $transactions = Transaction::whereBetween('date_transaction', [$startDate, $endDate])
+        $transactions = Transaction::with('category', 'subcategory')
+            ->whereBetween('date_transaction', [$startDate, $endDate])
             ->where('id_user', Auth::id())
+            ->whereIn('id_category', $selectedCategories)
             ->orderBy('date_transaction', 'asc')
             ->get();
+
 
         // Podziel transakcje na miesiące
         $transactionsByMonth = $transactions->groupBy(function ($transaction) {
             return Carbon::parse($transaction->date_transaction)->format('m');
         });
-
 
         // Podział transakcji na tygodnie w poszczególnych miesiącach
         $transactionsByWeek = [];
@@ -181,29 +183,36 @@ class ReportController extends Controller
                 $weekTotals[$month][$week] = $transactionsInWeek->sum('amount_transaction');
             }
         }
+
         // Dodanie informacji o zakresie dat dla każdego tygodnia do istniejącej struktury danych
         foreach ($transactionsByWeek as $month => $weeks) {
             foreach ($weeks as $week => $transactionsInWeek) {
-                $startOfWeek = Carbon::create($selectedYear)->isoWeekYear($selectedYear)->isoWeek($week)->startOfWeek();
+                // Pobierz pierwszą transakcję w tygodniu, aby uzyskać datę dla początku tygodnia
+                $firstTransaction = $transactionsInWeek->first();
+                $startOfWeek = Carbon::parse($firstTransaction->date_transaction)->startOfWeek();
                 $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
-                if ($startOfWeek->Format('m') < $month) {
+                // Sprawdź, czy początek tygodnia wchodzi w inny rok
+                if ($startOfWeek->format('Y') != $selectedYear) {
+                    // Jeśli tak, ustaw zakres dat na początek stycznia obecnego roku
+                    $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->isoFormat('D MMM') . ' - '. Carbon::createFromDate($selectedYear, $month, 1)->endOfWeek()->isoFormat('D MMM');
+                } elseif ($startOfWeek->format('m') < $month) {
                     $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->startOfMonth()->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
-                } elseif ($endOfWeek->Format('m') > $month) {
+                } elseif ($endOfWeek->format('m') > $month) {
                     $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfMonth()->isoFormat('D MMM');
                 } else {
                     $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
                 }
-
             }
         }
 
-        return  [
+        return [
             'transactionsByMonth' => $transactionsByMonth,
             'transactionsByWeek' => $transactionsByWeek,
             'weekTotals' => $weekTotals,
         ];
     }
+
 
     public function generateMonthlyReport(Request $request)
     {
@@ -211,12 +220,14 @@ class ReportController extends Controller
             $selectedYear = $request->input('selected_year');
             $startMonth = $request->input('start_date');
             $endMonth = $request->input('end_date');
+            $selectedCategories = $request->input('categories', []);
 
             $startDate = Carbon::create($selectedYear, $startMonth, 1);
             $endDate = Carbon::create($selectedYear, $endMonth, 1)->endOfMonth();
 
             if ($endDate->gte($startDate)) {
-                $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate);
+                $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
+                $data['categories'] = Category::whereIn('id_category', $selectedCategories)->get(); // Dodane
 
                 return view('Report.monthReport', $data);
             } else {
