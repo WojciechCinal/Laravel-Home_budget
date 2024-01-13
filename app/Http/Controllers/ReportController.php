@@ -120,7 +120,6 @@ class ReportController extends Controller
         ];
     }
 
-
     public function generateYearlyReport(Request $request)
     {
         try {
@@ -136,7 +135,7 @@ class ReportController extends Controller
 
             return view('Report.yearReport', $data);
         } catch (\Exception $e) {
-            Log::error('ReportControllerr. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
+            Log::error('ReportController. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
         }
     }
@@ -154,70 +153,78 @@ class ReportController extends Controller
         return $pdf->download("$name.pdf");
     }
 
+    private function fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate)
+    {
+        $transactions = Transaction::whereBetween('date_transaction', [$startDate, $endDate])
+            ->where('id_user', Auth::id())
+            ->orderBy('date_transaction', 'asc')
+            ->get();
+
+        // Podziel transakcje na miesiące
+        $transactionsByMonth = $transactions->groupBy(function ($transaction) {
+            return Carbon::parse($transaction->date_transaction)->format('m');
+        });
+
+
+        // Podział transakcji na tygodnie w poszczególnych miesiącach
+        $transactionsByWeek = [];
+        foreach ($transactionsByMonth as $month => $transactions) {
+            $transactionsByWeek[$month] = $transactions->groupBy(function ($transaction) {
+                return Carbon::parse($transaction->date_transaction)->format('W');
+            });
+        }
+
+        // Obliczenie sumy kwot dla kategorii w danym tygodniu
+        $weekTotals = [];
+        foreach ($transactionsByWeek as $month => $weeks) {
+            foreach ($weeks as $week => $transactionsInWeek) {
+                $weekTotals[$month][$week] = $transactionsInWeek->sum('amount_transaction');
+            }
+        }
+        // Dodanie informacji o zakresie dat dla każdego tygodnia do istniejącej struktury danych
+        foreach ($transactionsByWeek as $month => $weeks) {
+            foreach ($weeks as $week => $transactionsInWeek) {
+                $startOfWeek = Carbon::create($selectedYear)->isoWeekYear($selectedYear)->isoWeek($week)->startOfWeek();
+                $endOfWeek = $startOfWeek->copy()->endOfWeek();
+
+                if ($startOfWeek->Format('m') < $month) {
+                    $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->startOfMonth()->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
+                } elseif ($endOfWeek->Format('m') > $month) {
+                    $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfMonth()->isoFormat('D MMM');
+                } else {
+                    $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
+                }
+
+            }
+        }
+
+        return  [
+            'transactionsByMonth' => $transactionsByMonth,
+            'transactionsByWeek' => $transactionsByWeek,
+            'weekTotals' => $weekTotals,
+        ];
+    }
+
     public function generateMonthlyReport(Request $request)
     {
-        $selectedYear = $request->input('selected_year');
-        $startMonth = $request->input('start_date');
-        $endMonth = $request->input('end_date');
+        try {
+            $selectedYear = $request->input('selected_year');
+            $startMonth = $request->input('start_date');
+            $endMonth = $request->input('end_date');
 
-        $startDate = Carbon::create($selectedYear, $startMonth, 1);
-        $endDate = Carbon::create($selectedYear, $endMonth, 1)->endOfMonth();
+            $startDate = Carbon::create($selectedYear, $startMonth, 1);
+            $endDate = Carbon::create($selectedYear, $endMonth, 1)->endOfMonth();
 
+            if ($endDate->gte($startDate)) {
+                $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate);
 
-        // Sprawdź czy miesiąc końcowy jest większy bądź równy miesiącowi startowemu
-        if ($endDate->gte($startDate)) {
-            $transactions = Transaction::whereBetween('date_transaction', [$startDate, $endDate])
-                ->where('id_user', Auth::id())
-                ->orderBy('date_transaction', 'asc')
-                ->get();
-
-            // Podziel transakcje na miesiące
-            $transactionsByMonth = $transactions->groupBy(function ($transaction) {
-                return Carbon::parse($transaction->date_transaction)->format('m');
-            });
-
-
-            // Podział transakcji na tygodnie w poszczególnych miesiącach
-            $transactionsByWeek = [];
-            foreach ($transactionsByMonth as $month => $transactions) {
-                $transactionsByWeek[$month] = $transactions->groupBy(function ($transaction) {
-                    return Carbon::parse($transaction->date_transaction)->format('W');
-                });
+                return view('Report.monthReport', $data);
+            } else {
+                return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
             }
-
-            // Obliczenie sumy kwot dla kategorii w danym tygodniu
-            $weekTotals = [];
-            foreach ($transactionsByWeek as $month => $weeks) {
-                foreach ($weeks as $week => $transactionsInWeek) {
-                    $weekTotals[$month][$week] = $transactionsInWeek->sum('amount_transaction');
-                }
-            }
-            // Dodanie informacji o zakresie dat dla każdego tygodnia do istniejącej struktury danych
-            foreach ($transactionsByWeek as $month => $weeks) {
-                foreach ($weeks as $week => $transactionsInWeek) {
-                    $startOfWeek = Carbon::create($selectedYear)->isoWeekYear($selectedYear)->isoWeek($week)->startOfWeek();
-                    $endOfWeek = $startOfWeek->copy()->endOfWeek();
-
-                    if ($startOfWeek->Format('m') < $month) {
-                        $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->startOfMonth()->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
-                    } elseif ($endOfWeek->Format('m') > $month) {
-                        $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfMonth()->isoFormat('D MMM');
-                    } else {
-                        $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
-                    }
-
-                    //$transactionsByWeek[$month][$week]['week_number'] = "$week tydzień";
-
-                }
-            }
-
-            return view('Report.monthReport', [
-                'transactionsByMonth' => $transactionsByMonth,
-                'transactionsByWeek' => $transactionsByWeek,
-                'weekTotals' => $weekTotals,
-            ]);
-        } else {
-            return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
+        } catch (\Exception $e) {
+            Log::error('ReportController. Błąd w metodzie generateMonthlyReport(): ' . $e->getMessage());
+            return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
         }
     }
 }
