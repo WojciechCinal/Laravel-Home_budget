@@ -147,7 +147,8 @@ class ReportController extends Controller
         $selectedCategories = $request->input('categories', []);
 
         $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
-        $name = "Budżet domowy - zestawienie roczne: $startYear-$endYear";
+        $now = Carbon::now()->format('Y-m-d');
+        $name = "$now Budżet domowy - zestawienie roczne: $startYear-$endYear";
 
         $pdf = PDF::loadView('Report.yearReportPDF', $data)->setPaper('a4', 'portrait');
         return $pdf->download("$name.pdf");
@@ -162,12 +163,31 @@ class ReportController extends Controller
             ->orderBy('date_transaction', 'asc')
             ->get();
 
-            $categories = Category::whereIn('id_category', $selectedCategories)->get();
+        $categories = Category::where('id_user', Auth::id())
+            ->whereIn('id_category', $selectedCategories)
+            ->get();
 
         // Podziel transakcje na miesiące
         $transactionsByMonth = $transactions->groupBy(function ($transaction) {
             return Carbon::parse($transaction->date_transaction)->format('m');
         });
+
+
+        // Suma kwot na daną kategorię w poszczególnych miesiącach
+        $monthTotals = [];
+
+        foreach ($transactionsByMonth as $month => $transactions) {
+            foreach ($categories as $category) {
+                $categoryTransactions = $transactions->where('id_category', $category->id_category);
+                $categorySum = $categoryTransactions->sum('amount_transaction');
+
+                // Dodaj do $monthTotals tylko, jeśli suma nie jest równa 0
+                if ($categorySum != 0) {
+                    // Przypisz sumę do nazwy kategorii zamiast do id
+                    $monthTotals[$month][$category->name_category] = $categorySum;
+                }
+            }
+        }
 
         // Podział transakcji na tygodnie w poszczególnych miesiącach
         $transactionsByWeek = [];
@@ -196,7 +216,7 @@ class ReportController extends Controller
                 // Sprawdź, czy początek tygodnia wchodzi w inny rok
                 if ($startOfWeek->format('Y') != $selectedYear) {
                     // Jeśli tak, ustaw zakres dat na początek stycznia obecnego roku
-                    $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->isoFormat('D MMM') . ' - '. Carbon::createFromDate($selectedYear, $month, 1)->endOfWeek()->isoFormat('D MMM');
+                    $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->isoFormat('D MMM') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfWeek()->isoFormat('D MMM');
                 } elseif ($startOfWeek->format('m') < $month) {
                     $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->startOfMonth()->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
                 } elseif ($endOfWeek->format('m') > $month) {
@@ -208,10 +228,11 @@ class ReportController extends Controller
         }
 
         return [
-            'categories' => $categories,
             'transactionsByMonth' => $transactionsByMonth,
             'transactionsByWeek' => $transactionsByWeek,
             'weekTotals' => $weekTotals,
+            'categories' => $categories,
+            'monthTotals' => $monthTotals,
         ];
     }
 
