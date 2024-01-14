@@ -119,186 +119,198 @@
 <body>
     @php
         $startYear = request('start_year');
+        $endYear = request('end_year');
     @endphp
 
-    @foreach ($yearlyExpenses as $year => $yearData)
-        <div>
+    @for ($year = $startYear; $year <= $endYear; $year++)
+        @if (isset($yearlyExpenses[$year]))
+            <div>
+                <h1>{{ $year }} r. - zestawienie roczne.</h1>
+                <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+
+                <h3>{{ $year }} - zestawienie kategorii i podkategorii.</h3>
+                <table class="category-table">
+                    <thead>
+                        <tr>
+                            <th>Kategoria</th>
+                            <th>Kwota kategoria</th>
+                            <th>Podkategorie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($subcategoryYearlyTotal[$year] as $category => $subcategories)
+                            @if ($loop->even)
+                                <tr class="gray">
+                                    <td>{{ $category }}</td>
+                                    <td style="text-align: center;"> <b>{{ array_sum($subcategories) }} PLN</b></td>
+                                    <td>
+                                        @foreach ($subcategories as $subcategory => $total)
+                                            <li>{{ $subcategory }}: <b>{{ $total }} PLN</b>
+                                            </li>
+                                        @endforeach
+                                    </td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td>{{ $category }}</td>
+                                    <td style="text-align: center;"><b>{{ array_sum($subcategories) }} PLN</b></td>
+                                    <td>
+                                        @foreach ($subcategories as $subcategory => $total)
+                                            <li>{{ $subcategory }}: <b>{{ $total }} PLN</b>
+                                            </li>
+                                        @endforeach
+                                    </td>
+                                </tr>
+                            @endif
+                        @endforeach
+                        <tr class="tfoot" style="font-size: 16px;">
+                            <td>
+                                Wydatki roczne:
+                            </td>
+                            <td style="text-align: center; font-style:italic;">
+                                {{ $yearlyTotal[$year] }} PLN
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="page-break"></div>
+            {{-- Pierwsza tabela miesiace 1-6 --}}
             <h1>{{ $year }} r. - zestawienie roczne.</h1>
             <hr style="height:2px;border-width:0;color:gray;background-color:gray">
-
-            <h3>{{ $year }} - zestawienie kategorii i podkategorii.</h3>
-            <table class="category-table">
+            <h3>{{ $year }} - I połowa roku - miesięczne zestawienie kategorii.</h3>
+            <table class="month-table">
                 <thead>
                     <tr>
-                        <th>Kategoria</th>
-                        <th>Kwota kategoria</th>
-                        <th>Podkategorie</th>
+                        <th>{{ $year }} r.</th>
+                        @for ($month = 1; $month <= 6; $month++)
+                            @php
+                                $monthName = \Carbon\Carbon::createFromDate(null, $month, 1)->translatedFormat('F');
+                                $shortMonthName = Str::limit($monthName, 3, '');
+                            @endphp
+                            <th>{{ $shortMonthName }}</th>
+                        @endfor
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($subcategoryYearlyTotal[$year] as $category => $subcategories)
+                    @foreach ($categories as $category)
                         @if ($loop->even)
-                            <tr class="gray">
-                                <td>{{ $category }}</td>
-                                <td style="text-align: center;"> <b>{{ array_sum($subcategories) }} PLN</b></td>
-                                <td>
-                                    @foreach ($subcategories as $subcategory => $total)
-                                        <li>{{ $subcategory }}: <b>{{ $total }} PLN</b>
-                                        </li>
-                                    @endforeach
-                                </td>
+                            <tr>
+                                <td class="catName">{{ $category->name_category }}</td>
+                                @for ($month = 1; $month <= 6; $month++)
+                                    @php
+                                        $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
+                                    @endphp
+                                    <td>
+                                        {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
+                                    </td>
+                                @endfor
                             </tr>
                         @else
-                            <tr>
-                                <td>{{ $category }}</td>
-                                <td style="text-align: center;"><b>{{ array_sum($subcategories) }} PLN</b></td>
-                                <td>
-                                    @foreach ($subcategories as $subcategory => $total)
-                                        <li>{{ $subcategory }}: <b>{{ $total }} PLN</b>
-                                        </li>
-                                    @endforeach
-                                </td>
+                            <tr class="gray">
+                                <td class="catName">{{ $category->name_category }}</td>
+                                @for ($month = 1; $month <= 6; $month++)
+                                    @php
+                                        $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
+                                    @endphp
+                                    <td>
+                                        {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
+                                    </td>
+                                @endfor
                             </tr>
                         @endif
                     @endforeach
-                    <tr class="tfoot" style="font-size: 16px;">
-                        <td>
-                            Wydatki roczne:
-                        </td>
-                        <td style="text-align: center; font-style:italic;">
-                            {{ $yearlyTotal[$year] }} PLN
-                        </td>
-                        <td>
-                        </td>
+                    <tr class="tfoot">
+                        <td>Łącznie (PLN):</td>
+                        @for ($month = 1; $month <= 6; $month++)
+                            @php
+                                $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
+                            @endphp
+                            <td>
+                                {{ $monthlyTotalExpenses[$year][$monthKey] ?? '-' }}
+                            </td>
+                        @endfor
                     </tr>
                 </tbody>
             </table>
-        </div>
-
-        <div class="page-break"></div>
-        {{-- Pierwsza tabela miesiace 1-6 --}}
-        <h1>{{ $year }} r. - zestawienie roczne.</h1>
-        <hr style="height:2px;border-width:0;color:gray;background-color:gray">
-        <h3>{{ $year }} - I połowa roku - miesięczne zestawienie kategorii.</h3>
-        <table class="month-table">
-            <thead>
-                <tr>
-                    <th>{{ $year }} r.</th>
-                    @for ($month = 1; $month <= 6; $month++)
-                        @php
-                            $monthName = \Carbon\Carbon::createFromDate(null, $month, 1)->translatedFormat('F');
-                            $shortMonthName = Str::limit($monthName, 3, '');
-                        @endphp
-                        <th>{{ $shortMonthName }}</th>
-                    @endfor
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($categories as $category)
-                    @if ($loop->even)
-                        <tr>
-                            <td class="catName">{{ $category->name_category }}</td>
-                            @for ($month = 1; $month <= 6; $month++)
-                                @php
-                                    $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
-                                @endphp
-                                <td>
-                                    {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
-                                </td>
-                            @endfor
-                        </tr>
-                    @else
-                        <tr class="gray">
-                            <td class="catName">{{ $category->name_category }}</td>
-                            @for ($month = 1; $month <= 6; $month++)
-                                @php
-                                    $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
-                                @endphp
-                                <td>
-                                    {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
-                                </td>
-                            @endfor
-                        </tr>
-                    @endif
-                @endforeach
-                <tr class="tfoot">
-                    <td>Łącznie (PLN):</td>
-                    @for ($month = 1; $month <= 6; $month++)
-                        @php
-                            $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
-                        @endphp
-                        <td>
-                            {{ $monthlyTotalExpenses[$year][$monthKey] ?? '-' }}
-                        </td>
-                    @endfor
-                </tr>
-            </tbody>
-        </table>
-        <div class="page-break"></div>
-        {{-- Druga tabela dla miesiecy 7-12 --}}
-        <h1>{{ $year }} r. - zestawienie roczne.</h1>
-        <hr style="height:2px;border-width:0;color:gray;background-color:gray">
-        <h3>{{ $year }} - II połowa roku - miesięczne zestawienie kategorii.</h3>
-        <table class="month-table">
-            <thead>
-                <tr>
-                    <th>{{ $year }} r.</th>
-                    @for ($month = 7; $month <= 12; $month++)
-                        @php
-                            $monthName = \Carbon\Carbon::createFromDate(null, $month, 1)->translatedFormat('F');
-                            $shortMonthName = Str::limit($monthName, 3, '');
-                        @endphp
-                        <th>{{ $shortMonthName }}</th>
-                    @endfor
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($categories as $category)
-                    @if ($loop->even)
-                        <tr>
-                            <td class="catName">{{ $category->name_category }}</td>
-                            @for ($month = 7; $month <= 12; $month++)
-                                @php
-                                    $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
-                                @endphp
-                                <td>
-                                    {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
-                                </td>
-                            @endfor
-                        </tr>
-                    @else
-                        <tr class="gray">
-                            <td class="catName">{{ $category->name_category }}</td>
-                            @for ($month = 7; $month <= 12; $month++)
-                                @php
-                                    $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
-                                @endphp
-                                <td>
-                                    {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
-                                </td>
-                            @endfor
-                        </tr>
-                    @endif
-                @endforeach
-                <tr class="tfoot">
-                    <td>Łącznie (PLN):</td>
-                    @for ($month = 7; $month <= 12; $month++)
-                        @php
-                            $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
-                        @endphp
-                        <td>
-                            {{ $monthlyTotalExpenses[$year][$monthKey] ?? '-' }}
-                        </td>
-                    @endfor
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- Dodanie strony przed kolejnym rokiem --}}
-        @if ($year != $startYear)
             <div class="page-break"></div>
+            {{-- Druga tabela dla miesiecy 7-12 --}}
+            <h1>{{ $year }} r. - zestawienie roczne.</h1>
+            <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+            <h3>{{ $year }} - II połowa roku - miesięczne zestawienie kategorii.</h3>
+            <table class="month-table">
+                <thead>
+                    <tr>
+                        <th>{{ $year }} r.</th>
+                        @for ($month = 7; $month <= 12; $month++)
+                            @php
+                                $monthName = \Carbon\Carbon::createFromDate(null, $month, 1)->translatedFormat('F');
+                                $shortMonthName = Str::limit($monthName, 3, '');
+                            @endphp
+                            <th>{{ $shortMonthName }}</th>
+                        @endfor
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($categories as $category)
+                        @if ($loop->even)
+                            <tr>
+                                <td class="catName">{{ $category->name_category }}</td>
+                                @for ($month = 7; $month <= 12; $month++)
+                                    @php
+                                        $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
+                                    @endphp
+                                    <td>
+                                        {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
+                                    </td>
+                                @endfor
+                            </tr>
+                        @else
+                            <tr class="gray">
+                                <td class="catName">{{ $category->name_category }}</td>
+                                @for ($month = 7; $month <= 12; $month++)
+                                    @php
+                                        $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
+                                    @endphp
+                                    <td>
+                                        {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
+                                    </td>
+                                @endfor
+                            </tr>
+                        @endif
+                    @endforeach
+                    <tr class="tfoot">
+                        <td>Łącznie (PLN):</td>
+                        @for ($month = 7; $month <= 12; $month++)
+                            @php
+                                $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
+                            @endphp
+                            <td>
+                                {{ $monthlyTotalExpenses[$year][$monthKey] ?? '-' }}
+                            </td>
+                        @endfor
+                    </tr>
+                </tbody>
+            </table>
+
+            {{-- Dodanie strony przed kolejnym rokiem --}}
+            @if ($year != $endYear)
+                <div class="page-break"></div>
+            @endif
+        @else
+            <div>
+                <h1>{{ $year }} - brak transakcji.</h1>
+                <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+                @if ($year != $endYear)
+                    <div class="page-break"></div>
+                @endif
+            </div>
         @endif
-    @endforeach
+    @endfor
+
 </body>
 
 </html>
