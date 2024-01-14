@@ -187,21 +187,26 @@ class ReportController extends Controller
                     // Przypisz sumę do nazwy kategorii zamiast do id
                     $monthTotals[$month][$category->name_category] = $categorySum;
 
-                    // Dodaj sumę dla podkategorii
-                    $subCategories = $category->subcategories;
-                    foreach ($subCategories as $subCategory) {
-                        $subCategoryTransactions = $categoryTransactions->where('id_subCategory', $subCategory->id_subCategory);
-                        $subCategorySum = $subCategoryTransactions->sum('amount_transaction');
-                        if ($subCategorySum != 0) {
-                            $monthTotalsSubCat[$month][$category->name_category][$subCategory->name_subCategory] = $subCategorySum;
+                    // Pomijaj kategorie "Plany oszczędnościowe" na wykresie kołowym
+                    if ($category->name_start == "Plany oszczędnościowe") {
+                        continue;
+                    } else {
+                        // Dodaj sumę dla podkategorii
+                        $subCategories = $category->subcategories;
+                        foreach ($subCategories as $subCategory) {
+                            $subCategoryTransactions = $categoryTransactions->where('id_subCategory', $subCategory->id_subCategory);
+                            $subCategorySum = $subCategoryTransactions->sum('amount_transaction');
+                            if ($subCategorySum != 0) {
+                                $monthTotalsSubCat[$month][$category->name_category][$subCategory->name_subCategory] = $subCategorySum;
+                            }
                         }
-                    }
 
-                    // Dodaj sumę dla transakcji bez przypisanej podkategorii
-                    $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
-                    $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
-                    if ($amountWithoutSubCategory != 0) {
-                        $monthTotalsSubCat[$month][$category->name_category]['Nie podano kategorii'] = $amountWithoutSubCategory;
+                        // Dodaj sumę dla transakcji bez przypisanej podkategorii
+                        $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
+                        $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
+                        if ($amountWithoutSubCategory != 0) {
+                            $monthTotalsSubCat[$month][$category->name_category]['Nie podano kategorii'] = $amountWithoutSubCategory;
+                        }
                     }
                 }
             }
