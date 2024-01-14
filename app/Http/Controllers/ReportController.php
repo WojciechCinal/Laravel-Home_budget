@@ -175,6 +175,7 @@ class ReportController extends Controller
 
         // Suma kwot na daną kategorię w poszczególnych miesiącach
         $monthTotals = [];
+        $monthTotalsSubCat = []; // Nowa zmienna dla podkategorii
 
         foreach ($transactionsByMonth as $month => $transactions) {
             foreach ($categories as $category) {
@@ -185,6 +186,23 @@ class ReportController extends Controller
                 if ($categorySum != 0) {
                     // Przypisz sumę do nazwy kategorii zamiast do id
                     $monthTotals[$month][$category->name_category] = $categorySum;
+
+                    // Dodaj sumę dla podkategorii
+                    $subCategories = $category->subcategories;
+                    foreach ($subCategories as $subCategory) {
+                        $subCategoryTransactions = $categoryTransactions->where('id_subCategory', $subCategory->id_subCategory);
+                        $subCategorySum = $subCategoryTransactions->sum('amount_transaction');
+                        if ($subCategorySum != 0) {
+                            $monthTotalsSubCat[$month][$category->name_category][$subCategory->name_subCategory] = $subCategorySum;
+                        }
+                    }
+
+                    // Dodaj sumę dla transakcji bez przypisanej podkategorii
+                    $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
+                    $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
+                    if ($amountWithoutSubCategory != 0) {
+                        $monthTotalsSubCat[$month][$category->name_category]['Nie podano kategorii'] = $amountWithoutSubCategory;
+                    }
                 }
             }
         }
@@ -226,6 +244,7 @@ class ReportController extends Controller
                 }
             }
         }
+        //dd($monthTotalsSubCat);
 
         return [
             'transactionsByMonth' => $transactionsByMonth,
@@ -233,6 +252,7 @@ class ReportController extends Controller
             'weekTotals' => $weekTotals,
             'categories' => $categories,
             'monthTotals' => $monthTotals,
+            'monthTotalsSubCat' => $monthTotalsSubCat,
         ];
     }
 
