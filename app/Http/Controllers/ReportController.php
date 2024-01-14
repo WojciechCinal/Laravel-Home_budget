@@ -162,6 +162,7 @@ class ReportController extends Controller
             ->orderBy('date_transaction', 'asc')
             ->get();
 
+            $categories = Category::whereIn('id_category', $selectedCategories)->get();
 
         // Podziel transakcje na miesiące
         $transactionsByMonth = $transactions->groupBy(function ($transaction) {
@@ -207,12 +208,12 @@ class ReportController extends Controller
         }
 
         return [
+            'categories' => $categories,
             'transactionsByMonth' => $transactionsByMonth,
             'transactionsByWeek' => $transactionsByWeek,
             'weekTotals' => $weekTotals,
         ];
     }
-
 
     public function generateMonthlyReport(Request $request)
     {
@@ -227,7 +228,6 @@ class ReportController extends Controller
 
             if ($endDate->gte($startDate)) {
                 $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
-                $data['categories'] = Category::whereIn('id_category', $selectedCategories)->get(); // Dodane
 
                 return view('Report.monthReport', $data);
             } else {
