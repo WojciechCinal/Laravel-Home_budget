@@ -5,18 +5,18 @@
         <div id="messages">
             @include('layouts.messages')
         </div>
-        {{-- <form id="yearlyReportForm" action="{{ route('generate.yearly.report.pdf') }}" method="GET"
-            style="display: none;">
-            <input type="hidden" name="start_year" id="start_year"
-                value="{{ request()->input('start_year', now()->year) }}">
-            <input type="hidden" name="end_year" id="end_year"
-                value="{{ request()->input('end_year', now()->year) }}">
+        <form id="monthlyReportForm" action="{{ route('generate.monthly.report.pdf') }}" method="GET">
+            <input type="hidden" name="selected_year" value="{{ request()->input('selected_year', now()->year) }}">
+            <input type="hidden" name="start_date" value="{{ request()->input('start_date', 1) }}">
+            <input type="hidden" name="end_date" value="{{ request()->input('end_date', 12) }}">
+
             @foreach (request()->input('categories', []) as $category)
                 <input type="hidden" name="categories[]" value="{{ $category }}">
             @endforeach
+
+            <button type="submit" class="btn btn-primary">Pobierz raport</button>
         </form>
 
-        <button type="button" onclick="generateYearlyReport()" class="btn btn-primary">Pobierz raport</button> --}}
 
         @php
             $year = request('selected_year');
@@ -96,10 +96,10 @@
                                     var myBarChart = new Chart(ctxBar, {
                                         type: 'bar',
                                         data: {
-                                            labels: {!! json_encode(array_keys($monthTotals[$month])) !!},
+                                            labels: {!! json_encode(array_keys($monthTotalsCat[$month])) !!},
                                             datasets: [{
                                                 label: 'Miesięczne wydatki',
-                                                data: {!! json_encode(array_values($monthTotals[$month])) !!},
+                                                data: {!! json_encode(array_values($monthTotalsCat[$month])) !!},
                                                 backgroundColor: [
                                                     'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)',
                                                     'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)',

@@ -148,7 +148,7 @@ class ReportController extends Controller
 
         $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
         $now = Carbon::now()->format('Y-m-d');
-        $name = "$now Budżet domowy - zestawienie roczne: $startYear-$endYear";
+        $name = "$now Budżet domowy - zestawienie roczne $startYear-$endYear";
 
         $pdf = PDF::loadView('Report.yearReportPDF', $data)->setPaper('a4', 'portrait');
         return $pdf->download("$name.pdf");
@@ -174,8 +174,8 @@ class ReportController extends Controller
 
 
         // Suma kwot na daną kategorię w poszczególnych miesiącach
-        $monthTotals = [];
-        $monthTotalsSubCat = []; // Nowa zmienna dla podkategorii
+        $monthTotalsCat = [];
+        $monthTotalsSubCat = [];
 
         foreach ($transactionsByMonth as $month => $transactions) {
             foreach ($categories as $category) {
@@ -185,7 +185,7 @@ class ReportController extends Controller
                 // Dodaj do $monthTotals tylko, jeśli suma nie jest równa 0
                 if ($categorySum != 0) {
                     // Przypisz sumę do nazwy kategorii zamiast do id
-                    $monthTotals[$month][$category->name_category] = $categorySum;
+                    $monthTotalsCat[$month][$category->name_category] = $categorySum;
 
                     // Pomijaj kategorie "Plany oszczędnościowe" na wykresie kołowym
                     if ($category->name_start == "Plany oszczędnościowe") {
@@ -239,24 +239,23 @@ class ReportController extends Controller
                 // Sprawdź, czy początek tygodnia wchodzi w inny rok
                 if ($startOfWeek->format('Y') != $selectedYear) {
                     // Jeśli tak, ustaw zakres dat na początek stycznia obecnego roku
-                    $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->isoFormat('D MMM') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfWeek()->isoFormat('D MMM');
+                    $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->isoFormat('D') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfWeek()->isoFormat('D MMM');
                 } elseif ($startOfWeek->format('m') < $month) {
-                    $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->startOfMonth()->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
+                    $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->startOfMonth()->isoFormat('D') . ' - ' . $endOfWeek->isoFormat('D MMM');
                 } elseif ($endOfWeek->format('m') > $month) {
-                    $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfMonth()->isoFormat('D MMM');
+                    $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfMonth()->isoFormat('D MMM');
                 } else {
-                    $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D MMM') . ' - ' . $endOfWeek->isoFormat('D MMM');
+                    $transactionsByWeek[$month][$week]['week_dates'] = $startOfWeek->isoFormat('D') . ' - ' . $endOfWeek->isoFormat('D MMM');
                 }
             }
         }
-        //dd($monthTotalsSubCat);
 
         return [
             'transactionsByMonth' => $transactionsByMonth,
             'transactionsByWeek' => $transactionsByWeek,
             'weekTotals' => $weekTotals,
             'categories' => $categories,
-            'monthTotals' => $monthTotals,
+            'monthTotalsCat' => $monthTotalsCat,
             'monthTotalsSubCat' => $monthTotalsSubCat,
         ];
     }
@@ -283,5 +282,24 @@ class ReportController extends Controller
             Log::error('ReportController. Błąd w metodzie generateMonthlyReport(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
         }
+    }
+    public function monthlyReportPDF(Request $request)
+    {
+        $selectedYear = $request->input('selected_year');
+        $startMonth = $request->input('start_date');
+        $endMonth = $request->input('end_date');
+        $selectedCategories = $request->input('categories', []);
+
+        $startDate = Carbon::create($selectedYear, $startMonth, 1);
+        $endDate = Carbon::create($selectedYear, $endMonth, 1)->endOfMonth();
+        $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
+
+        $monthStartName = \Carbon\Carbon::createFromFormat('m', $startMonth)->locale('pl')->isoFormat('MMMM');
+        $monthEndName = \Carbon\Carbon::createFromFormat('m', $endMonth)->locale('pl')->isoFormat('MMMM');
+        $now = Carbon::now()->format('Y-m-d');
+        $name = "$now Budżet domowy - zestawienie miesięczne $selectedYear $monthStartName-$monthEndName";
+
+        $pdf = PDF::loadView('Report.monthReportPDF', $data)->setPaper('a4', 'portrait');
+        return $pdf->download("$name.pdf");
     }
 }
