@@ -172,6 +172,23 @@ class ReportController extends Controller
             return Carbon::parse($transaction->date_transaction)->format('m');
         });
 
+        $messages = [];
+
+        // Sprawdź każdy miesiąc w zakresie
+        foreach (range($startMonth, $endMonth) as $month) {
+            $month = str_pad($month, 2, '0', STR_PAD_LEFT); // formatowanie na dwie cyfry
+
+            if (!isset($transactionsByMonth[$month]) || $transactionsByMonth[$month]->isEmpty()) {
+                $msg = Carbon::createFromDate($selectedYear, $month, 1)->isoFormat('MMMM') . ' ' . $selectedYear . ' - brak transakcji.';
+                $messages[] = $msg;
+            }
+        }
+
+        // Zapisujemy wszystkie komunikaty w sesji
+        if (!empty($messages)) {
+            session()->put('yearReportMessages', $messages);
+        }
+
 
         // Suma kwot na daną kategorię w poszczególnych miesiącach
         $monthTotalsCat = [];
