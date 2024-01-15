@@ -73,4 +73,5 @@ Route::get('/generate/report/year', [ReportController::class, 'generateYearlyRep
 Route::get('/generate/report/year/pdf', [ReportController::class, 'yearlyReportPDF'] )->name('generate.yearly.report.pdf');
 Route::get('/generate/report/month', [ReportController::class, 'generateMonthlyReport'] )->name('generate.monthly.report');
 Route::get('/generate/report/month/pdf', [ReportController::class, 'monthlyReportPDF'] )->name('generate.monthly.report.pdf');
+Route::get('/generate/report/week', [ReportController::class, 'generateWeeklyReport'] )->name('generate.weekly.report');
 

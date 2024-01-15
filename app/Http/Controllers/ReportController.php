@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use App\Models\Transaction;
 use App\Models\Category;
 use App\Models\SubCategory;
@@ -105,7 +106,7 @@ class ReportController extends Controller
 
         // Zapisujemy wszystkie komunikaty w sesji
         if (!empty($messages)) {
-            session()->put('yearReportMessages', $messages);
+            session()->put('ReportMessages', $messages);
         }
 
         return [
@@ -186,7 +187,7 @@ class ReportController extends Controller
 
         // Zapisujemy wszystkie komunikaty w sesji
         if (!empty($messages)) {
-            session()->put('yearReportMessages', $messages);
+            session()->put('ReportMessages', $messages);
         }
 
 
@@ -290,7 +291,7 @@ class ReportController extends Controller
 
             if ($endDate->gte($startDate)) {
                 $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
-
+               // dd($data);
                 return view('Report.monthReport', $data);
             } else {
                 return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
@@ -300,6 +301,7 @@ class ReportController extends Controller
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
         }
     }
+
     public function monthlyReportPDF(Request $request)
     {
         $selectedYear = $request->input('selected_year');
@@ -318,5 +320,115 @@ class ReportController extends Controller
 
         $pdf = PDF::loadView('Report.monthReportPDF', $data)->setPaper('a4', 'portrait');
         return $pdf->download("$name.pdf");
+    }
+
+    private function fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories)
+    {
+        $transactions = Transaction::with('category', 'subcategory.category')
+            ->whereBetween('date_transaction', [$startDate, $endDate])
+            ->where('id_user', Auth::id())
+            ->whereIn('id_category', $selectedCategories)
+            ->orderBy('date_transaction', 'asc')
+            ->get();
+
+        $categories = Category::where('id_user', Auth::id())
+            ->whereIn('id_category', $selectedCategories)
+            ->get();
+
+        // Podział transakcji na tygodnie
+        $transactionsByWeek = $transactions->groupBy(function ($transaction) {
+            return Carbon::parse($transaction->date_transaction)->format('Y-\WW');
+        });
+
+        // Podział transakcji w tygodniu na dni
+        $transactionsByDay = $transactionsByWeek->map(function ($weekTransactions) {
+            return $weekTransactions->groupBy(function ($transaction) {
+                return Carbon::parse($transaction->date_transaction)->format('Y-m-d');
+            });
+        });
+
+        // Zsumowanie dziennej kwoty wydatków
+        $dayTotals = $transactionsByDay->map(function ($weekTransactions) {
+            return $weekTransactions->map(function ($dayTransactions) {
+                return $dayTransactions->sum('amount_transaction');
+            });
+        });
+
+        // Zsumowanie tygodniowej kwoty wydatków ze względu na kategorie
+        $weekTotalsCat = $transactionsByWeek->flatMap(function ($weekTransactions) use ($categories) {
+            $weekTotals = [];
+            foreach ($categories as $category) {
+                $categoryTransactions = $weekTransactions->where('id_category', $category->id_category);
+                $categorySum = $categoryTransactions->sum('amount_transaction');
+
+                // Dodaj do $weekTotalsCat tylko, jeśli suma nie jest równa 0
+                if ($categorySum != 0) {
+                    // Przypisz sumę do nazwy kategorii zamiast do id
+                    $weekTotals[$category->name_category] = $categorySum;
+                }
+            }
+            return $weekTotals;
+        });
+
+        // Zsumowanie tygodniowej kwoty wydatków ze względu na podkategorie
+        $weekTotalsSubCat = $transactionsByWeek->flatMap(function ($weekTransactions) use ($categories) {
+            $weekTotals = [];
+            foreach ($categories as $category) {
+                $categoryTransactions = $weekTransactions->where('category.id_category', $category->id_category);
+                $subCategories = $category->subcategories;
+                foreach ($subCategories as $subCategory) {
+                    $subCategoryTransactions = $categoryTransactions->where('id_subCategory', $subCategory->id_subCategory);
+                    $subCategorySum = $subCategoryTransactions->sum('amount_transaction');
+                    if ($subCategorySum != 0) {
+                        $weekTotals[$category->name_category][$subCategory->name_subCategory] = $subCategorySum;
+                    }
+                }
+
+                // Dodaj sumę dla transakcji bez przypisanej podkategorii
+                $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
+                $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
+                if ($amountWithoutSubCategory != 0) {
+                    $weekTotals[$category->name_category]['Nie podano kategorii'] = $amountWithoutSubCategory;
+                }
+            }
+            return $weekTotals;
+        });
+
+        return [
+            'categories' => $categories,
+            'transactionsByWeek' => $transactionsByWeek,
+            'transactionsByDay' => $transactionsByDay,
+            'dayTotals' => $dayTotals,
+            'weekTotalsCat' => $weekTotalsCat,
+            'weekTotalsSubCat' => $weekTotalsSubCat,
+        ];
+    }
+
+    public function generateWeeklyReport(Request $request)
+    {
+        try {
+            // Pobranie danych z formularza
+            $startWeek = $request->input('startWeek');
+            $endWeek = $request->input('endWeek');
+            $selectedCategories = $request->input('categories');
+
+            // Sprawdzenie poprawności zakresu dat
+            // Sprawdzenie poprawności zakresu dat
+            $startDate = CarbonImmutable::parse($startWeek);
+            $endDate = CarbonImmutable::parse($endWeek)->endOfWeek();
+
+            if ($endDate->lt($startDate)) {
+                // Data końcowa jest wcześniejsza niż data początkowa
+                return redirect()->back()->with('error', 'Data końcowa nie może być wcześniejsza niż data początkowa!');
+            }
+
+            // Tutaj możesz wykorzystać pobrane dane do generowania raportu
+            $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
+            //dd($data);
+            return view('Report.weekReport', $data);
+        } catch (\Exception $e) {
+            Log::error('ReportController. Błąd w metodzie generateWeeklyReport(): ' . $e->getMessage());
+            return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
+        }
     }
 }

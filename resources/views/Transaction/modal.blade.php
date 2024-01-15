@@ -145,8 +145,47 @@
 <!-- Modal dla raportu tygodniowego -->
 <div class="modal fade" id="weeklyReportModal" tabindex="-1" aria-labelledby="weeklyReportModalLabel"
     aria-hidden="true">
-    <!-- Kod formularza dla raportu tygodniowego -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="weeklyReportModalLabel">Raport Tygodniowy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Kod formularza dla raportu tygodniowego -->
+                <form action="{{ route('generate.weekly.report') }}" method="GET">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="startWeek">Wybierz początkowy tydzień:</label>
+                        <input type="week" id="startWeek" name="startWeek" class="form-control"
+                            value="{{ now()->format('Y-\WW') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endWeek">Wybierz końcowy tydzień:</label>
+                        <input type="week" id="endWeek" name="endWeek" class="form-control"
+                            value="{{ now()->format('Y-\WW') }}" required>
+                    </div>
+                    <!-- Check boxy z nazwami kategorii -->
+                    <div class="col-md-12">
+                        <label><b>Kategorie:</b></label>
+                        <div class="scrollable-checkboxes-year">
+                            @foreach ($categories as $category)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="categories[]"
+                                        value="{{ $category->id_category }}"
+                                        {{ in_array($category->id_category, $selectedCategories) ? 'checked' : '' }}>
+                                    <label class="form-check-label">{{ $category->name_category }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generuj raport</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

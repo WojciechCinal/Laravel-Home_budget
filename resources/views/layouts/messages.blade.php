@@ -52,14 +52,14 @@
     @endphp
 @endif
 
-@if (session()->has('yearReportMessages'))
-    @foreach (session('yearReportMessages') as $message)
+@if (session()->has('ReportMessages'))
+    @foreach (session('ReportMessages') as $message)
         <div class="alert alert-primary alert-dismissible fade show" role="alert">
             <strong><i class="bi bi-info-circle-fill" style="font-size: 1rem"></i> {{ $message }} </strong>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endforeach
     @php
-        session()->forget('yearReportMessages');
+        session()->forget('ReportMessages');
     @endphp
 @endif
