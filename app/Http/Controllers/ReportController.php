@@ -246,17 +246,15 @@ class ReportController extends Controller
             }
         }
 
-        // Dodanie informacji o zakresie dat dla każdego tygodnia do istniejącej struktury danych
+        // Dodanie informacji o zakresie dat dla każdego tygodnia
         foreach ($transactionsByWeek as $month => $weeks) {
             foreach ($weeks as $week => $transactionsInWeek) {
-                // Pobierz pierwszą transakcję w tygodniu, aby uzyskać datę dla początku tygodnia
                 $firstTransaction = $transactionsInWeek->first();
                 $startOfWeek = Carbon::parse($firstTransaction->date_transaction)->startOfWeek();
                 $endOfWeek = $startOfWeek->copy()->endOfWeek();
 
-                // Sprawdź, czy początek tygodnia wchodzi w inny rok
+                // Sformatowanie dat (miesiąc jest nadrzędny w porównaniu do tygodnia)
                 if ($startOfWeek->format('Y') != $selectedYear) {
-                    // Jeśli tak, ustaw zakres dat na początek stycznia obecnego roku
                     $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->isoFormat('D') . ' - ' . Carbon::createFromDate($selectedYear, $month, 1)->endOfWeek()->isoFormat('D MMM');
                 } elseif ($startOfWeek->format('m') < $month) {
                     $transactionsByWeek[$month][$week]['week_dates'] = Carbon::createFromDate($selectedYear, $month, 1)->startOfMonth()->isoFormat('D') . ' - ' . $endOfWeek->isoFormat('D MMM');
@@ -291,7 +289,7 @@ class ReportController extends Controller
 
             if ($endDate->gte($startDate)) {
                 $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
-               // dd($data);
+                // dd($data);
                 return view('Report.monthReport', $data);
             } else {
                 return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
@@ -355,7 +353,7 @@ class ReportController extends Controller
         });
 
         // Zsumowanie tygodniowej kwoty wydatków ze względu na kategorie
-        $weekTotalsCat = $transactionsByWeek->flatMap(function ($weekTransactions) use ($categories) {
+        $weekTotalsCat = $transactionsByWeek->map(function ($weekTransactions) use ($categories) {
             $weekTotals = [];
             foreach ($categories as $category) {
                 $categoryTransactions = $weekTransactions->where('id_category', $category->id_category);
@@ -363,7 +361,6 @@ class ReportController extends Controller
 
                 // Dodaj do $weekTotalsCat tylko, jeśli suma nie jest równa 0
                 if ($categorySum != 0) {
-                    // Przypisz sumę do nazwy kategorii zamiast do id
                     $weekTotals[$category->name_category] = $categorySum;
                 }
             }
@@ -371,7 +368,7 @@ class ReportController extends Controller
         });
 
         // Zsumowanie tygodniowej kwoty wydatków ze względu na podkategorie
-        $weekTotalsSubCat = $transactionsByWeek->flatMap(function ($weekTransactions) use ($categories) {
+        $weekTotalsSubCat = $transactionsByWeek->map(function ($weekTransactions) use ($categories) {
             $weekTotals = [];
             foreach ($categories as $category) {
                 $categoryTransactions = $weekTransactions->where('category.id_category', $category->id_category);
@@ -394,6 +391,7 @@ class ReportController extends Controller
             return $weekTotals;
         });
 
+
         return [
             'categories' => $categories,
             'transactionsByWeek' => $transactionsByWeek,
@@ -407,22 +405,18 @@ class ReportController extends Controller
     public function generateWeeklyReport(Request $request)
     {
         try {
-            // Pobranie danych z formularza
             $startWeek = $request->input('startWeek');
             $endWeek = $request->input('endWeek');
             $selectedCategories = $request->input('categories');
 
             // Sprawdzenie poprawności zakresu dat
-            // Sprawdzenie poprawności zakresu dat
             $startDate = CarbonImmutable::parse($startWeek);
             $endDate = CarbonImmutable::parse($endWeek)->endOfWeek();
 
             if ($endDate->lt($startDate)) {
-                // Data końcowa jest wcześniejsza niż data początkowa
                 return redirect()->back()->with('error', 'Data końcowa nie może być wcześniejsza niż data początkowa!');
             }
 
-            // Tutaj możesz wykorzystać pobrane dane do generowania raportu
             $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
             //dd($data);
             return view('Report.weekReport', $data);
