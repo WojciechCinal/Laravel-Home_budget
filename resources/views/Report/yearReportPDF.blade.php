@@ -44,6 +44,7 @@
             border: 1px solid #333;
             padding: 8px;
             text-align: left;
+
         }
 
         li {
@@ -54,53 +55,24 @@
             page-break-after: always;
         }
 
-        .category-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .category-table th,
-        .category-table td {
-            text-align: left;
-            padding: 8px;
-        }
-
-        .category-table th {
-            background-color: #4a4a4a;
+        th {
+            background-color: #2c2c2c;
             color: #ffffff;
+            border-right: 1px solid #dfdfdf;
+            text-align: center;
         }
 
         .gray {
             background-color: #e7e7e7;
-            /* Szare tło dla parzystych */
         }
 
-        .month-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .month-table th,
-        .month-table td {
-            text-align: center;
-            padding: 8px;
-        }
-
-        .month-table th {
-            background-color: #2c2c2c;
-            color: #f8f8f8;
-            border-right: 1px solid #e5e5e5;
-        }
-
-        .month-table th:last-child {
+        th:last-child {
             background-color: #2c2c2c;
             color: #f8f8f8;
             border-right: 1px solid #333;
         }
 
-        .month-table th:first-child {
+        th:first-child {
             font-weight: bold;
         }
 
@@ -109,7 +81,7 @@
             font-weight: bold;
         }
 
-        .month-table .catName {
+        .catName {
             font-style: italic;
             text-align: left;
         }
@@ -129,7 +101,7 @@
                 <hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
                 <h3>{{ $year }} - zestawienie kategorii i podkategorii.</h3>
-                <table class="category-table">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Kategoria</th>
@@ -141,7 +113,7 @@
                         @foreach ($subcategoryYearlyTotal[$year] as $category => $subcategories)
                             @if ($loop->even)
                                 <tr class="gray">
-                                    <td>{{ $category }}</td>
+                                    <td class="catName">{{ $category }}</td>
                                     <td style="text-align: center;"> <b>{{ array_sum($subcategories) }} PLN</b></td>
                                     <td>
                                         @foreach ($subcategories as $subcategory => $total)
@@ -152,7 +124,7 @@
                                 </tr>
                             @else
                                 <tr>
-                                    <td>{{ $category }}</td>
+                                    <td class="catName">{{ $category }}</td>
                                     <td style="text-align: center;"><b>{{ array_sum($subcategories) }} PLN</b></td>
                                     <td>
                                         @foreach ($subcategories as $subcategory => $total)
@@ -182,7 +154,7 @@
             <h1>{{ $year }} r. - zestawienie roczne.</h1>
             <hr style="height:2px;border-width:0;color:gray;background-color:gray">
             <h3>{{ $year }} - I połowa roku - miesięczne zestawienie kategorii.</h3>
-            <table class="month-table">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>{{ $year }} r.</th>
@@ -204,7 +176,7 @@
                                     @php
                                         $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
                                     @endphp
-                                    <td>
+                                    <td style="text-align: center;">
                                         {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
                                     </td>
                                 @endfor
@@ -216,7 +188,7 @@
                                     @php
                                         $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
                                     @endphp
-                                    <td>
+                                    <td style="text-align: center;">
                                         {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
                                     </td>
                                 @endfor
@@ -229,7 +201,7 @@
                             @php
                                 $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
                             @endphp
-                            <td>
+                            <td style="text-align: center;">
                                 {{ $monthlyTotalExpenses[$year][$monthKey] ?? '-' }}
                             </td>
                         @endfor
@@ -241,7 +213,7 @@
             <h1>{{ $year }} r. - zestawienie roczne.</h1>
             <hr style="height:2px;border-width:0;color:gray;background-color:gray">
             <h3>{{ $year }} - II połowa roku - miesięczne zestawienie kategorii.</h3>
-            <table class="month-table">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>{{ $year }} r.</th>
@@ -263,7 +235,7 @@
                                     @php
                                         $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
                                     @endphp
-                                    <td>
+                                    <td style="text-align: center;">
                                         {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
                                     </td>
                                 @endfor
@@ -275,7 +247,7 @@
                                     @php
                                         $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
                                     @endphp
-                                    <td>
+                                    <td style="text-align: center;">
                                         {{ $yearlyExpenses[$year][$monthKey][$category->name_category] ?? '-' }}
                                     </td>
                                 @endfor
@@ -288,7 +260,7 @@
                             @php
                                 $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
                             @endphp
-                            <td>
+                            <td style="text-align: center;">
                                 {{ $monthlyTotalExpenses[$year][$monthKey] ?? '-' }}
                             </td>
                         @endfor

@@ -134,7 +134,7 @@ class ReportController extends Controller
 
             $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
 
-            return view('Report.yearReport', $data);
+            return view('Report.yearReportPDF', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
@@ -290,7 +290,7 @@ class ReportController extends Controller
             if ($endDate->gte($startDate)) {
                 $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
                 // dd($data);
-                return view('Report.monthReport', $data);
+                return view('Report.monthReportPDF', $data);
             } else {
                 return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
             }
@@ -419,7 +419,7 @@ class ReportController extends Controller
 
             $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
             //dd($data);
-            return view('Report.weekReport', $data);
+            return view('Report.weekReportPDF', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateWeeklyReport(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');

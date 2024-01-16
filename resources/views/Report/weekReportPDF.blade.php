@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Monthly Report PDF</title>
+    <title>Weekly Report PDF</title>
 
     <style>
         body {
@@ -89,24 +89,25 @@
 </head>
 
 <body>
-    @php
-        $year = request('selected_year');
-    @endphp
-    @foreach ($transactionsByMonth as $month => $transactionsInMonth)
+    @foreach ($transactionsByWeek as $week => $transactionsInWeek)
         @php
-            $monthName = \Carbon\Carbon::createFromFormat('m', $month)
-                ->locale('pl')
-                ->isoFormat('MMMM');
 
-            $monthTotal = 0;
-            foreach ($transactionsInMonth as $transaction) {
-                $monthTotal += $transaction->amount_transaction;
+            $weekTotal = 0;
+            foreach ($transactionsInWeek as $transaction) {
+                $weekTotal += $transaction->amount_transaction;
             }
         @endphp
-        <h1>{{ $year }} r. - zestawienie miesięczne.</h1>
+        @php
+            $carbonWeek = \Carbon\Carbon::parse($week);
+            $year = $carbonWeek->format('Y');
+            $weekNumber = $carbonWeek->format('W');
+            $startDay = $carbonWeek->startOfWeek()->translatedFormat('d M');
+            $endDay = $carbonWeek->endOfWeek()->translatedFormat('d M');
+        @endphp
+        <h1>{{ $year }}r. tydz. {{ $weekNumber }} - zestawienie tygodniowe.</h1>
         <hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
-        <h3>{{ $monthName }} {{ $year }} - zestawienie kategorii i podkategorii.</h3>
+        <h3>Tydz. {{ $weekNumber }} {{ $year }} - zestawienie kategorii i podkategorii.</h3>
         <table class="table">
             <thead>
                 <tr>
@@ -116,9 +117,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($monthTotalsCat[$month] ?? [] as $categoryName => $categorySum)
+                @foreach ($weekTotalsCat[$week] ?? [] as $categoryName => $categorySum)
                     @php
-                        $subCategories = $monthTotalsSubCat[$month][$categoryName] ?? [];
+                        $subCategories = $weekTotalsSubCat[$week][$categoryName] ?? [];
                     @endphp
 
                     @if ($loop->even)
@@ -148,26 +149,28 @@
                     @endif
                 @endforeach
                 <tr class="tfoot" style="font-size: 16px;">
-                    <td>Wydatki miesięczne:</td>
+                    <td>Wydatki tygodniowe:</td>
                     <td style="text-align: center; font-style: italic;">
-                        {{ $monthTotal }} PLN
+                        {{$weekTotal}} PLN
                     </td>
                     <td></td>
                 </tr>
             </tbody>
         </table>
         <div class="page-break"></div>
-        <h1>{{ $year }} r. - zestawienie miesięczne.</h1>
+        <h1>{{ $year }}r. tydz. {{ $weekNumber }} - zestawienie tygodniowe.</h1>
         <hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
-        <h3>{{ $monthName }} {{ $year }} - tygodniowe zestawienie kategorii.</h3>
+        <h3>Tydz. {{ $weekNumber }} {{ $year }} - zestawienie kategorii i podkategorii.</h3>
         <table class="table">
             <thead>
                 <tr>
-                    <th>{{ $monthName }}
-                        {{ $year }}</th>
-                    @foreach ($transactionsByWeek[$month] as $week)
-                        <th>{{ $week['week_dates'] }}</th>
+                    <th>Tydz. {{ $weekNumber }}: {{$startDay}} - {{$endDay}}</th>
+                    @foreach ($transactionsByDay[$week]->keys() as $day)
+                        @php
+                        $dayName = \Carbon\Carbon::parse($day)->format('d');
+                        @endphp
+                        <th>{{ $dayName }}</th>
                     @endforeach
                 </tr>
             </thead>
@@ -176,14 +179,14 @@
                     @if ($loop->even)
                         <tr class="gray">
                             <td class="catName">{{ $category->name_category }}</td>
-                            @foreach ($transactionsByWeek[$month] as $week => $transactionsInWeek)
-                                @if ($transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
+                            @foreach ($transactionsByDay[$week] as $day => $transactionsInDay)
+                                @if ($transactionsInDay->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
                                     <td style="text-align: center;">
                                         -
                                     </td>
                                 @else
                                     <td style="text-align: center;">
-                                        {{ $transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
+                                        {{ $transactionsInDay->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
                                             0 }}
                                     </td>
                                 @endif
@@ -192,14 +195,14 @@
                     @else
                         <tr>
                             <td class="catName">{{ $category->name_category }}</td>
-                            @foreach ($transactionsByWeek[$month] as $week => $transactionsInWeek)
-                                @if ($transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
+                            @foreach ($transactionsByDay[$week] as $day => $transactionsInDay)
+                                @if ($transactionsInDay->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
                                     <td style="text-align: center;">
                                         -
                                     </td>
                                 @else
                                     <td style="text-align: center;">
-                                        {{ $transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
+                                        {{ $transactionsInDay->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
                                             0 }}
                                     </td>
                                 @endif
@@ -209,8 +212,8 @@
                 @endforeach
                 <tr class="tfoot">
                     <td>Łącznie (PLN):</td>
-                    @foreach ($weekTotals[$month] as $weekTotal)
-                        <td style="text-align: center;">{{ $weekTotal }}</td>
+                    @foreach ($dayTotals[$week] as $dayTotal)
+                        <td style="text-align: center;">{{ $dayTotal }}</td>
                     @endforeach
                 </tr>
             </tbody>
