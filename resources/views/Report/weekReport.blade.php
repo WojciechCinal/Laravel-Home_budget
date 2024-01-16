@@ -5,6 +5,17 @@
         <div id="messages">
             @include('layouts.messages')
         </div>
+        <form id="weeklyReportForm" action="{{ route('generate.weekly.report.pdf') }}" method="GET">
+            <input type="hidden" name="startWeek" value="{{ request()->input('startWeek', now()->format('Y-\WW')) }}">
+            <input type="hidden" name="endWeek" value="{{ request()->input('endWeek', now()->addWeeks(1)->format('Y-\WW')) }}">
+
+            @foreach (request()->input('categories', []) as $category)
+                <input type="hidden" name="categories[]" value="{{ $category }}">
+            @endforeach
+
+            <button type="submit" class="btn btn-primary">Pobierz raport</button>
+        </form>
+
         @foreach ($transactionsByWeek as $week => $weekTransactions)
             <div class="accordion mt-3" id="accordion_{{ $week }}">
                 <div class="accordion-item">

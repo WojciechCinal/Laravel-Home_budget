@@ -134,7 +134,7 @@ class ReportController extends Controller
 
             $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
 
-            return view('Report.yearReportPDF', $data);
+            return view('Report.yearReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
@@ -290,7 +290,7 @@ class ReportController extends Controller
             if ($endDate->gte($startDate)) {
                 $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
                 // dd($data);
-                return view('Report.monthReportPDF', $data);
+                return view('Report.monthReport', $data);
             } else {
                 return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
             }
@@ -419,10 +419,36 @@ class ReportController extends Controller
 
             $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
             //dd($data);
-            return view('Report.weekReportPDF', $data);
+            return view('Report.weekReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateWeeklyReport(): ' . $e->getMessage());
             return redirect()->route('transactions.index')->with('error', 'Wystąpił błąd podczas tworzenia raportu');
         }
+    }
+
+    public function weeklyReportPDF(Request $request)
+    {
+        $startWeek = $request->input('startWeek');
+        $endWeek = $request->input('endWeek');
+        $selectedCategories = $request->input('categories');
+
+        // Sprawdzenie poprawności zakresu dat
+        $startDate = CarbonImmutable::parse($startWeek);
+        $endDate = CarbonImmutable::parse($endWeek)->endOfWeek();
+
+        if ($endDate->lt($startDate)) {
+            return redirect()->back()->with('error', 'Data końcowa nie może być wcześniejsza niż data początkowa!');
+        }
+
+        $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
+
+        // $monthStartName = \Carbon\Carbon::createFromFormat('m', $startMonth)->locale('pl')->isoFormat('MMMM');
+        // $monthEndName = \Carbon\Carbon::createFromFormat('m', $endMonth)->locale('pl')->isoFormat('MMMM');
+        $now = Carbon::now()->format('Y-m-d');
+        $name = "$now Budżet domowy - zestawienie tygodniowe $startWeek - $endWeek";
+
+        $pdf = PDF::loadView('Report.weekReportPDF', $data)->setPaper('a4', 'portrait');
+
+        return $pdf->download("$name.pdf");
     }
 }
