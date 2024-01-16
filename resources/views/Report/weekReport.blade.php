@@ -12,7 +12,17 @@
                         <button class="accordion-button bg-info" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTable_{{ $week }}" aria-expanded="true"
                             aria-controls="collapseTable_{{ $week }}">
-                            <h4><b>{{ $week }} - Raport tygodniowy</b></h4>
+                            @php
+                                $carbonWeek = \Carbon\Carbon::parse($week);
+                                $year = $carbonWeek->format('Y');
+                                $weekNumber = $carbonWeek->format('W');
+                                $startDay = $carbonWeek->startOfWeek()->translatedFormat('d M');
+                                $endDay = $carbonWeek->endOfWeek()->translatedFormat('d M');
+                            @endphp
+
+                            <h4><b>{{ $year }}r. tydz. {{ $weekNumber }}: {{ $startDay }} -
+                                    {{ $endDay }}</b></h4>
+
                         </button>
                     </h2>
                     <div id="collapseTable_{{ $week }}" class="accordion-collapse collapse show"
@@ -23,7 +33,8 @@
                                     <tr>
                                         <th>Kategoria</th>
                                         @foreach ($transactionsByDay[$week]->keys() as $day)
-                                            <th class="text-center">{{ \Carbon\Carbon::parse($day)->format('d M') }}</th>
+                                            <th class="text-center">
+                                                {{ \Carbon\Carbon::parse($day)->translatedFormat('d M') }}</th>
                                         @endforeach
                                     </tr>
                                 </thead>
