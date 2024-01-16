@@ -335,7 +335,7 @@ class ReportController extends Controller
 
         // Podział transakcji na tygodnie
         $transactionsByWeek = $transactions->groupBy(function ($transaction) {
-            return Carbon::parse($transaction->date_transaction)->format('Y-\WW');
+            return Carbon::parse($transaction->date_transaction)->startOfWeek()->format('Y-\WW');
         });
 
         // Podział transakcji w tygodniu na dni
