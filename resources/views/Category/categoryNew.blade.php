@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            Dodaj nową kategorię.
+                            <h4 class="mt-2">Dodaj nową kategorię.</h4>
                         </div>
                         <div>
                             <a href="{{ url()->previous() }}" class="btn btn-success btn-sm">
@@ -18,16 +18,35 @@
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('category.store') }}">
+                        <form method="POST" action="{{ route('category.store') }}" class="needs-validation" novalidate>
                             @csrf
-
-                            <div class="form-group">
-                                <label for="category_name">Nazwa kategorii:</label>
-                                <input type="text" class="form-control" id="category_name" name="category_name">
+                            <div class="mb-3">
+                                <label for="category_name" class="form-label">Nazwa kategorii</label>
+                                <input type="text" class="form-control" id="category_name"
+                                    name="category_name" required minlength="3" maxlength="60"
+                                    oninput="this.value = this.value.trim()">
+                                <div class="invalid-feedback">Podaj nazwę nowej kategorii (od 3 do 60 znaków).</div>
                             </div>
-
-                            <button type="submit" class="btn btn-primary">Dodaj kategorię</button>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Utwórz kategorię</button>
+                            </div>
                         </form>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var forms = document.querySelectorAll('.needs-validation');
+
+                                Array.prototype.slice.call(forms).forEach(function(form) {
+                                    form.addEventListener('submit', function(event) {
+                                        if (!form.checkValidity()) {
+                                            event.preventDefault();
+                                            event.stopPropagation();
+                                        }
+
+                                        form.classList.add('was-validated');
+                                    }, false);
+                                });
+                            });
+                        </script>
                     </div>
                 </div>
             </div>

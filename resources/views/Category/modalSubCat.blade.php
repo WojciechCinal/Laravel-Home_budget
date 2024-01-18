@@ -29,7 +29,12 @@
             $('#editSubCategoryModal').modal('show');
 
             $('#saveSubCategoryChanges').off('click').on('click', function() {
-                let newName = $('#newSubCategoryName').val();
+                let newName = $('#newSubCategoryName').val().trim();
+
+                if (newName.length < 3 || newName.length > 60) {
+                alert('Nazwa podkategorii powinna mieć od 3 do 60 znaków.');
+                return;
+            }
 
                 if (newName !== null && newName !== '') {
                     let csrfToken = $('meta[name="csrf-token"]').attr('content');

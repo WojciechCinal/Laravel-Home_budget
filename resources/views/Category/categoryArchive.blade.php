@@ -7,7 +7,7 @@
                 <div id="messages">@include('layouts.messages')</div>
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
-                        <span class="align-middle">{{ __('Archiwum kategorii') }}</span>
+                        <h4 class="mt-2">Archiwum kategorii</h4>
                         <div class="ms-auto">
                             <a href="{{ route('category.list') }}" class="btn btn-success btn-sm">
                                 <i class="bi bi-escape align-middle" style="font-size: 1rem;"></i>

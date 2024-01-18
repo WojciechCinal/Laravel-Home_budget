@@ -31,7 +31,13 @@
     $(document).ready(function() {
         $('#saveCategoryChanges').on('click', function() {
             let categoryId = $('#editCategoryModal').data('category-id');
-            let newCategoryName = $('#newCategoryName').val();
+            let newCategoryName = $('#newCategoryName').val().trim();
+
+            // Walidacja - sprawdzenie długości nazwy kategorii
+            if (newCategoryName.length < 3 || newCategoryName.length > 60) {
+                alert('Nazwa kategorii powinna mieć od 3 do 60 znaków.');
+                return;
+            }
 
             if (newCategoryName !== null && newCategoryName !== '') {
                 let csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -72,7 +78,6 @@
                 });
             }
         });
-
         $('.edit-category').on('click', function() {
             let categoryId = $(this).data('id');
             let currentCategoryName = $(this).closest('tr').find('td:first').text().trim();

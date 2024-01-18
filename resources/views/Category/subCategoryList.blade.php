@@ -8,7 +8,7 @@
                 <div id="messages">@include('layouts.messages')</div>
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
-                        <span class="align-middle "><b>{{ $category->name_category }}</b></span>
+                        <span class="align-middle "><h4 class="mt-2">{{ $category->name_category }}</h4></span>
                         <div class="ms-auto">
                             <a href="{{ route('subCategory.new', ['id' => $category->id_category]) }}"
                                 class="btn btn-success btn-sm mx-1 my-1">

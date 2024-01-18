@@ -9,7 +9,7 @@
                 <div class="card">
 
                     <div class="card-header d-flex align-items-center">
-                        <span class="align-middle">{{ __('Moje kategorie') }}</span>
+                        <h4 class="mt-2">Moje kategorie</h4>
                         <div class="ms-auto">
                             <a href="{{ route('create.category') }}" class="btn btn-success btn-sm mx-2">
                                 <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa

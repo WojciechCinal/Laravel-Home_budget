@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            Dodaj nową podkategorię do: {{ $category->name_category }}
+                            <h4 class="mt-2"> Dodaj nową podkategorię do:<b> {{ $category->name_category }}</b></h4>
                         </div>
                         <div>
                             <a href="{{ route('subCategory.list', ['id' => $category->id_category]) }}"
@@ -19,17 +19,37 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('subCategory.store') }}" method="POST">
+                        <form action="{{ route('subCategory.store') }}" method="POST" class="needs-validation" novalidate>
                             @csrf
                             <input type="hidden" name="category_id" value="{{ $category->id_category }}">
 
                             <div class="mb-3">
                                 <label for="name_subCategory" class="form-label">Nazwa podkategorii</label>
-                                <input type="text" class="form-control" id="name_subCategory" name="name_subCategory">
+                                <input type="text" class="form-control" id="name_subCategory"
+                                    name="name_subCategory" required minlength="3" maxlength="60"
+                                    oninput="this.value = this.value.trim()">
+                                <div class="invalid-feedback">Podaj nazwę nowej podkategorii (od 3 do 60 znaków).</div>
                             </div>
-
-                            <button type="submit" class="btn btn-primary">Dodaj</button>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Utwórz podkategorię</button>
+                            </div>
                         </form>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var forms = document.querySelectorAll('.needs-validation');
+
+                                Array.prototype.slice.call(forms).forEach(function(form) {
+                                    form.addEventListener('submit', function(event) {
+                                        if (!form.checkValidity()) {
+                                            event.preventDefault();
+                                            event.stopPropagation();
+                                        }
+
+                                        form.classList.add('was-validated');
+                                    }, false);
+                                });
+                            });
+                        </script>
                     </div>
                 </div>
             </div>
