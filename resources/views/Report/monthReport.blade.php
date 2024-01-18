@@ -13,10 +13,11 @@
             @foreach (request()->input('categories', []) as $category)
                 <input type="hidden" name="categories[]" value="{{ $category }}">
             @endforeach
-
-            <button type="submit" class="btn btn-primary">Pobierz raport</button>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg" id="downloadReportButton"><i
+                        class="bi bi-file-earmark-pdf-fill mt-2" style="font-size: 1.5rem;"></i> POBIERZ RAPORT</button>
+            </div>
         </form>
-
 
         @php
             $year = request('selected_year');
@@ -29,7 +30,8 @@
                         <button class="accordion-button bg-info" type="button" data-bs-toggle="collapse"
                             data-bs-target="#collapseTable_{{ $month }}" aria-expanded="true"
                             aria-controls="collapseTable_{{ $month }}">
-                            <h4><b>{{ \Carbon\Carbon::createFromFormat('m', $month)->locale('pl')->isoFormat('MMMM') }} {{$year}} - Raport miesięczny</b></h4>
+                            <h4><b>{{ \Carbon\Carbon::createFromFormat('m', $month)->locale('pl')->isoFormat('MMMM') }}
+                                    {{ $year }} - Raport miesięczny</b></h4>
                         </button>
                     </h2>
                     <div id="collapseTable_{{ $month }}" class="accordion-collapse collapse show"
@@ -49,16 +51,16 @@
                                         <tr>
                                             <td>{{ $category->name_category }}</td>
                                             @foreach ($transactionsByWeek[$month] as $week => $transactionsInWeek)
-                                            @if ($transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
-                                            <td class="text-center">
-                                                -
-                                            </td>
-                                            @else
-                                            <td class="text-center">
-                                                {{ $transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
-                                                    0 }}
-                                            </td>
-                                            @endif
+                                                @if ($transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
+                                                    <td class="text-center">
+                                                        -
+                                                    </td>
+                                                @else
+                                                    <td class="text-center">
+                                                        {{ $transactionsInWeek->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
+                                                            0 }}
+                                                    </td>
+                                                @endif
                                             @endforeach
                                         </tr>
                                     @endforeach
@@ -187,4 +189,21 @@
             </div>
         @endforeach
     </div>
+    <script>
+        $(document).ready(function() {
+            $('#downloadReportButton').click(function() {
+                $.ajax({
+                    success: function(response) {
+                        setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        alert('Wystąpił błąd podczas pobierania raportu.');
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

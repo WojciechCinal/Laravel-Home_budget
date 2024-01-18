@@ -7,13 +7,17 @@
         </div>
         <form id="weeklyReportForm" action="{{ route('generate.weekly.report.pdf') }}" method="GET">
             <input type="hidden" name="startWeek" value="{{ request()->input('startWeek', now()->format('Y-\WW')) }}">
-            <input type="hidden" name="endWeek" value="{{ request()->input('endWeek', now()->addWeeks(1)->format('Y-\WW')) }}">
+            <input type="hidden" name="endWeek"
+                value="{{ request()->input('endWeek',now()->addWeeks(1)->format('Y-\WW')) }}">
 
             @foreach (request()->input('categories', []) as $category)
                 <input type="hidden" name="categories[]" value="{{ $category }}">
             @endforeach
 
-            <button type="submit" class="btn btn-primary">Pobierz raport</button>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg" id="downloadReportButton"><i
+                        class="bi bi-file-earmark-pdf-fill mt-2" style="font-size: 1.5rem;"></i> POBIERZ RAPORT</button>
+            </div>
         </form>
 
         @foreach ($transactionsByWeek as $week => $weekTransactions)
@@ -193,7 +197,22 @@
                 </div>
             </div>
         @endforeach
-
-
     </div>
+    <script>
+        $(document).ready(function() {
+            $('#downloadReportButton').click(function() {
+                $.ajax({
+                    success: function(response) {
+                        setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        alert('Wystąpił błąd podczas pobierania raportu.');
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

@@ -5,15 +5,18 @@
         <div id="messages">
             @include('layouts.messages')
         </div>
-        <form id="yearlyReportForm" action="{{ route('generate.yearly.report.pdf') }}" method="GET" style="display: none;">
+        <form action="{{ route('generate.yearly.report.pdf') }}" method="GET">
             <input type="hidden" name="start_year" id="start_year" value="{{ request()->input('start_year', now()->year) }}">
             <input type="hidden" name="end_year" id="end_year" value="{{ request()->input('end_year', now()->year) }}">
             @foreach (request()->input('categories', []) as $category)
                 <input type="hidden" name="categories[]" value="{{ $category }}">
             @endforeach
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg" id="downloadReportButton"><i
+                        class="bi bi-file-earmark-pdf-fill mt-2" style="font-size: 1.5rem;"></i> POBIERZ RAPORT</button>
+            </div>
         </form>
 
-        <button type="button" onclick="generateYearlyReport()" class="btn btn-primary">Pobierz raport</button>
         @foreach ($yearlyExpenses as $year => $yearData)
             <div class="accordion mt-3" id="accordion_{{ $year }}">
                 <div class="accordion-item">
@@ -250,27 +253,20 @@
     </div>
 
     <script>
-        function generateYearlyReport() {
-            // Pobierz aktualne wartości parametrów z URL
-            var startYear = "{{ request()->input('start_year', now()->year) }}";
-            var endYear = "{{ request()->input('end_year', now()->year) }}";
-            var categories = {!! json_encode(request()->input('categories', [])) !!};
-
-            // Ustaw wartości parametrów w formularzu
-            document.getElementById('start_year').value = startYear;
-            document.getElementById('end_year').value = endYear;
-
-            // Ustaw wartości kategorii w formularzu
-            categories.forEach(function(category) {
-                var input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'categories[]';
-                input.value = category;
-                document.getElementById('yearlyReportForm').appendChild(input);
+        $(document).ready(function() {
+            $('#downloadReportButton').click(function() {
+                $.ajax({
+                    success: function(response) {
+                        setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        alert('Wystąpił błąd podczas pobierania raportu.');
+                    }
+                });
             });
-
-            // Wyślij formularz
-            document.getElementById('yearlyReportForm').submit();
-        }
+        });
     </script>
 @endsection
