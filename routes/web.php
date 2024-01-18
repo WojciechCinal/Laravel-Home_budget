@@ -28,6 +28,7 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+
 Route::get('/categoriesList', [CategoryController::class, 'list'])->name('category.list');
 Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);
 Route::get('/categories/create', [CategoryController::class, 'create'])->name('create.category');
@@ -54,6 +55,7 @@ Route::put('/shoppingLists/{id}', [ShoppingListController::class, 'update'])->na
 Route::get('/shoppingLists/index/new', [ShoppingListController::class, 'create'])->name('shopping-lists.new');
 Route::post('/shoppingLists/index/store', [ShoppingListController::class, 'store'])->name('shopping-lists.store');
 
+
 Route::get('/savingsPlans/index', [SavingsPlansController::class, 'index'])->name('savings-plans.index');
 Route::post('/savingsPlans/delete/{id}', [SavingsPlansController::class, 'destroy'])->name('savings-plans.destroy');
 Route::get('/savingsPlans/index/new', [SavingsPlansController::class, 'create'])->name('savings-plans.new');
@@ -62,12 +64,14 @@ Route::get('/savingsPlans/{id}/edit', [SavingsPlansController::class, 'edit'])->
 Route::put('/savingsPlans/{id}/update', [SavingsPlansController::class, 'update'])->name('savings-plans.update');
 Route::post('/savingsPlans/{id}/updateAmount', [SavingsPlansController::class, 'updateAmount'])->name('savings-plans.update-amount');
 
+
 Route::get('/transactions/index', [TransactionController::class, 'index'])->name('transactions.index');
 Route::get('/transactions/create', [TransactionController::class, 'create'])->name('transactions.create');
 Route::post('/transactions/store', [TransactionController::class, 'store'])->name('transactions.store');
 Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
 Route::put('/transactions/{transaction}/update', [TransactionController::class, 'update'])->name('transactions.update');
 Route::post('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+
 
 Route::get('/generate/report/year', [ReportController::class, 'generateYearlyReport'] )->name('generate.yearly.report');
 Route::get('/generate/report/year/pdf', [ReportController::class, 'yearlyReportPDF'] )->name('generate.yearly.report.pdf');

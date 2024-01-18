@@ -209,7 +209,7 @@ class TransactionController extends Controller
             $transaction->amount_transaction = $data['amount_transaction'];
             $transaction->date_transaction = $data['date_transaction'];
             $transaction->id_category = $data['category_id'];
-            $transaction->id_subCategory = $data['subcategory_id'];
+            $transaction->id_subCategory = $data['subcategory_id'] ?? null;
 
             $transactionDate = $data['date_transaction'];
 
