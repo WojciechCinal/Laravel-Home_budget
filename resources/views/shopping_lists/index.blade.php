@@ -3,14 +3,14 @@
 @section('content')
     @include('shopping_lists.modal')
     <div class="container">
+        <div id="messages">@include('layouts.messages')</div>
         <div class="d-flex justify-content-between align-items-center">
-            <h1>Moje listy zakupów.</h1>
+            <h3>Listy zakupów.</h3>
             <a href="{{ route('shopping-lists.new') }}" class="btn btn-success btn-sm mx-2">
                 <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa
                 lista
             </a>
         </div>
-        <div id="messages">@include('layouts.messages')</div>
         <div class="row">
             @foreach ($shoppingLists as $list)
                 <div class="col-xl-4 mt-4">

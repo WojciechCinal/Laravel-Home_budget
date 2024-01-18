@@ -5,9 +5,10 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
+                    <div id="messages">@include('layouts.messages')</div>
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            Edytuj listę zakupów
+                            <h4 class="mt-2">Edytuj listę zakupów</h4>
                         </div>
                         <div>
                             <a href="{{ route('shopping-lists.index') }}" class="btn btn-success btn-sm">
@@ -19,20 +20,43 @@
 
                     <div class="card-body">
                         <form method="POST"
-                            action="{{ route('shopping-lists.update', ['id' => $shoppingList->id_shopping_list]) }}">
+                            action="{{ route('shopping-lists.update', ['id' => $shoppingList->id_shopping_list]) }}"
+                            class="needs-validation" novalidate>
                             @csrf
                             @method('PUT')
-                            <div class="form-group">
-                                <label for="title">Tytuł</label>
-                                <input type="text" class="form-control" id="title" name="title"
-                                    value="{{ $shoppingList->title_shopping_list }}">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Tytuł</label>
+                                <input type="text" class="form-control" id="title"
+                                    name="title" value="{{ $shoppingList->title_shopping_list }}" required minlength="3" maxlength="150">
+                                <div class="invalid-feedback">Podaj tytuł listy zakupów (od 3 do 150 znaków).</div>
                             </div>
-                            <div class="form-group">
-                                <label for="description">Opis</label>
-                                <textarea class="form-control" id="description" name="description" style="height: 183px">{{ $shoppingList->description_shopping_list }}</textarea>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Opis</label>
+                                <textarea class="form-control" id="description" name="description"
+                                    required minlength="3" maxlength="2000">{{ $shoppingList->description_shopping_list }}</textarea>
+                                <div class="invalid-feedback">Wpisz produkty na listę zakupów (od 3 do 2000 znaków).</div>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-2">Zapisz zmiany</button>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+                            </div>
                         </form>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var forms = document.querySelectorAll('.needs-validation');
+
+                                Array.prototype.slice.call(forms).forEach(function(form) {
+                                    form.addEventListener('submit', function(event) {
+                                        if (!form.checkValidity()) {
+                                            event.preventDefault();
+                                            event.stopPropagation();
+                                        }
+
+                                        form.classList.add('was-validated');
+                                    }, false);
+                                });
+                            });
+                        </script>
                     </div>
                 </div>
             </div>

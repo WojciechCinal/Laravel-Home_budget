@@ -20,7 +20,7 @@
 
 <div class="modal fade" id="fullScreenModal" tabindex="-1" role="dialog" aria-labelledby="fullScreenModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-md modal-dialog-scrollable">
         <div class="modal-content bg-warning">
             <div class="modal-header">
                 <h3><b><span id="fullScreenListName"></span></b></h3>
