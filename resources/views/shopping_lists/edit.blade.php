@@ -8,11 +8,11 @@
                     <div id="messages">@include('layouts.messages')</div>
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            <h4 class="mt-2">Edytuj listę zakupów</h4>
+                            <h4 class="mt-3">Edytuj listę zakupów</h4>
                         </div>
                         <div>
                             <a href="{{ route('shopping-lists.index') }}" class="btn btn-success btn-sm">
-                                <i class="bi bi-escape align-middle" style="font-size: 1rem;"></i>
+                                <i class="bi bi-escape align-middle" style="font-size: 1.3rem;"></i>
                                 Powrót
                             </a>
                         </div>
@@ -27,7 +27,8 @@
                             <div class="mb-3">
                                 <label for="title" class="form-label">Tytuł</label>
                                 <input type="text" class="form-control" id="title"
-                                    name="title" value="{{ $shoppingList->title_shopping_list }}" required minlength="3" maxlength="150">
+                                    name="title" value="{{ $shoppingList->title_shopping_list }}" required minlength="3" maxlength="150"
+                                    oninput="this.value = this.value.trim()">
                                 <div class="invalid-feedback">Podaj tytuł listy zakupów (od 3 do 150 znaków).</div>
                             </div>
 

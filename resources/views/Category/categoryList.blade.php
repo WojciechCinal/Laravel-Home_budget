@@ -9,14 +9,14 @@
                 <div class="card">
 
                     <div class="card-header d-flex align-items-center">
-                        <h4 class="mt-2">Moje kategorie</h4>
+                        <h3 class="mt-2">Moje kategorie</h3>
                         <div class="ms-auto">
                             <a href="{{ route('create.category') }}" class="btn btn-success btn-sm mx-2">
-                                <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa
+                                <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1.5rem;"></i> Nowa
                                 kategoria
                             </a>
                             <a href="{{ route('category.archiveList') }}" class="btn btn-secondary btn-sm">
-                                <i class="bi bi-archive-fill align-middle" style="font-size: 1rem;"></i> Archiwum
+                                <i class="bi bi-archive-fill align-middle" style="font-size: 1.5rem;"></i> Archiwum
                             </a>
                         </div>
                     </div>

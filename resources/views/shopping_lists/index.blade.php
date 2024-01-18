@@ -4,12 +4,14 @@
     @include('shopping_lists.modal')
     <div class="container">
         <div id="messages">@include('layouts.messages')</div>
-        <div class="d-flex justify-content-between align-items-center">
-            <h3>Listy zakupów.</h3>
-            <a href="{{ route('shopping-lists.new') }}" class="btn btn-success btn-sm mx-2">
-                <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa
-                lista
-            </a>
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mt-2" >Listy zakupów.</h3>
+                <a href="{{ route('shopping-lists.new') }}" class="btn btn-success btn-sm mx-2 btn-lg">
+                    <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1.5rem;"></i> Nowa
+                    lista
+                </a>
+            </div>
         </div>
         <div class="row">
             @foreach ($shoppingLists as $list)
@@ -36,8 +38,9 @@
                                         class="btn btn-primary me-2"><i class="bi bi-pencil-square align-middle"
                                             style="font-size: 1rem;"></i> Edytuj</a>
                                     <button class="btn btn-danger deleteButton"
-                                        data-list-id="{{ $list->id_shopping_list }}"><i class="bi bi-trash3-fill align-middle"
-                                        style="font-size: 1rem;"></i> Usuń</button>
+                                        data-list-id="{{ $list->id_shopping_list }}"><i
+                                            class="bi bi-trash3-fill align-middle" style="font-size: 1rem;"></i>
+                                        Usuń</button>
                                 </div>
                             </div>
                         </div>

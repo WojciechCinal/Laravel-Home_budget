@@ -8,11 +8,11 @@
                 <div class="card mt-2">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            <h4 class="mt-2">Dodaj nową transakcję.</h4>
+                            <h4 class="mt-3">Dodaj nową transakcję.</h4>
                         </div>
                         <div>
                             <a href="{{ route('transactions.index') }}" class="btn btn-success btn-sm">
-                                <i class="bi bi-escape align-middle" style="font-size: 1rem;"></i>
+                                <i class="bi bi-escape align-middle" style="font-size: 1.3rem;"></i>
                                 Powrót
                             </a>
                         </div>
@@ -23,7 +23,8 @@
                             <div class="row mb-2">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="name_transaction" name="name_transaction"
-                                        aria-label="name_transaction" placeholder="" required pattern=".{3,100}">
+                                        aria-label="name_transaction" placeholder="" required pattern=".{3,100}"
+                                        oninput="this.value = this.value.trim()">
                                     <label class="ms-2" for="name_transaction">Nazwa transakcji</label>
                                     <div class="invalid-feedback">Podaj nazwę transakcji (od 3 do 100 znaków).</div>
                                 </div>

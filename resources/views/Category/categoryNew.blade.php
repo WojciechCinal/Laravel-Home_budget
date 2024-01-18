@@ -7,11 +7,11 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
-                            <h4 class="mt-2">Dodaj nową kategorię.</h4>
+                            <h4 class="mt-3">Dodaj nową kategorię.</h4>
                         </div>
                         <div>
                             <a href="{{ url()->previous() }}" class="btn btn-success btn-sm">
-                                <i class="bi bi-escape align-middle" style="font-size: 1rem;"></i>
+                                <i class="bi bi-escape align-middle" style="font-size: 1.3rem;"></i>
                                 Powrót
                             </a>
                         </div>

@@ -24,7 +24,8 @@
                             @method('PUT')
                             <div class="form-floating mb-2">
                                 <input type="text" class="form-control" id="name_transaction" name="name_transaction"
-                                    value="{{ $transaction->name_transaction }}" required pattern=".{3,100}">
+                                    value="{{ $transaction->name_transaction }}" required pattern=".{3,100}"
+                                    oninput="this.value = this.value.trim()">
                                 <label for="name_transaction" class="ms-2">Nazwa transakcji</label>
                                 <div class="invalid-feedback">Podaj nazwę transakcji (od 3 do 100 znaków).</div>
                             </div>

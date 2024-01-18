@@ -8,15 +8,15 @@
                 <div id="messages">@include('layouts.messages')</div>
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
-                        <span class="align-middle "><h4 class="mt-2">{{ $category->name_category }}</h4></span>
+                        <span class="align-middle "><h4 class="mt-3">{{ $category->name_category }}</h4></span>
                         <div class="ms-auto">
                             <a href="{{ route('subCategory.new', ['id' => $category->id_category]) }}"
                                 class="btn btn-success btn-sm mx-1 my-1">
-                                <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1rem;"></i> Nowa
+                                <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1.3rem;"></i> Nowa
                                 podkategoria
                             </a>
                             <a href="{{ route('category.list') }}" class="btn btn-success btn-sm mx-1 my-1">
-                                <i class="bi bi-escape align-middle" style="font-size: 1rem;"></i>
+                                <i class="bi bi-escape align-middle" style="font-size: 1.3rem;"></i>
                                 Powrót
                             </a>
                         </div>
