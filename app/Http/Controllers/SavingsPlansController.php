@@ -37,7 +37,7 @@ class SavingsPlansController extends Controller
             }
 
             // Wybór priorytetów do wyświetlenia - wszystkie
-            $selectedPriorities = [1, 2, 3, 4, 5]; // Wszystkie priorytety
+            $selectedPriorities = [1, 2, 3, 4, 5];
             if ($request->has('sort_priority')) {
                 $selectedPriorities = $request->input('sort_priority');
             }
@@ -158,7 +158,6 @@ class SavingsPlansController extends Controller
 
             $increaseAmount = $request->input('increase_amount');
 
-            // Pobierz kategorię "Plany oszczędnościowe" przypisaną do użytkownika
             $category = Category::where('id_user', $user->id_user)
                 ->where('name_start', 'Plany oszczędnościowe')
                 ->first();
@@ -167,7 +166,7 @@ class SavingsPlansController extends Controller
                 return redirect()->route('savings-plans.index')->with('error', 'Nie znaleziono kategorii oszczędnościowej!');
             }
 
-            // Oblicz aktualne wydatki w kategorii "Plany oszczędnościowe" w bieżącym miesiącu
+            // Aktualne wydatki w bieżącym miesiącu
             $expensesThisMonth = Transaction::where('id_user', $user->id_user)
                 ->whereYear('date_transaction', date('Y'))
                 ->whereMonth('date_transaction', date('m'))
@@ -176,13 +175,12 @@ class SavingsPlansController extends Controller
             // Oblicz dostępną kwotę do wydania w tym miesiącu
             $remainingFunds = $user->monthly_budget - $expensesThisMonth;
 
-            // Sprawdź, czy dodanie wpłacanej kwoty nie przekroczy miesięcznego budżetu
+            // Czy dodanie wpłacanej kwoty nie przekroczy miesięcznego budżetu
             if ($increaseAmount > $remainingFunds) {
                 $message = 'Dodanie tej kwoty przekroczy miesięczny budżet! Środków do wydania pozostało: ' . $remainingFunds . ' PLN.';
                 session()->flash('warning', $message);
             }
 
-            // Dodaj wpłacaną kwotę do oszczędności
             $newAmount = $savingsPlan->amount_savings_plan + $increaseAmount;
 
             if ($newAmount > $savingsPlan->goal_savings_plan) {
@@ -195,7 +193,7 @@ class SavingsPlansController extends Controller
                 $transaction = Transaction::create([
                     'name_transaction' => 'Wpłata do planu oszczędnościowego ' . $savingsPlan->name_savings_plan,
                     'amount_transaction' => $increaseAmount,
-                    'date_transaction' => now(), // Dzisiejsza data
+                    'date_transaction' => now(),
                     'id_user' => $user->id_user,
                     'id_category' => $category->id_category,
                 ]);
@@ -209,7 +207,7 @@ class SavingsPlansController extends Controller
                 $transaction = Transaction::create([
                     'name_transaction' => 'Wpłata do planu oszczędnościowego ' . $savingsPlan->name_savings_plan,
                     'amount_transaction' => $increaseAmount,
-                    'date_transaction' => now(), // Dzisiejsza data
+                    'date_transaction' => now(),
                     'id_user' => $user->id_user,
                     'id_category' => $category->id_category,
                 ]);

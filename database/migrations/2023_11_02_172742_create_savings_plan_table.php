@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('savings_plans', function (Blueprint $table) {
             $table->id('id_savings_plan');
             $table->string('name_savings_plan');
-            $table->float('goal_savings_plan', 10, 2);
-            $table->float('amount_savings_plan', 10, 2)->default(0);
+            $table->integer('goal_savings_plan');
+            $table->integer('amount_savings_plan')->default(0);
             $table->date('end_date_savings_plan');
             $table->timestamps();
         });

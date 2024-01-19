@@ -2,7 +2,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body">
-                <h5> Czy na pewno chcesz usunąć listę <b><span id="listName"></span></b> ?</h5>
+                <h5> Czy na pewno chcesz usunąć plan: <b><span id="listName"></span></b> ?</h5>
             </div>
             <div class="modal-footer">
                 <button id="cancelButton" type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
@@ -104,7 +104,6 @@
                             <i class="bi bi-trash3-fill align-middle" style="font-size: 1rem;"></i>
                             Usuń
                         </button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
                     </div>
                 </div>
 
@@ -117,13 +116,13 @@
     $(document).ready(function() {
         $('.deleteButton').on('click', function() {
             var id = $(this).data('list-id');
-            var modalId = $(this).closest('.modal').attr('id'); // Pobieramy ID aktualnego modala
-            var listName = $('#' + modalId + ' .modal-title').text(); // Pobieramy tekst z tytułu modala
+            var modalId = $(this).closest('.modal').attr('id');
+            var listName = $('#' + modalId + ' .modal-title').text();
             $('#listName').text(listName);
             $('#deleteModal').modal('show');
             currentId = id;
             $('#confirmButton').data('list-title',
-                listName); // Aktualizacja nazwy dla potwierdzenia usunięcia
+                listName);
         });
 
         $('#confirmButton').on('click', function() {
