@@ -25,9 +25,14 @@
 
                         <form class="d-flex justify-content-center" role="search" action="{{ route('category.list') }}"
                             method="GET">
+                            <i type="button" class="bi bi-info-square-fill mt-1 mx-3"
+                                style="font-size: 2rem; color: #0dcaf0;" data-bs-container="body" data-bs-toggle="popover"
+                                data-bs-placement="bottom"
+                                data-bs-content="Jeśli wyszukiwana fraza nie zgadza się z nazwą kategorii, sprawdź jej podkategorie."></i>
+
                             <input class="form-control" type="search" name="search"
                                 placeholder="Podaj nazwę kategorii lub podkategorii..." aria-label="Search"
-                                style="width: 60%">
+                                style="width: 60%" value="{{ request('search') }}">
                             <button class="btn btn-success ms-2" type="submit">
                                 <i class="bi bi-search align-middle" style="font-size: 1rem;"></i> Szukaj
                             </button>
