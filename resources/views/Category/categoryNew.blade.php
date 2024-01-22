@@ -24,7 +24,7 @@
                                 <label for="category_name" class="form-label">Nazwa kategorii</label>
                                 <input type="text" class="form-control" id="category_name"
                                     name="category_name" required minlength="3" maxlength="60"
-                                    oninput="this.value = this.value.trim()">
+                                    oninput="this.value.trim()">
                                 <div class="invalid-feedback">Podaj nazwę nowej kategorii (od 3 do 60 znaków).</div>
                             </div>
                             <div class="d-grid">

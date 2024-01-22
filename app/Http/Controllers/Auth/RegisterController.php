@@ -281,5 +281,10 @@ class RegisterController extends Controller
             'id_user' => $userId,
             'name_start' => 'Plany oszczędnościowe'
         ]);
+
+        $noName = Category::create([
+            'name_category' => 'Brak kategorii',
+            'id_user' => $userId
+        ]);
     }
 }

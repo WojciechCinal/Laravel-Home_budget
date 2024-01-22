@@ -26,7 +26,7 @@
                                 <label for="title_shopping_list" class="form-label">Tytuł</label>
                                 <input type="text" class="form-control" id="title_shopping_list"
                                     name="title_shopping_list" required minlength="3" maxlength="150"
-                                    oninput="this.value = this.value.trim()">
+                                    oninput="this.value.trim()">
                                 <div class="invalid-feedback">Podaj tytuł listy zakupów (od 3 do 150 znaków).</div>
                             </div>
 

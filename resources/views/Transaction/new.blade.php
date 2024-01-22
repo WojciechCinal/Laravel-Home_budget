@@ -24,7 +24,7 @@
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="name_transaction" name="name_transaction"
                                         aria-label="name_transaction" placeholder="" required pattern=".{3,100}"
-                                        oninput="this.value = this.value.trim()">
+                                        oninput="this.value.trim()">
                                     <label class="ms-2" for="name_transaction">Nazwa transakcji</label>
                                     <div class="invalid-feedback">Podaj nazwę transakcji (od 3 do 100 znaków).</div>
                                 </div>

@@ -24,7 +24,7 @@
 
                             <div class="form-floating mb-2">
                                 <input type="text" class="form-control" id="name_savings_plan" name="name_savings_plan"
-                                    placeholder="" required pattern=".{3,100}" oninput="this.value = this.value.trim()">
+                                    placeholder="" required pattern=".{3,100}" oninput="this.value.trim()">
                                 <label for="name_savings_plans" class="ms-2">Nazwa celu oszczędnościowego</label>
                                 <div class="invalid-feedback">Podaj nazwę celu oszczędnościowego (od 3 do 100 znaków).</div>
                             </div>

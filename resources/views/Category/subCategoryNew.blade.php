@@ -27,7 +27,7 @@
                                 <label for="name_subCategory" class="form-label">Nazwa podkategorii</label>
                                 <input type="text" class="form-control" id="name_subCategory"
                                     name="name_subCategory" required minlength="3" maxlength="60"
-                                    oninput="this.value = this.value.trim()">
+                                    oninput="this.value.trim()">
                                 <div class="invalid-feedback">Podaj nazwę nowej podkategorii (od 3 do 60 znaków).</div>
                             </div>
                             <div class="d-grid">

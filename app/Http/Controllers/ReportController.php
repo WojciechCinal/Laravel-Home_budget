@@ -25,82 +25,32 @@ class ReportController extends Controller
 
     private function fetchDataForYearlyReport($startYear, $endYear, $selectedCategories)
     {
-        $transactionsQuery = Transaction::where('id_user', Auth::id())
+        $startDate = Carbon::create($startYear)->startOfYear();
+        $endDate = Carbon::create($endYear)->endOfYear();
+
+        $transactions = Transaction::with('category', 'subcategory')
+            ->whereBetween('date_transaction', [$startDate, $endDate])
+            ->where('id_user', Auth::id())
             ->whereIn('id_category', $selectedCategories)
-            ->whereYear('date_transaction', '>=', $startYear)
-            ->whereYear('date_transaction', '<=', $endYear);
+            ->orderBy('date_transaction', 'asc')
+            ->get();
 
-        if (!empty($selectedCategories)) {
-            $transactionsQuery->whereIn('id_category', $selectedCategories);
-        }
-
-        $transactions = $transactionsQuery->get();
-        $yearlyExpenses = [];
-        $monthlyTotalExpenses = [];
-        $categoryYearlyTotal = [];
         $categories = Category::where('id_user', Auth::id())
             ->whereIn('id_category', $selectedCategories)
             ->get();
 
-        $subcategoryYearlyTotal = [];
-        $yearlyTotal = [];
+        // Podziel transakcje na lata
+        $transactionsByYear = $transactions->groupBy(function ($transaction) {
+            return Carbon::parse($transaction->date_transaction)->format('Y');
+        });
 
-        foreach ($transactions as $transaction) {
-            $date = Carbon::parse($transaction->date_transaction);
-            $year = $date->format('Y');
-            $month = $date->format('m');
-            $category = $transaction->category->name_category;
-
-            if (!isset($yearlyTotal[$year])) {
-                $yearlyTotal[$year] = 0;
-            }
-
-            $yearlyTotal[$year] += $transaction->amount_transaction;
-
-            if (!isset($yearlyExpenses[$year][$month][$category])) {
-                $yearlyExpenses[$year][$month][$category] = 0;
-            }
-
-            $yearlyExpenses[$year][$month][$category] += $transaction->amount_transaction;
-            if (!isset($monthlyTotalExpenses[$year][$month])) {
-                $monthlyTotalExpenses[$year][$month] = 0;
-            }
-
-            $monthlyTotalExpenses[$year][$month] += $transaction->amount_transaction;
-
-            if (!isset($categoryYearlyTotal[$year][$category])) {
-                $categoryYearlyTotal[$year][$category] = 0;
-            }
-
-            $categoryYearlyTotal[$year][$category] += $transaction->amount_transaction;
-
-            $categoryName = $transaction->category->name_category;
-
-            $subcategory = $transaction->subcategory;
-            $subcategoryName = $subcategory ? $subcategory->name_subCategory : 'Nie podano podkategorii';
-
-            if (!isset($subcategoryYearlyTotal[$year][$categoryName][$subcategoryName])) {
-                $subcategoryYearlyTotal[$year][$categoryName][$subcategoryName] = 0;
-            }
-
-            // Dodajemy wartość do podkategorii tylko, jeśli nie jest pusta ani równa zero
-            if ($transaction->amount_transaction > 0) {
-                $subcategoryYearlyTotal[$year][$categoryName][$subcategoryName] += $transaction->amount_transaction;
-            }
-        }
-
-        // Tworzymy tablicę z wszystkimi latami w zakresie
-        $allYears = range($startYear, $endYear);
         $messages = [];
 
-        // Sprawdzamy każdy rok z zakresu
-        foreach ($allYears as $year) {
-            $transactionsForYear = $transactions->filter(function ($transaction) use ($year) {
-                return Carbon::parse($transaction->date_transaction)->format('Y') == $year;
-            });
+        // Sprawdź każdy rok w zakresie
+        foreach (range($startYear, $endYear) as $year) {
 
-            if ($transactionsForYear->isEmpty()) {
-                $msg = "$year - brak transakcji spełniających kryteria.";
+            if (!isset($transactionsByYear[$year]) || $transactionsByYear[$year]->isEmpty()) {
+                $msg = $year . 'r. - brak transakcji.';
                 $messages[] = $msg;
             }
         }
@@ -110,15 +60,70 @@ class ReportController extends Controller
             session()->put('ReportMessages', $messages);
         }
 
+
+        // Suma kwot na daną kategorię w poszczególnych miesiącach
+        $yearTotalsCat = [];
+        $yearTotalsSubCat = [];
+
+        foreach ($transactionsByYear as $year => $transactions) {
+            foreach ($categories as $category) {
+                $categoryTransactions = $transactions->where('id_category', $category->id_category);
+                $categorySum = $categoryTransactions->sum('amount_transaction');
+
+                // Dodaj do $monthTotals tylko, jeśli suma nie jest równa 0
+                if ($categorySum != 0) {
+                    // Przypisz sumę do nazwy kategorii zamiast do id
+                    $yearTotalsCat[$year][$category->name_category] = $categorySum;
+
+                    // Pomijaj kategorie "Plany oszczędnościowe" na wykresie kołowym
+                    if ($category->name_start == "Plany oszczędnościowe") {
+                        continue;
+                    } else {
+                        // Dodaj sumę dla podkategorii
+                        $subCategories = $category->subcategories;
+                        foreach ($subCategories as $subCategory) {
+                            $subCategoryTransactions = $categoryTransactions->where('id_subCategory', $subCategory->id_subCategory);
+                            $subCategorySum = $subCategoryTransactions->sum('amount_transaction');
+                            if ($subCategorySum != 0) {
+                                $yearTotalsSubCat[$year][$category->name_category][$subCategory->name_subCategory] = $subCategorySum;
+                            }
+                        }
+
+                        // Dodaj sumę dla transakcji bez przypisanej podkategorii
+                        $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
+                        $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
+                        if ($amountWithoutSubCategory != 0) {
+                            $yearTotalsSubCat[$year][$category->name_category]['Nie podano kategorii'] = $amountWithoutSubCategory;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Podział transakcji na miesiące w poszczególnych latach
+        $transactionsByMonth = [];
+
+        foreach ($transactionsByYear as $year => $transactions) {
+            $transactionsByMonth[$year] = $transactions->groupBy(function ($transaction) {
+                return Carbon::parse($transaction->date_transaction)->format('m');
+            });
+        }
+
+        // Obliczenie sumy kwot dla kategorii w danym miesiącu
+        $monthTotals = [];
+        foreach ($transactionsByMonth as $year => $months) {
+            foreach ($months as $month => $transactionsInMonth) {
+                $monthTotals[$year][$month] = $transactionsInMonth->sum('amount_transaction');
+            }
+        }
+
         return [
-            'yearlyExpenses' => $yearlyExpenses,
+            'transactionsByYear' => $transactionsByYear,
+            'transactionsByMonth' => $transactionsByMonth,
+            'monthTotals' => $monthTotals,
             'categories' => $categories,
-            'startYear' => $startYear,
-            'endYear' => $endYear,
-            'monthlyTotalExpenses' => $monthlyTotalExpenses,
-            'categoryYearlyTotal' => $categoryYearlyTotal,
-            'subcategoryYearlyTotal' => $subcategoryYearlyTotal,
-            'yearlyTotal' => $yearlyTotal,
+            'yearTotalsCat' => $yearTotalsCat,
+            'yearTotalsSubCat' => $yearTotalsSubCat,
         ];
     }
 
@@ -134,7 +139,7 @@ class ReportController extends Controller
             }
 
             $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
-
+            //dd($data);
             return view('Report.yearReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
