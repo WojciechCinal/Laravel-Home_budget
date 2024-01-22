@@ -26,6 +26,7 @@ class ReportController extends Controller
     private function fetchDataForYearlyReport($startYear, $endYear, $selectedCategories)
     {
         $transactionsQuery = Transaction::where('id_user', Auth::id())
+            ->whereIn('id_category', $selectedCategories)
             ->whereYear('date_transaction', '>=', $startYear)
             ->whereYear('date_transaction', '<=', $endYear);
 
