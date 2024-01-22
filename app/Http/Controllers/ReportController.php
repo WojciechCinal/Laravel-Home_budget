@@ -55,7 +55,6 @@ class ReportController extends Controller
             }
         }
 
-        // Zapisujemy wszystkie komunikaty w sesji
         if (!empty($messages)) {
             session()->put('ReportMessages', $messages);
         }
@@ -72,14 +71,11 @@ class ReportController extends Controller
 
                 // Dodaj do $monthTotals tylko, jeśli suma nie jest równa 0
                 if ($categorySum != 0) {
-                    // Przypisz sumę do nazwy kategorii zamiast do id
                     $yearTotalsCat[$year][$category->name_category] = $categorySum;
 
-                    // Pomijaj kategorie "Plany oszczędnościowe" na wykresie kołowym
                     if ($category->name_start == "Plany oszczędnościowe") {
                         continue;
                     } else {
-                        // Dodaj sumę dla podkategorii
                         $subCategories = $category->subcategories;
                         foreach ($subCategories as $subCategory) {
                             $subCategoryTransactions = $categoryTransactions->where('id_subCategory', $subCategory->id_subCategory);
@@ -89,7 +85,7 @@ class ReportController extends Controller
                             }
                         }
 
-                        // Dodaj sumę dla transakcji bez przypisanej podkategorii
+                        // Suma dla transakcji bez przypisanej podkategorii
                         $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
                         $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
                         if ($amountWithoutSubCategory != 0) {
@@ -106,6 +102,18 @@ class ReportController extends Controller
         foreach ($transactionsByYear as $year => $transactions) {
             $transactionsByMonth[$year] = $transactions->groupBy(function ($transaction) {
                 return Carbon::parse($transaction->date_transaction)->format('m');
+            });
+
+            // Puste kolekcje dla miesięcy, które nie występują
+            for ($month = 1; $month <= 12; $month++) {
+                $monthKey = str_pad($month, 2, '0', STR_PAD_LEFT);
+
+                if (!isset($transactionsByMonth[$year][$monthKey])) {
+                    $transactionsByMonth[$year][$monthKey] = collect();
+                }
+            }
+            $transactionsByMonth[$year] = $transactionsByMonth[$year]->sortBy(function ($value, $key) {
+                return $key;
             });
         }
 

@@ -157,12 +157,12 @@
         <h1>{{ $year }} r. - zestawienie roczne.</h1>
         <hr style="height:2px;border-width:0;color:gray;background-color:gray">
 
-        <h3>{{ $year }} - miesięczne zestawienie kategorii.</h3>
+        <h3>{{ $year }} - I półrocze - miesięczne zestawienie kategorii.</h3>
         <table class="table">
             <thead>
                 <tr>
                     <th>{{ $year }}</th>
-                    @foreach ($transactionsByMonth[$year]->keys() as $month)
+                    @foreach ($transactionsByMonth[$year]->keys()->take(6) as $month)
                         <th>{{ \Carbon\Carbon::create($year, $month)->translatedFormat('M') }}</th>
                     @endforeach
                 </tr>
@@ -172,31 +172,25 @@
                     @if ($loop->even)
                         <tr class="gray">
                             <td class="catName">{{ $category->name_category }}</td>
-                            @foreach ($transactionsByMonth[$year] as $month => $transactionsInMonth)
+                            @foreach ($transactionsByMonth[$year]->take(6) as $month => $transactionsInMonth)
                                 @if ($transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
-                                    <td style="text-align: center;">
-                                        -
-                                    </td>
+                                    <td style="text-align: center;">-</td>
                                 @else
                                     <td style="text-align: center;">
-                                        {{ $transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
-                                            0 }}
+                                        {{ $transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') ?? 0 }}
                                     </td>
                                 @endif
                             @endforeach
                         </tr>
-                    @else
+                        @else
                         <tr>
                             <td class="catName">{{ $category->name_category }}</td>
-                            @foreach ($transactionsByMonth[$year] as $month => $transactionsInMonth)
+                            @foreach ($transactionsByMonth[$year]->take(6) as $month => $transactionsInMonth)
                                 @if ($transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
-                                    <td style="text-align: center;">
-                                        -
-                                    </td>
+                                    <td style="text-align: center;">-</td>
                                 @else
                                     <td style="text-align: center;">
-                                        {{ $transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') ??
-                                            0 }}
+                                        {{ $transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') ?? 0 }}
                                     </td>
                                 @endif
                             @endforeach
@@ -205,12 +199,71 @@
                 @endforeach
                 <tr class="tfoot">
                     <td>Łącznie (PLN):</td>
-                    @foreach ($monthTotals[$year] as $monthTotal)
-                        <td style="text-align: center;">{{ $monthTotal }}</td>
-                    @endforeach
+                    @for ($m = 1; $m < 7; $m++)
+                        @php
+                            $mKey = str_pad($m, 2, '0', STR_PAD_LEFT);
+                        @endphp
+                        <td style="text-align: center;">{{ $monthTotals[$year][$mKey] }}</td>
+                    @endfor
                 </tr>
             </tbody>
         </table>
+
+        <div class="page-break"></div>
+        <h1>{{ $year }} r. - zestawienie roczne.</h1>
+        <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+        <h3>{{ $year }} - II półrocze - miesięczne zestawienie kategorii.</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{ $year }}</th>
+                    @foreach ($transactionsByMonth[$year]->keys()->skip(6) as $month)
+                        <th>{{ \Carbon\Carbon::create($year, $month)->translatedFormat('M') }}</th>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($categories as $category)
+                    @if ($loop->even)
+                        <tr class="gray">
+                            <td class="catName">{{ $category->name_category }}</td>
+                            @foreach ($transactionsByMonth[$year]->slice(6, 6) as $month => $transactionsInMonth)
+                                @if ($transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
+                                    <td style="text-align: center;">-</td>
+                                @else
+                                    <td style="text-align: center;">
+                                        {{ $transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') ?? 0 }}
+                                    </td>
+                                @endif
+                            @endforeach
+                        </tr>
+                        @else
+                        <tr>
+                            <td class="catName">{{ $category->name_category }}</td>
+                            @foreach ($transactionsByMonth[$year]->slice(6, 6) as $month => $transactionsInMonth)
+                                @if ($transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') == 0)
+                                    <td style="text-align: center;">-</td>
+                                @else
+                                    <td style="text-align: center;">
+                                        {{ $transactionsInMonth->where('category.name_category', $category->name_category)->sum('amount_transaction') ?? 0 }}
+                                    </td>
+                                @endif
+                            @endforeach
+                        </tr>
+                    @endif
+                @endforeach
+                <tr class="tfoot">
+                    <td>Łącznie (PLN):</td>
+                    @for ($m = 7; $m < 13; $m++)
+                    @php
+                        $mKey = str_pad($m, 2, '0', STR_PAD_LEFT);
+                    @endphp
+                    <td style="text-align: center;">{{ $monthTotals[$year][$mKey] }}</td>
+                @endfor
+                </tr>
+            </tbody>
+        </table>
+
 
         @if (!$loop->last)
             <div class="page-break"></div>
