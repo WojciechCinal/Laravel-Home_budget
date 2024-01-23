@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ShoppingListController;
 use App\Http\Controllers\SubCategoryController;
@@ -79,3 +80,5 @@ Route::get('/generate/report/month', [ReportController::class, 'generateMonthlyR
 Route::get('/generate/report/month/pdf', [ReportController::class, 'monthlyReportPDF'] )->name('generate.monthly.report.pdf');
 Route::get('/generate/report/week', [ReportController::class, 'generateWeeklyReport'] )->name('generate.weekly.report');
 Route::get('/generate/report/week/pdf', [ReportController::class, 'WeeklyReportPDF'] )->name('generate.weekly.report.pdf');
+
+Route::get('/ranking', [RankingController::class, 'index'] )->name('ranking.index');

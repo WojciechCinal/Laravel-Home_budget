@@ -73,6 +73,12 @@
                                 @endif
                             @else
                                 <li class="nav-item">
+                                    <a href="{{ route('ranking.index') }}" class="btn btn-sm nav-link">
+                                        <i class="bi bi-bar-chart-line-fill align-middle" style="font-size: 1rem;"></i>
+                                        Ranking
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="{{ route('transactions.index') }}" class="btn btn-sm nav-link">
                                         <i class="bi bi-cash-coin align-middle" style="font-size: 1rem;"></i>
                                         Transakcje
