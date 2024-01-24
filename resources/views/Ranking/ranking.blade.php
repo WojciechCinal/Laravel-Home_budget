@@ -1,13 +1,20 @@
 @extends('layouts.app')
 
 @section('content')
+    @include('Ranking.modal')
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <h3 class="mt-2 ms-3">{{ $rankingName }}</h3>
+                        <a href="#" class="btn btn-primary btn-sm me-3" data-bs-toggle="modal"
+                            data-bs-target="#generateRankingModal">
+                            <i class="bi bi-calendar-week-fill align-middle" style="font-size: 1.5rem;"></i> Zmień przedział
+                            rankingu
+                        </a>
+                    </div>
                     <div class="card-body">
-                        Ranking<br>
-
                         <div style="width: 100%;">
                             <canvas id="myChart"></canvas>
                         </div>

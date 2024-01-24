@@ -20,10 +20,29 @@ class RankingController extends Controller
 
     public function index(Request $request)
     {
-        $dateStart = Carbon::now()->subYear()->startOfYear();
-        $dateEnd = Carbon::now()->subYear()->endOfYear();
-
         $categories = Category::whereNotNull('name_start')->get();
+
+        // Sprawdzenie rodzaju rankingu
+        $rankingType = $request->input('ranking_type');
+
+        if ($rankingType === 'monthly') {
+            $selectedMonth = $request->input('date');
+            $dateStart = Carbon::parse($selectedMonth)->startOfMonth();
+            $dateEnd = Carbon::parse($selectedMonth)->endOfMonth();
+            $month = Carbon::parse($selectedMonth)->translatedFormat('F - Y');
+            $rankingName = "Ranking miesięczny: $month r.";
+        } elseif ($rankingType === 'yearly') {
+            $selectedYear = $request->input('date');
+            $dateStart = Carbon::createFromDate($selectedYear, 1, 1)->startOfYear();
+            $dateEnd = Carbon::createFromDate($selectedYear, 1, 1)->endOfYear();
+            $year = Carbon::createFromDate($selectedYear, 1, 1)->format('Y');
+            $rankingName = "Ranking roczny: $year r.";
+        } else {
+            $dateStart = Carbon::now()->subYear()->startOfYear();
+            $dateEnd = Carbon::now()->subYear()->endOfYear();
+            $year = Carbon::now()->subYear()->startOfYear()->format('Y');
+            $rankingName = "Ranking roczny: $year r.";
+        }
 
         // tablica z przypisaniem id do name_start np: "Mieszkanie" => [1,9,17,30,...]
         $groupedCategories = $categories->groupBy('name_start')->map(function ($items) {
@@ -74,8 +93,9 @@ class RankingController extends Controller
             'averageAmounts' => $averageAmounts,
             'summedTransactions' => $summedTransactions,
             'myExpenses' => $myExpenses,
+            'rankingName' => $rankingName,
         ];
-       // dd($data);
-        return view('ranking', $data);
+        // dd($data);
+        return view('Ranking.ranking', $data);
     }
 }
