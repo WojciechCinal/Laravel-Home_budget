@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Transaction;
 use App\Models\Category;
 use App\Models\SubCategory;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
@@ -143,7 +144,8 @@ class TransactionController extends Controller
             // Sprawdź, czy nie przekracza to miesięcznego budżetu
             if ($expensesThisMonth > $user->monthly_budget) {
                 $message = 'Nowa transakcja przekroczyła miesięczny budżet!';
-                session()->flash('error', $message);            }
+                session()->flash('error', $message);
+            }
             $transaction = Transaction::create($transactionData);
 
             return redirect()->route('transactions.index')->with('success', 'Transakcja została dodana pomyślnie.');
@@ -256,5 +258,67 @@ class TransactionController extends Controller
             Log::error('TransactionsController. Błąd w metodzie destroy(): ' . $e->getMessage());
             return response()->json(['error' => 'Wystąpił błąd podczas usuwania transakcji!'], 500);
         }
+    }
+
+    public function generatePrediction(Request $request)
+    {
+        $user = Auth::user();
+        $startYear = Carbon::create($request->input('start_date'))->format('Y');
+        $month = Carbon::create($request->input('start_date'))->format('m');
+
+        $activeCategories = Category::where('id_user', $user->id_user)
+            ->where('is_active', true)
+            ->where('name_category', '!=' ,"Brak kategorii")
+            ->get();
+
+        $averageExpenses = [];
+
+        for ($i = 1; $i < 4; $i++) {
+            $startYear -= 1;
+            $transactions = Transaction::where('id_user', $user->id_user)
+                ->whereMonth('date_transaction', $month)
+                ->whereYear('date_transaction', $startYear)
+                ->get();
+
+            foreach ($activeCategories as $category) {
+                $categoryTransactions = $transactions->where('id_category', $category->id_category);
+
+                // Jeśli są transakcje dla danej kategorii w danym roku
+                if ($categoryTransactions->count() > 0) {
+                    $totalAmount = $categoryTransactions->sum('amount_transaction');
+
+                    if (!isset($categoryTotals[$category->name_category])) {
+                        $categoryTotals[$category->name_category] = 0;
+                    }
+
+                    $categoryTotals[$category->name_category] += $totalAmount;
+                    $categoryYears[$category->name_category][] = $startYear;
+                }
+            }
+        }
+
+        $averageExpenses = [];
+
+        // Średnia dla każdej kategorii
+        foreach ($activeCategories as $category) {
+            $categoryName = $category->name_category;
+
+            if (isset($categoryTotals[$categoryName])) {
+                $sum = $categoryTotals[$categoryName];
+                $years = count($categoryYears[$categoryName]);
+                $average = $years > 0 ? round($sum / $years, 2) : 0;
+
+                $averageExpenses[$categoryName] = $average;
+            } else {
+                $averageExpenses[$categoryName] = "Brak danych";
+            }
+        }
+        $title = Carbon::parse($request->input('start_date'))->translatedFormat('F Y');
+        $data = [
+            'averageExpenses' => $averageExpenses,
+            'title' => $title,
+        ];
+
+        return view('Transaction.predictionExpenses', $data);
     }
 }

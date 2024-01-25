@@ -72,6 +72,7 @@ Route::post('/transactions/store', [TransactionController::class, 'store'])->nam
 Route::get('/transactions/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
 Route::put('/transactions/{transaction}/update', [TransactionController::class, 'update'])->name('transactions.update');
 Route::post('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+Route::get('/transactions/generate/prediction', [TransactionController::class, 'generatePrediction'] )->name('generate.prediction');
 
 
 Route::get('/generate/report/year', [ReportController::class, 'generateYearlyReport'] )->name('generate.yearly.report');

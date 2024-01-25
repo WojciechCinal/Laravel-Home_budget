@@ -27,6 +27,11 @@ class ShoppingListController extends Controller
             ->orderByDesc('updated_at')
             ->paginate(6);
 
+            if (ShoppingList::where('id_user', $user->id_user)->count() == 0) {
+                $msg = "Brak list zakupów - utwórz nową.";
+                session()->flash('message', $msg);
+            }
+
             return view('shopping_lists.index', compact('shoppingLists'));
         } catch (\Exception $e) {
             Log::error('ShoppingListController. Błąd w metodzie index(): ' . $e->getMessage());

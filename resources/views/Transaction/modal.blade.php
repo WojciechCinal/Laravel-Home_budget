@@ -191,6 +191,45 @@
     </div>
 </div>
 
+<div class="modal fade modal-md" id="generatePredictionModal" tabindex="-1" role="dialog"
+    aria-labelledby="generatePredictionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="text-align: center;">
+                <p class="h3">Prognozowanie wydatków.</p>
+                <hr>
+                <form action="{{ route('generate.prediction') }}" method="GET">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="selected_month_year_start" class="form-label"><b>Wybierz miesiąc dla którego
+                                    chcesz przeprowadzić prognozę wydatków:</b></label>
+                            <select class="form-select" id="selected_month_year_start" name="start_date" required>
+                                <option value="" disabled selected>Wybierz miesiąc</option>
+                                @for ($i = 0; $i < 12; $i++)
+                                    @php
+                                        $monthValue = now()
+                                            ->addMonths($i)
+                                            ->format('n');
+                                        $yearValue = now()
+                                            ->addMonths($i)
+                                            ->format('Y');
+                                    @endphp
+                                    <option value="{{ \Carbon\Carbon::create(null, $monthValue, 1)->year($yearValue)->format('Y-M')}}">
+                                        {{ \Carbon\Carbon::create(null, $monthValue, 1)->year($yearValue)->locale('pl')->isoFormat('MMMM Y') }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 mt-2">
+                        <button type="submit" class="btn btn-info"><b>SPRAWDŹ PROGNOZĘ WYDATKÓW</b></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -17,10 +17,14 @@
                     @if (count($transactions) > 0)
                         <a href="#" class="btn btn-primary btn-sm mx-2" data-bs-toggle="modal"
                             data-bs-target="#generateReportModal">
-                            <i class="bi bi-file-earmark-bar-graph-fill align-middle" style="font-size: 1.5rem;"></i> Generuj
-                            raport
+                            <i class="bi bi-file-earmark-bar-graph-fill align-middle" style="font-size: 1.5rem;"></i>
+                            Generuj raport
                         </a>
                     @endif
+                    <a href="#" class="btn btn-info btn-sm mx-2" data-bs-toggle="modal"
+                        data-bs-target="#generatePredictionModal">
+                        <i class="bi bi-graph-up-arrow align-middle" style="font-size: 1.5rem;"></i> Prognoza wydatków
+                    </a>
                     <a href="{{ route('transactions.create') }}" class="btn btn-success btn-sm mx-2">
                         <i class="bi bi-bookmark-plus-fill align-middle" style="font-size: 1.5rem;"></i> Nowa transakcja
                     </a>

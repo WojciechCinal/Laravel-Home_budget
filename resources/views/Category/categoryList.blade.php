@@ -58,15 +58,18 @@
                                         {{ $category->name_category }}
                                     </td>
                                     <td class="col align-middle text-center">
-                                        {{ $category->activeSubcategoriesCount() }}/{{ $category->subcategories()->count() }}
+                                        @if ($category->name_category == 'Brak kategorii')
+                                            -
+                                        @else
+                                            {{ $category->activeSubcategoriesCount() }}/{{ $category->subcategories()->count() }}
+                                        @endif
                                     </td>
                                     <td class="col text-center">
-                                        @if ($category->is_active == false)
-                                            Kategoria archiwalna!
-                                            <a href="{{ route('category.restore', ['id' => $category->id_category]) }}"
-                                                class="btn btn-warning btn-sm mx-2">
-                                                <i class="bi bi-box-arrow-up align-middle" style="font-size: 1rem;"></i>
-                                                Przywróć
+                                        @if ($category->name_category == 'Brak kategorii')
+                                            <a href="{{ route('archive.category', ['id' => $category->id_category]) }}"
+                                                class="btn btn-secondary btn-sm my-1" style="min-width: 112px">
+                                                <i class="bi bi-archive align-middle" style="font-size: 1rem;"></i>
+                                                Archiwizuj
                                             </a>
                                         @else
                                             <button class="btn btn-warning btn-sm edit-category my-1"

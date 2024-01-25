@@ -67,8 +67,9 @@ class RankingController extends Controller
             $nameStart = $category->name_start;
             $sum = $summedTransactions->get($nameStart, 0);
             $users = $usersCount->get($nameStart, 0);
+            $average = $users > 0 ? round($sum / $users, 2) : 0;
 
-            return [$nameStart => $users > 0 ? $sum / $users : 0];
+            return [$nameStart => $average];
         });
 
         $myTransactions = Transaction::whereIn('id_category', $categories->pluck('id_category'))
