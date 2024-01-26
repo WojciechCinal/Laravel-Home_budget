@@ -30,7 +30,8 @@
                         <div class="col-md-12">
                             <label for="date" class="form-label"><b>Wybierz rok</b></label>
                             <input type="number" class="form-control" id="date" name="date" min="2019"
-                                max="2100" required>
+                                max="{{ date('Y') }}" placeholder="{{ date('Y') - 1 }}" value="{{ date('Y') - 1 }}"
+                                required>
                         </div>
                     </div>
                     <div class="d-grid">
@@ -55,7 +56,9 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label for="date" class="form-label"><b>Wybierz miesiąc:</b></label>
-                            <input type="month" class="form-control" id="date" name="date" required>
+                            <input type="month" class="form-control" id="date" name="date"
+                                max="{{ date('Y-m') }}" value="{{ date('Y-m', strtotime('-1 month')) }}"
+                                placeholder="{{ date('Y-m', strtotime('-1 month')) }}" required>
                         </div>
                     </div>
                     <div class="d-grid">

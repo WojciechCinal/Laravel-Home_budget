@@ -158,8 +158,8 @@
         <div class="position-fixed bottom-0 start-0 p-3 mb-4">
             @if ($remainingFunds > 0)
                 <button type="button" class="btn btn-info" data-bs-toggle="popover" data-bs-placement="right"
-                    title="<h4>{{ $dateNow }}</h4>" data-bs-html="true"
-                    data-bs-content="Wydatki w bieżącym miesiącu: {{ $expensesThisMonth }} zł <br> Budżet miesięczny: {{ $monthlyBudget }} zł <h5> Pozostało: <b>{{ $remainingFunds }} zł</b></h5>">
+                    title="<h4 class=mt-2>{{ $dateNow }}</h4>" data-bs-html="true"
+                    data-bs-content="<h6>Wydatki w miesiącu: {{ $expensesThisMonth }} zł <br> Budżet miesięczny: {{ $monthlyBudget }} zł</h6> <h5> Pozostało: <b>{{ $remainingFunds }} zł</b></h5>">
                     <i class="bi bi-journal-bookmark-fill align-middle" style="font-size: 2rem;"></i>
                 </button>
             @else

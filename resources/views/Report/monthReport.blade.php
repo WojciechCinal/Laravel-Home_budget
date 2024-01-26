@@ -160,7 +160,7 @@
                                                                         'rgba(153, 102, 255, 0.8)',
                                                                         'rgba(255, 159, 64, 0.8)'
                                                                     ],
-                                                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                                                    borderColor: 'rgba(192, 192, 192, 1)',
                                                                     borderWidth: 1
                                                                 }]
                                                             },

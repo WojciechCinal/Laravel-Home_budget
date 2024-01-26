@@ -39,14 +39,14 @@ class ReportController extends Controller
             ->whereIn('id_category', $selectedCategories)
             ->get();
 
-        // Podziel transakcje na lata
+        // Transakcje na lata
         $transactionsByYear = $transactions->groupBy(function ($transaction) {
             return Carbon::parse($transaction->date_transaction)->format('Y');
         });
 
         $messages = [];
 
-        // Sprawdź każdy rok w zakresie
+        // Sprawdzenie każdego roku w zakresie
         foreach (range($startYear, $endYear) as $year) {
 
             if (!isset($transactionsByYear[$year]) || $transactionsByYear[$year]->isEmpty()) {
@@ -59,8 +59,6 @@ class ReportController extends Controller
             session()->put('ReportMessages', $messages);
         }
 
-
-        // Suma kwot na daną kategorię w poszczególnych miesiącach
         $yearTotalsCat = [];
         $yearTotalsSubCat = [];
 
@@ -69,7 +67,6 @@ class ReportController extends Controller
                 $categoryTransactions = $transactions->where('id_category', $category->id_category);
                 $categorySum = $categoryTransactions->sum('amount_transaction');
 
-                // Dodaj do $monthTotals tylko, jeśli suma nie jest równa 0
                 if ($categorySum != 0) {
                     $yearTotalsCat[$year][$category->name_category] = $categorySum;
 
@@ -89,7 +86,7 @@ class ReportController extends Controller
                         $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
                         $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
                         if ($amountWithoutSubCategory != 0) {
-                            $yearTotalsSubCat[$year][$category->name_category]['Nie podano kategorii'] = $amountWithoutSubCategory;
+                            $yearTotalsSubCat[$year][$category->name_category]['Nie podano'] = $amountWithoutSubCategory;
                         }
                     }
                 }
@@ -147,7 +144,6 @@ class ReportController extends Controller
             }
 
             $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
-            //dd($data);
             return view('Report.yearReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
@@ -163,7 +159,7 @@ class ReportController extends Controller
 
         $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
         $now = Carbon::now()->format('Y-m-d');
-        $name = "$now Budżet domowy - zestawienie roczne $startYear-$endYear";
+        $name = "$now Budżetomierz - zestawienie roczne $startYear-$endYear";
 
         $pdf = PDF::loadView('Report.yearReportPDF', $data)->setPaper('a4', 'portrait');
         return $pdf->download("$name.pdf");
@@ -182,16 +178,16 @@ class ReportController extends Controller
             ->whereIn('id_category', $selectedCategories)
             ->get();
 
-        // Podziel transakcje na miesiące
+        // Transakcje na miesiące
         $transactionsByMonth = $transactions->groupBy(function ($transaction) {
             return Carbon::parse($transaction->date_transaction)->format('m');
         });
 
         $messages = [];
 
-        // Sprawdź każdy miesiąc w zakresie
+        // Sprawdzenie każdego miesiąca w zakresie
         foreach (range($startMonth, $endMonth) as $month) {
-            $month = str_pad($month, 2, '0', STR_PAD_LEFT); // formatowanie na dwie cyfry
+            $month = str_pad($month, 2, '0', STR_PAD_LEFT);
 
             if (!isset($transactionsByMonth[$month]) || $transactionsByMonth[$month]->isEmpty()) {
                 $msg = Carbon::createFromDate($selectedYear, $month, 1)->isoFormat('MMMM') . ' ' . $selectedYear . ' - brak transakcji.';
@@ -199,13 +195,10 @@ class ReportController extends Controller
             }
         }
 
-        // Zapisujemy wszystkie komunikaty w sesji
         if (!empty($messages)) {
             session()->put('ReportMessages', $messages);
         }
 
-
-        // Suma kwot na daną kategorię w poszczególnych miesiącach
         $monthTotalsCat = [];
         $monthTotalsSubCat = [];
 
@@ -214,16 +207,12 @@ class ReportController extends Controller
                 $categoryTransactions = $transactions->where('id_category', $category->id_category);
                 $categorySum = $categoryTransactions->sum('amount_transaction');
 
-                // Dodaj do $monthTotals tylko, jeśli suma nie jest równa 0
                 if ($categorySum != 0) {
-                    // Przypisz sumę do nazwy kategorii zamiast do id
                     $monthTotalsCat[$month][$category->name_category] = $categorySum;
 
-                    // Pomijaj kategorie "Plany oszczędnościowe" na wykresie kołowym
                     if ($category->name_start == "Plany oszczędnościowe") {
                         continue;
                     } else {
-                        // Dodaj sumę dla podkategorii
                         $subCategories = $category->subcategories;
                         foreach ($subCategories as $subCategory) {
                             $subCategoryTransactions = $categoryTransactions->where('id_subCategory', $subCategory->id_subCategory);
@@ -237,7 +226,7 @@ class ReportController extends Controller
                         $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
                         $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
                         if ($amountWithoutSubCategory != 0) {
-                            $monthTotalsSubCat[$month][$category->name_category]['Nie podano kategorii'] = $amountWithoutSubCategory;
+                            $monthTotalsSubCat[$month][$category->name_category]['Nie podano'] = $amountWithoutSubCategory;
                         }
                     }
                 }
@@ -303,7 +292,6 @@ class ReportController extends Controller
 
             if ($endDate->gte($startDate)) {
                 $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
-                // dd($data);
                 return view('Report.monthReport', $data);
             } else {
                 return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
@@ -328,7 +316,7 @@ class ReportController extends Controller
         $monthStartName = \Carbon\Carbon::createFromFormat('m', $startMonth)->locale('pl')->isoFormat('MMMM');
         $monthEndName = \Carbon\Carbon::createFromFormat('m', $endMonth)->locale('pl')->isoFormat('MMMM');
         $now = Carbon::now()->format('Y-m-d');
-        $name = "$now Budżet domowy - zestawienie miesięczne $selectedYear $monthStartName-$monthEndName";
+        $name = "$now Budżetomierz - zestawienie miesięczne $selectedYear $monthStartName-$monthEndName";
 
         $pdf = PDF::loadView('Report.monthReportPDF', $data)->setPaper('a4', 'portrait');
         return $pdf->download("$name.pdf");
@@ -347,7 +335,7 @@ class ReportController extends Controller
             ->whereIn('id_category', $selectedCategories)
             ->get();
 
-        // Podział transakcji na tygodnie
+        // Transakcje na tygodnie
         $transactionsByWeek = $transactions->groupBy(function ($transaction) {
             return Carbon::parse($transaction->date_transaction)->startOfWeek()->format('Y-\WW');
         });
@@ -373,7 +361,6 @@ class ReportController extends Controller
                 $categoryTransactions = $weekTransactions->where('id_category', $category->id_category);
                 $categorySum = $categoryTransactions->sum('amount_transaction');
 
-                // Dodaj do $weekTotalsCat tylko, jeśli suma nie jest równa 0
                 if ($categorySum != 0) {
                     $weekTotals[$category->name_category] = $categorySum;
                 }
@@ -395,11 +382,10 @@ class ReportController extends Controller
                     }
                 }
 
-                // Dodaj sumę dla transakcji bez przypisanej podkategorii
                 $transactionsWithoutSubCategory = $categoryTransactions->where('id_subCategory', null);
                 $amountWithoutSubCategory = $transactionsWithoutSubCategory->sum('amount_transaction');
                 if ($amountWithoutSubCategory != 0) {
-                    $weekTotals[$category->name_category]['Nie podano kategorii'] = $amountWithoutSubCategory;
+                    $weekTotals[$category->name_category]['Nie podano'] = $amountWithoutSubCategory;
                 }
             }
             return $weekTotals;
@@ -423,7 +409,6 @@ class ReportController extends Controller
             $endWeek = $request->input('endWeek');
             $selectedCategories = $request->input('categories');
 
-            // Sprawdzenie poprawności zakresu dat
             $startDate = CarbonImmutable::parse($startWeek);
             $endDate = CarbonImmutable::parse($endWeek)->endOfWeek();
 
@@ -432,7 +417,6 @@ class ReportController extends Controller
             }
 
             $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
-            //dd($data);
             return view('Report.weekReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateWeeklyReport(): ' . $e->getMessage());
@@ -446,7 +430,6 @@ class ReportController extends Controller
         $endWeek = $request->input('endWeek');
         $selectedCategories = $request->input('categories');
 
-        // Sprawdzenie poprawności zakresu dat
         $startDate = CarbonImmutable::parse($startWeek);
         $endDate = CarbonImmutable::parse($endWeek)->endOfWeek();
 
@@ -456,10 +439,8 @@ class ReportController extends Controller
 
         $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
 
-        // $monthStartName = \Carbon\Carbon::createFromFormat('m', $startMonth)->locale('pl')->isoFormat('MMMM');
-        // $monthEndName = \Carbon\Carbon::createFromFormat('m', $endMonth)->locale('pl')->isoFormat('MMMM');
         $now = Carbon::now()->format('Y-m-d');
-        $name = "$now Budżet domowy - zestawienie tygodniowe $startWeek - $endWeek";
+        $name = "$now Budżetomierz - zestawienie tygodniowe $startWeek - $endWeek";
 
         $pdf = PDF::loadView('Report.weekReportPDF', $data)->setPaper('a4', 'portrait');
 
