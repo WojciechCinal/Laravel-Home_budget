@@ -19,43 +19,32 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('shopping-lists.store') }}" method="POST" class="needs-validation"
-                            novalidate>
+                        <form action="{{ route('shopping-lists.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="title_shopping_list" class="form-label">Tytuł</label>
-                                <input type="text" class="form-control" id="title_shopping_list"
-                                    name="title_shopping_list" required minlength="3" maxlength="150"
-                                    oninput="this.value.trim()">
-                                <div class="invalid-feedback">Podaj tytuł listy zakupów (od 3 do 150 znaków).</div>
+                                <input type="text"
+                                    class="form-control @error('title_shopping_list') is-invalid @enderror"
+                                    id="title_shopping_list" name="title_shopping_list"
+                                    value="{{ old('title_shopping_list') }}" required>
+                                @error('title_shopping_list')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-3">
                                 <label for="description_shopping_list" class="form-label">Opis</label>
-                                <textarea class="form-control" id="description_shopping_list" name="description_shopping_list" required minlength="3"
-                                    maxlength="2000"></textarea>
-                                <div class="invalid-feedback">Wpisz produkty na listę zakupów (od 3 do 2000 znaków).</div>
+                                <textarea class="form-control @error('description_shopping_list') is-invalid @enderror" id="description_shopping_list"
+                                    name="description_shopping_list">{{ old('description_shopping_list') }}</textarea>
+                                @error('description_shopping_list')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
+
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Utwórz listę zakupów</button>
                             </div>
                         </form>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var forms = document.querySelectorAll('.needs-validation');
-
-                                Array.prototype.slice.call(forms).forEach(function(form) {
-                                    form.addEventListener('submit', function(event) {
-                                        if (!form.checkValidity()) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-
-                                        form.classList.add('was-validated');
-                                    }, false);
-                                });
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

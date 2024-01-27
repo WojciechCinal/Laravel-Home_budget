@@ -19,45 +19,30 @@
                     </div>
 
                     <div class="card-body">
-                        <form method="POST"
-                            action="{{ route('shopping-lists.update', ['id' => $shoppingList->id_shopping_list]) }}"
-                            class="needs-validation" novalidate>
+                        <form method="POST" action="{{ route('shopping-lists.update', ['id' => $shoppingList->id_shopping_list]) }}">
                             @csrf
                             @method('PUT')
+
                             <div class="mb-3">
                                 <label for="title" class="form-label">Tytuł</label>
-                                <input type="text" class="form-control" id="title"
-                                    name="title" value="{{ $shoppingList->title_shopping_list }}" required minlength="3" maxlength="150"
-                                    oninput="this.value.trim()">
-                                <div class="invalid-feedback">Podaj tytuł listy zakupów (od 3 do 150 znaków).</div>
+                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $shoppingList->title_shopping_list) }}" required>
+                                @error('title')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-3">
                                 <label for="description" class="form-label">Opis</label>
-                                <textarea class="form-control" id="description" name="description"
-                                    required minlength="3" maxlength="2000">{{ $shoppingList->description_shopping_list }}</textarea>
-                                <div class="invalid-feedback">Wpisz produkty na listę zakupów (od 3 do 2000 znaków).</div>
+                                <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" required>{{ old('description', $shoppingList->description_shopping_list) }}</textarea>
+                                @error('description')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
+
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
                             </div>
                         </form>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var forms = document.querySelectorAll('.needs-validation');
-
-                                Array.prototype.slice.call(forms).forEach(function(form) {
-                                    form.addEventListener('submit', function(event) {
-                                        if (!form.checkValidity()) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-
-                                        form.classList.add('was-validated');
-                                    }, false);
-                                });
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

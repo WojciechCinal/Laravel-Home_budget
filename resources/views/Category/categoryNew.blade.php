@@ -10,7 +10,7 @@
                             <h4 class="mt-3">Dodaj nową kategorię.</h4>
                         </div>
                         <div>
-                            <a href="{{ url()->previous() }}" class="btn btn-success btn-sm">
+                            <a href="{{ route('category.list') }}" class="btn btn-success btn-sm">
                                 <i class="bi bi-escape align-middle" style="font-size: 1.3rem;"></i>
                                 Powrót
                             </a>
@@ -18,35 +18,21 @@
                     </div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('category.store') }}" class="needs-validation" novalidate>
+                        <form method="POST" action="{{ route('category.store') }}">
                             @csrf
                             <div class="mb-3">
                                 <label for="category_name" class="form-label">Nazwa kategorii</label>
-                                <input type="text" class="form-control" id="category_name"
-                                    name="category_name" required minlength="3" maxlength="60"
-                                    oninput="this.value.trim()">
-                                <div class="invalid-feedback">Podaj nazwę nowej kategorii (od 3 do 60 znaków).</div>
+                                <input type="text" class="form-control @error('category_name') is-invalid @enderror" id="category_name" name="category_name" value="{{ old('category_name') }}" required>
+                                @error('category_name')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Utwórz kategorię</button>
                             </div>
                         </form>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var forms = document.querySelectorAll('.needs-validation');
-
-                                Array.prototype.slice.call(forms).forEach(function(form) {
-                                    form.addEventListener('submit', function(event) {
-                                        if (!form.checkValidity()) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-
-                                        form.classList.add('was-validated');
-                                    }, false);
-                                });
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class SubCategoryController extends Controller
 {
@@ -77,26 +78,43 @@ class SubCategoryController extends Controller
     public function store(Request $request)
     {
         try {
+            // Wywołanie osobnej metody walidacji
+            $validator = $this->validateSubCategory($request);
+
+            // Sprawdź, czy walidacja zakończyła się sukcesem
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
             $user = Auth::user();
 
-            $data = $request->validate([
-                'name_subCategory' => 'required|string',
-                'category_id' => 'required|exists:categories,id_category',
-            ]);
-
             SubCategory::create([
-                'name_subCategory' => $data['name_subCategory'],
-                'id_category' => $data['category_id'],
-                'id_user' => $user->id_user
+                'name_subCategory' => $request->input('name_subCategory'),
+                'id_category' => $request->input('category_id'),
+                'id_user' => $user->id_user,
             ]);
 
-            return redirect()->route('subCategory.list', ['id' => $data['category_id']])
+            return redirect()->route('subCategory.list', ['id' => $request->input('category_id')])
                 ->with('success', 'Dodano nową podkategorię.');
         } catch (\Exception $e) {
             Log::error('SubCategoryController. Błąd w metodzie store(): ' . $e->getMessage());
             return redirect()->route('category.list')->with('error', 'Wystąpił błąd podczas dodawania nowej podkategorii.');
         }
     }
+
+    // Osobna metoda walidacji dla SubCategory
+    private function validateSubCategory(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'name_subCategory' => ['required', 'string', 'min:3', 'max:100'],
+            'category_id' => ['required', 'exists:categories,id_category'],
+        ], [
+            'name_subCategory.required' => 'Nazwa podkategorii jest wymagana.',
+            'name_subCategory.min' => 'Nazwa podkategorii musi mieć przynajmniej :min znaki.',
+            'name_subCategory.max' => 'Nazwa podkategorii może mieć maksymalnie :max znaków.',
+        ]);
+    }
+
     public function create($categoryId)
     {
         $user = Auth::user();

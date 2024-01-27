@@ -140,7 +140,7 @@ class ReportController extends Controller
             $selectedCategories = $request->input('categories', []);
 
             if ($startYear > $endYear) {
-                throw new \Exception('Niepoprawny zakres dat!');
+                return redirect()->route('transactions.index')->with('error', 'Niepoprawny zakres dat!');
             }
 
             $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
@@ -413,7 +413,7 @@ class ReportController extends Controller
             $endDate = CarbonImmutable::parse($endWeek)->endOfWeek();
 
             if ($endDate->lt($startDate)) {
-                return redirect()->back()->with('error', 'Data końcowa nie może być wcześniejsza niż data początkowa!');
+                return redirect()->back()->with('error', 'Niepoprawny zakres dat!');
             }
 
             $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);

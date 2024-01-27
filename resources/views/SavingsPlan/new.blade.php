@@ -18,69 +18,62 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('savings-plans.store') }}" method="POST" class="needs-validation"
-                            novalidate>
+                        <form action="{{ route('savings-plans.store') }}" method="POST">
                             @csrf
 
                             <div class="form-floating mb-2">
-                                <input type="text" class="form-control" id="name_savings_plan" name="name_savings_plan"
-                                    placeholder="" required pattern=".{3,100}" oninput="this.value.trim()">
-                                <label for="name_savings_plans" class="ms-2">Nazwa celu oszczędnościowego</label>
-                                <div class="invalid-feedback">Podaj nazwę celu oszczędnościowego (od 3 do 100 znaków).</div>
+                                <input type="text" class="form-control @error('name_savings_plan') is-invalid @enderror"
+                                    id="name_savings_plan" name="name_savings_plan" placeholder=""
+                                    value="{{ old('name_savings_plan') }}" required>
+                                <label for="name_savings_plan" class="ms-2">Nazwa celu oszczędnościowego</label>
+                                @error('name_savings_plan')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="row mb-2">
                                 <div class="form-floating col-4">
-                                    <input type="number" class="form-control" id="goal_savings_plan"
-                                        name="goal_savings_plan" placeholder="" required min="0" pattern="^\d+$" oninput="validateNumberInput(this)">
+                                    <input type="number"
+                                        class="form-control @error('goal_savings_plan') is-invalid @enderror"
+                                        id="goal_savings_plan" name="goal_savings_plan" placeholder=""
+                                        value="{{ old('goal_savings_plan') }}" required>
                                     <label for="goal_savings_plan" class="ms-2">Cel oszczędnościowy (PLN)</label>
-                                    <div class="invalid-feedback">Podaj cel oszczędnościowy (liczba całkowita dodatnia).
-                                    </div>
+                                    @error('goal_savings_plan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="form-floating col-4">
-                                    <input type="date" class="form-control" id="end_date_savings_plan"
-                                        name="end_date_savings_plan" required min="{{ date('Y-m-d') }}">
+                                    <input type="date"
+                                        class="form-control @error('end_date_savings_plan') is-invalid @enderror"
+                                        id="end_date_savings_plan" name="end_date_savings_plan" required
+                                        min="{{ date('Y-m-d') }}" value="{{ old('end_date_savings_plan') }}">
                                     <label for="end_date_savings_plan" class="ms-2">Planowana data zakończenia</label>
-                                    <div class="invalid-feedback">Podaj planowaną datę zakończenia.
-                                    </div>
+                                    @error('end_date_savings_plan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="form-floating col-4">
-                                    <select class="form-select" id="priority_id" name="priority_id" required>
+                                    <select class="form-select @error('priority_id') is-invalid @enderror" id="priority_id"
+                                        name="priority_id" required>
                                         @foreach ($priorities as $priority)
-                                            <option value="{{ $priority->id_priority }}">{{ $priority->name_priority }}
-                                            </option>
+                                            <option value="{{ $priority->id_priority }}"
+                                                {{ old('priority_id') == $priority->id_priority ? 'selected' : '' }}>
+                                                {{ $priority->name_priority }}</option>
                                         @endforeach
                                     </select>
                                     <label for="priority_id" class="ms-2">Priorytet</label>
-                                    <div class="invalid-feedback">Wybierz priorytet.</div>
+                                    @error('priority_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
+
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Utwórz plan oszczędnościowy</button>
                             </div>
                         </form>
-
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var forms = document.querySelectorAll('.needs-validation');
-
-                                Array.prototype.slice.call(forms).forEach(function(form) {
-                                    form.addEventListener('submit', function(event) {
-                                        if (!form.checkValidity()) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-
-                                        form.classList.add('was-validated');
-                                    }, false);
-                                });
-                            });
-                            function validateNumberInput(input) {
-                                input.value = input.value.replace(/[^\d]/g, '')
-                            }
-                        </script>
                     </div>
                 </div>
             </div>

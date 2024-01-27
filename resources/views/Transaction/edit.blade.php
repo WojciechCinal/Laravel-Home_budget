@@ -18,31 +18,26 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('transactions.update', $transaction->id_transaction) }}"
-                            class="needs-validation" novalidate>
+                        <form method="POST" action="{{ route('transactions.update', $transaction->id_transaction) }}">
                             @csrf
                             @method('PUT')
                             <div class="form-floating mb-2">
                                 <input type="text" class="form-control" id="name_transaction" name="name_transaction"
-                                    value="{{ $transaction->name_transaction }}" required pattern=".{3,100}"
-                                    oninput="this.value.trim()">
+                                    value="{{ $transaction->name_transaction }}" required>
                                 <label for="name_transaction" class="ms-2">Nazwa transakcji</label>
-                                <div class="invalid-feedback">Podaj nazwę transakcji (od 3 do 100 znaków).</div>
                             </div>
                             <div class="row mb-2">
                                 <div class="form-floating col-6">
                                     <input type="text" class="form-control" id="amount_transaction"
-                                        name="amount_transaction" pattern="^\d+(\.\d{1,2})?$" title="Np. 34.99"
+                                        name="amount_transaction"
                                         value="{{ $transaction->amount_transaction }}" required>
                                     <label for="amount_transaction" class="ms-2">Kwota</label>
-                                    <div class="invalid-feedback">Podaj poprawny format kwoty (np. 35.99).</div>
                                 </div>
 
                                 <div class="form-floating col-6">
                                     <input type="date" class="form-control" id="date_transaction" name="date_transaction"
                                         value="{{ $transaction->date_transaction }}" required>
                                     <label for="date_transaction" class="ms-2">Data</label>
-                                    <div class="invalid-feedback">Podaj datę.</div>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -73,22 +68,6 @@
                             </div>
                             <button type="submit" class="btn btn-primary mt-2">Zapisz zmiany</button>
                         </form>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var forms = document.querySelectorAll('.needs-validation');
-
-                                Array.prototype.slice.call(forms).forEach(function(form) {
-                                    form.addEventListener('submit', function(event) {
-                                        if (!form.checkValidity()) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-
-                                        form.classList.add('was-validated');
-                                    }, false);
-                                });
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

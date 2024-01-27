@@ -19,37 +19,44 @@
                     </div>
                     <div class="card-body">
                         <form method="POST"
-                            action="{{ route('savings-plans.update', ['id' => $savingsPlan->id_savings_plan]) }}"
-                            class="needs-validation" novalidate>
+                            action="{{ route('savings-plans.update', ['id' => $savingsPlan->id_savings_plan]) }}">
                             @csrf
                             @method('PUT')
+
                             <div class="form-floating mb-2">
-                                <input type="text" class="form-control" id="name" name="name"
-                                    value="{{ $savingsPlan->name_savings_plan }}" required pattern=".{3,100}"
-                                    oninput="this.value.trim()">
+                                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                    id="name" name="name" value="{{ old('name', $savingsPlan->name_savings_plan) }}"
+                                    required>
                                 <label for="name" class="ms-2">Nazwa celu oszczędnościowego</label>
-                                <div class="invalid-feedback">Podaj nazwę celu oszczędnościowego (od 3 do 100 znaków).</div>
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="row mb-2">
                                 <div class="form-floating col-4">
-                                    <input type="number" class="form-control" id="goal" name="goal"
-                                        value="{{ $savingsPlan->goal_savings_plan }}" required min="0"
-                                        pattern="^\d+$" oninput="validateNumberInput(this)">
+                                    <input type="number" class="form-control @error('goal') is-invalid @enderror"
+                                        id="goal" name="goal"
+                                        value="{{ old('goal', $savingsPlan->goal_savings_plan) }}" required>
                                     <label for="goal" class="ms-2">Cel oszczędnościowy (PLN)</label>
-                                    <div class="invalid-feedback">Podaj cel oszczędnościowy (liczba całkowita dodatnia).
-                                    </div>
+                                    @error('goal')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="form-floating col-4">
-                                    <input type="date" class="form-control" id="end_date" name="end_date"
-                                        value="{{ $savingsPlan->end_date_savings_plan }}" required>
+                                    <input type="date" class="form-control @error('end_date') is-invalid @enderror"
+                                        id="end_date" name="end_date"
+                                        value="{{ old('end_date', $savingsPlan->end_date_savings_plan) }}" required>
                                     <label for="end_date" class="ms-2">Planowana data zakończenia</label>
-                                    <div class="invalid-feedback">Podaj planowaną datę zakończenia.</div>
+                                    @error('end_date')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="form-floating col-4">
-                                    <select class="form-control" id="priority" name="priority">
+                                    <select class="form-control @error('priority') is-invalid @enderror" id="priority"
+                                        name="priority">
                                         <option value="1" {{ $savingsPlan->id_priority == 1 ? 'selected' : '' }}>
                                             Bardzo wysoki</option>
                                         <option value="2" {{ $savingsPlan->id_priority == 2 ? 'selected' : '' }}>
@@ -62,34 +69,16 @@
                                             Brak</option>
                                     </select>
                                     <label for="priority" class="ms-2">Priorytet</label>
-                                    <div class="invalid-feedback">Wybierz priorytet.</div>
+                                    @error('priority')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
+
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary mt-2">Zapisz zmiany</button>
                             </div>
                         </form>
-
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var forms = document.querySelectorAll('.needs-validation');
-
-                                Array.prototype.slice.call(forms).forEach(function(form) {
-                                    form.addEventListener('submit', function(event) {
-                                        if (!form.checkValidity()) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-
-                                        form.classList.add('was-validated');
-                                    }, false);
-                                });
-                            });
-
-                            function validateNumberInput(input) {
-                                input.value = input.value.replace(/[^\d]/g, '')
-                            }
-                        </script>
                     </div>
                 </div>
             </div>

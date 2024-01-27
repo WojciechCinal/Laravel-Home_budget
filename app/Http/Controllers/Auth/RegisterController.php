@@ -51,12 +51,29 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
+        $messages = [
+            'name.required' => 'Nazwa użytkownika jest wymagana.',
+            'name.min' => 'Nazwa użytkownika musi mieć przynajmniej :min znaków.',
+            'name.max' => 'Nazwa użytkownika może mieć maksymalnie :max znaków.',
+            'email.required' => 'Pole email jest wymagane.',
+            'email.email' => 'Podaj poprawny adres email.',
+            'email.max'=>'Adres email może mieć maksymalnie :max znaków.',
+            'email.unique' => 'Podany adres email jest już zajęty.',
+            'password.required' => 'Pole hasło jest wymagane.',
+            'password.min' => 'Hasło musi mieć przynajmniej :min znaków.',
+            'password.confirmed' => 'Podane hasła są różne.',
+            'monthly_budget.required' => 'Pole miesięczny budżet jest wymagane.',
+            'monthly_budget.regex' => 'Prawidłowy format to np: 4200.22',
+        ];
+
+        $data = Validator::make($data, [
+            'name' => ['required', 'string', 'max:240', 'min:3'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'monthly_budget' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-        ]);
+        ], $messages);
+
+        return $data;
     }
 
     /**

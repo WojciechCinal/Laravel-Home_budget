@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class ShoppingListController extends Controller
 {
@@ -24,8 +25,8 @@ class ShoppingListController extends Controller
             $user = Auth::user();
 
             $shoppingLists = ShoppingList::where('id_user', $user->id_user)
-            ->orderByDesc('updated_at')
-            ->paginate(6);
+                ->orderByDesc('updated_at')
+                ->paginate(6);
 
             if (ShoppingList::where('id_user', $user->id_user)->count() == 0) {
                 $msg = "Brak list zakupów - utwórz nową.";
@@ -80,6 +81,23 @@ class ShoppingListController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'title' => 'required|string|min:3|max:150',
+                'description' => 'required|string|min:3|max:2000',
+            ], [
+                'title.required' => 'Tytuł jest wymagany.',
+                'title.min' => 'Tytuł musi mieć przynajmniej :min znaki.',
+                'title.max' => 'Tytuł może mieć maksymalnie :max znaków.',
+                'description.required' => 'Opis jest wymagany.',
+                'description.min' => 'Opis musi mieć przynajmniej :min znaki.',
+                'description.max' => 'Opis może mieć maksymalnie :max znaków.',
+            ]);
+
+            // Sprawdź, czy walidacja zakończyła się sukcesem
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
             $shoppingList = ShoppingList::findOrFail($id);
 
             $shoppingList->update([
@@ -102,6 +120,20 @@ class ShoppingListController extends Controller
     public function store(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'title_shopping_list' => 'required|string|min:3|max:255',
+                'description_shopping_list' => 'nullable|string|max:5000',
+            ], [
+                'title_shopping_list.required' => 'Tytuł jest wymagany.',
+                'title_shopping_list.min' => 'Tytuł musi mieć przynajmniej :min znaki.',
+                'title_shopping_list.max' => 'Tytuł może mieć maksymalnie :max znaków.',
+                'description_shopping_list.max' => 'Opis może mieć maksymalnie :max znaków.',
+            ]);
+
+            // Sprawdź, czy walidacja zakończyła się sukcesem
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
             $user = Auth::user();
 
             $validatedData = $request->validate([

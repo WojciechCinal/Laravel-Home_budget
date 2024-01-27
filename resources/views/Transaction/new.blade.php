@@ -18,72 +18,73 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('transactions.store') }}" method="POST" class="needs-validation" novalidate>
+                        <form action="{{ route('transactions.store') }}" method="POST">
                             @csrf
                             <div class="row mb-2">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="name_transaction" name="name_transaction"
-                                        aria-label="name_transaction" placeholder="" required pattern=".{3,100}"
-                                        oninput="this.value.trim()">
+                                    <input type="text"
+                                        class="form-control @error('name_transaction') is-invalid @enderror"
+                                        id="name_transaction" name="name_transaction" aria-label="name_transaction"
+                                        placeholder="" value="{{ old('name_transaction') }}" required>
                                     <label class="ms-2" for="name_transaction">Nazwa transakcji</label>
-                                    <div class="invalid-feedback">Podaj nazwę transakcji (od 3 do 100 znaków).</div>
+                                    @error('name_transaction')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="form-floating col-6">
-                                    <input type="text" class="form-control" id="amount_transaction"
-                                        name="amount_transaction" aria-label="amount_transaction" placeholder="" required
-                                        pattern="^\d+(\.\d{1,2})?$">
+                                    <input type="text"
+                                        class="form-control @error('amount_transaction') is-invalid @enderror"
+                                        id="amount_transaction" name="amount_transaction" aria-label="amount_transaction"
+                                        placeholder="" value="{{ old('amount_transaction') }}" required>
                                     <label class="ms-2" for="amount_transaction">Kwota</label>
-                                    <div class="invalid-feedback">Podaj poprawny format kwoty (np. 35.99).</div>
+                                    @error('amount_transaction')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-
                                 <div class="form-floating col-6">
-                                    <input type="date" class="form-control" id="date_transaction" name="date_transaction"
-                                        required>
+                                    <input type="date"
+                                        class="form-control @error('date_transaction') is-invalid @enderror"
+                                        id="date_transaction" name="date_transaction" required
+                                        value="{{ old('date_transaction') }}">
                                     <label class="ms-2" for="date_transaction">Data</label>
-                                    <div class="invalid-feedback">Podaj datę.</div>
+                                    @error('date_transaction')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="form-floating col-6">
-                                    <select class="form-select" id="category_id" name="category_id" required>
+                                    <select class="form-select @error('category_id') is-invalid @enderror" id="category_id"
+                                        name="category_id" required>
                                         <option value="" selected disabled>Kategoria</option>
                                         @foreach ($categories as $category)
-                                            <option value="{{ $category->id_category }}">{{ $category->name_category }}
-                                            </option>
+                                            <option value="{{ $category->id_category }}"
+                                                {{ old('category_id') == $category->id_category ? 'selected' : '' }}>
+                                                {{ $category->name_category }}</option>
                                         @endforeach
                                     </select>
                                     <label class="ms-2" for="category_id">Wybierz kategorię</label>
-                                    <div class="invalid-feedback">Podaj kategorię.</div>
+                                    @error('category_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="form-floating col-6">
-                                    <select class="form-select" id="subcategory_id" name="subcategory_id">
+                                    <select class="form-select @error('subcategory_id') is-invalid @enderror"
+                                        id="subcategory_id" name="subcategory_id">
                                         <option value="" selected disabled>Podkategoria</option>
                                     </select>
                                     <label class="ms-2" for="subcategory_id">Wybierz podkategorię (opcjonalne)</label>
+                                    @error('subcategory_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Utwórz transakcję</button>
                             </div>
                         </form>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var forms = document.querySelectorAll('.needs-validation');
-
-                                Array.prototype.slice.call(forms).forEach(function(form) {
-                                    form.addEventListener('submit', function(event) {
-                                        if (!form.checkValidity()) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-
-                                        form.classList.add('was-validated');
-                                    }, false);
-                                });
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

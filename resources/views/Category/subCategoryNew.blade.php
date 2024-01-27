@@ -19,37 +19,25 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('subCategory.store') }}" method="POST" class="needs-validation" novalidate>
+                        <form action="{{ route('subCategory.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="category_id" value="{{ $category->id_category }}">
 
                             <div class="mb-3">
                                 <label for="name_subCategory" class="form-label">Nazwa podkategorii</label>
-                                <input type="text" class="form-control" id="name_subCategory"
-                                    name="name_subCategory" required minlength="3" maxlength="60"
-                                    oninput="this.value.trim()">
-                                <div class="invalid-feedback">Podaj nazwę nowej podkategorii (od 3 do 60 znaków).</div>
+                                <input type="text" class="form-control @error('name_subCategory') is-invalid @enderror"
+                                    id="name_subCategory" name="name_subCategory" value="{{ old('name_subCategory') }}"
+                                    required>
+                                @error('name_subCategory')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-primary">Utwórz podkategorię</button>
                             </div>
                         </form>
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                var forms = document.querySelectorAll('.needs-validation');
-
-                                Array.prototype.slice.call(forms).forEach(function(form) {
-                                    form.addEventListener('submit', function(event) {
-                                        if (!form.checkValidity()) {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                        }
-
-                                        form.classList.add('was-validated');
-                                    }, false);
-                                });
-                            });
-                        </script>
                     </div>
                 </div>
             </div>

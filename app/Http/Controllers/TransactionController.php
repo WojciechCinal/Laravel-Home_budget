@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
@@ -110,49 +111,59 @@ class TransactionController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $user = Auth::user();
-            $data = $request->validate([
-                'name_transaction' => 'required|string',
-                'amount_transaction' => 'required|numeric',
-                'date_transaction' => 'required|date',
-                'category_id' => 'required|exists:categories,id_category',
-                'subcategory_id' => 'nullable|exists:sub_categories,id_subCategory',
-            ]);
+        $user = Auth::user();
 
-            $transactionData = [
-                'name_transaction' => $data['name_transaction'],
-                'amount_transaction' => $data['amount_transaction'],
-                'date_transaction' => $data['date_transaction'],
-                'id_user' => $user->id_user,
-                'id_category' => $data['category_id'],
-            ];
+        $validatedData = $request->validate([
+            'name_transaction' => 'required|string|min:3|max:100',
+            'amount_transaction' => 'required|numeric|min:0.01',
+            'date_transaction' => 'required|date',
+            'category_id' => 'required|exists:categories,id_category',
+            'subcategory_id' => 'nullable|exists:sub_categories,id_subCategory',
+        ], [
+            'name_transaction.required' => 'Nazwa transakcji jest wymagana.',
+            'name_transaction.string' => 'Nazwa transakcji powinna być tekstem.',
+            'name_transaction.min' => 'Nazwa transakcji powinna mieć co najmniej :min znaków.',
+            'name_transaction.max' => 'Nazwa transakcji nie może przekraczać :max znaków.',
+            'amount_transaction.required' => 'Kwota transakcji jest wymagana.',
+            'amount_transaction.numeric' => 'Kwota transakcji musi mieć format np: 35.99.',
+            'amount_transaction.min' => 'Kwota transakcji musi być większa niż 0.',
+            'date_transaction.required' => 'Data transakcji jest wymagana.',
+            'date_transaction.date' => 'Podana data transakcji nie jest poprawna.',
+            'category_id.required' => 'Kategoria jest wymagana.',
+            'category_id.exists' => 'Wybrana kategoria nie istnieje.',
+            'subcategory_id.exists' => 'Wybrana podkategoria nie istnieje.',
+        ]);
 
-            if (isset($data['subcategory_id'])) {
-                $transactionData['id_subCategory'] = $data['subcategory_id'];
-            }
+        $transactionData = [
+            'name_transaction' => $validatedData['name_transaction'],
+            'amount_transaction' => $validatedData['amount_transaction'],
+            'date_transaction' => $validatedData['date_transaction'],
+            'id_user' => $user->id_user,
+            'id_category' => $validatedData['category_id'],
+        ];
 
-            // Oblicz sumę wydatków w miesiącu transakcji
-            $expensesThisMonth = Transaction::where('id_user', $user->id_user)
-                ->whereYear('date_transaction', date('Y', strtotime($data['date_transaction'])))
-                ->whereMonth('date_transaction', date('m', strtotime($data['date_transaction'])))
-                ->sum('amount_transaction');
-
-            $remainingFunds = $user->monthly_budget - $expensesThisMonth;
-            $expensesThisMonth += $data['amount_transaction']; // Dodaj nową transakcję do sumy
-
-            // Sprawdź, czy nie przekracza to miesięcznego budżetu
-            if ($expensesThisMonth > $user->monthly_budget) {
-                $message = 'Nowa transakcja przekroczyła miesięczny budżet!';
-                session()->flash('error', $message);
-            }
-            $transaction = Transaction::create($transactionData);
-
-            return redirect()->route('transactions.index')->with('success', 'Transakcja została dodana pomyślnie.');
-        } catch (\Exception $e) {
-            Log::error('TransactionController. Błąd w metodzie store(): ' . $e->getMessage());
-            return redirect()->route('transactions.create')->with('error', 'Wystąpił błąd podczas dodawania transakcji.');
+        if (isset($validatedData['subcategory_id'])) {
+            $transactionData['id_subCategory'] = $validatedData['subcategory_id'];
         }
+
+        // Oblicz sumę wydatków w miesiącu transakcji
+        $expensesThisMonth = Transaction::where('id_user', $user->id_user)
+            ->whereYear('date_transaction', date('Y', strtotime($validatedData['date_transaction'])))
+            ->whereMonth('date_transaction', date('m', strtotime($validatedData['date_transaction'])))
+            ->sum('amount_transaction');
+
+        $remainingFunds = $user->monthly_budget - $expensesThisMonth;
+        $expensesThisMonth += $validatedData['amount_transaction']; // Dodaj nową transakcję do sumy
+
+        // Sprawdź, czy nie przekracza to miesięcznego budżetu
+        if ($expensesThisMonth > $user->monthly_budget) {
+            $message = 'Nowa transakcja przekroczyła miesięczny budżet!';
+            return redirect()->route('transactions.create')->with('error', $message);
+        }
+
+        $transaction = Transaction::create($transactionData);
+
+        return redirect()->route('transactions.index')->with('success', 'Transakcja została dodana pomyślnie.');
     }
 
     public function edit($id)
@@ -193,19 +204,35 @@ class TransactionController extends Controller
             $user = Auth::user();
             $transaction = Transaction::findOrFail($id);
 
-            // Sprawdź, czy transakcja należy do bieżącego użytkownika
-            if ($transaction->id_user !== $user->id_user) {
-                return redirect()->route('transactions.index')->with('error', 'Nie masz dostępu do tej transakcji!');
-            }
             $remainingFunds = $user->monthly_budget - $transaction->amount_transaction;
 
-            $data = $request->validate([
-                'name_transaction' => 'required|string',
-                'amount_transaction' => 'required|numeric',
+            $validator = Validator::make($request->all(), [
+                'name_transaction' => 'required|string|min:3|max:100',
+                'amount_transaction' => 'required|numeric|min:0.01',
                 'date_transaction' => 'required|date',
                 'category_id' => 'required|exists:categories,id_category',
                 'subcategory_id' => 'nullable|exists:sub_categories,id_subCategory',
+            ], [
+                'name_transaction.required' => 'Pole Nazwa transakcji jest wymagane.',
+                'name_transaction.min' => 'Nazwa transakcji musi mieć co najmniej :min znaki.',
+                'name_transaction.max' => 'Nazwa transakcji nie może mieć więcej niż :max znaków.',
+                'amount_transaction.required' => 'Pole Kwota jest wymagane.',
+                'amount_transaction.numeric' => 'Kwota musi być liczbą.',
+                'amount_transaction.min' => 'Kwota musi być większa niż 0.',
+                'date_transaction.required' => 'Pole Data jest wymagane.',
+                'date_transaction.date' => 'Data musi być w formacie daty.',
+                'category_id.required' => 'Pole Kategoria jest wymagane.',
+                'category_id.exists' => 'Wybrana kategoria jest nieprawidłowa.',
+                'subcategory_id.exists' => 'Wybrana podkategoria jest nieprawidłowa.',
             ]);
+
+            if ($validator->fails()) {
+                return redirect()->route('transactions.edit', $id)
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
+            $data = $validator->validated();
 
             $transaction->name_transaction = $data['name_transaction'];
             $transaction->amount_transaction = $data['amount_transaction'];
@@ -229,7 +256,9 @@ class TransactionController extends Controller
             // Sprawdź, czy nie przekracza to miesięcznego budżetu
             if ($expensesThisMonth > $user->monthly_budget) {
                 $message = 'Kwota transakcji po edycji przekroczyła miesięczny budżet!';
-                session()->flash('error', $message);
+                return redirect()->route('transactions.edit', $id)
+                    ->with('error', $message)
+                    ->withInput();
             }
 
             $transaction->save();
@@ -268,7 +297,7 @@ class TransactionController extends Controller
 
         $activeCategories = Category::where('id_user', $user->id_user)
             ->where('is_active', true)
-            ->where('name_category', '!=' ,"Brak kategorii")
+            ->where('name_category', '!=', "Brak kategorii")
             ->get();
 
         $averageExpenses = [];

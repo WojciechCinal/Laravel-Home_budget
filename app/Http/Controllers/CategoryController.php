@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Validator;
 use Exception;
 
 class CategoryController extends Controller
@@ -78,9 +79,26 @@ class CategoryController extends Controller
         return view('category.categoryNew');
     }
 
+    private function validateCategory(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'category_name' => ['required', 'string', 'min:3', 'max:100'],
+        ], [
+            'category_name.required' => 'Nazwa kategorii jest wymagana.',
+            'category_name.min' => 'Nazwa kategorii musi mieć przynajmniej :min znaki.',
+            'category_name.max' => 'Nazwa kategorii może mieć maksymalnie :max znaków.',
+        ]);
+    }
+
     public function store(Request $request)
     {
         try {
+            $validator = $this->validateCategory($request);
+
+            if ($validator->fails()) {
+                return redirect()->route('create.category')->withErrors($validator)->withInput();
+            }
+
             $user = Auth::user();
 
             $category = new Category();

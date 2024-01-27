@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class SavingsPlansController extends Controller
 {
@@ -118,9 +119,33 @@ class SavingsPlansController extends Controller
         }
     }
 
+    private function validateUpdate(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'name' => ['required', 'string', 'min:3', 'max:100'],
+            'goal' => ['required', 'numeric', 'min:50'],
+            'end_date' => ['required', 'date'],
+        ], [
+            'name.required' => 'Nazwa celu oszczędnościowego jest wymagana.',
+            'name.min' => 'Nazwa celu oszczędnościowego musi mieć przynajmniej :min znaki.',
+            'name.max' => 'Nazwa celu oszczędnościowego może mieć maksymalnie :max znaków.',
+            'goal.required' => 'Cel oszczędnościowy (PLN) jest wymagany.',
+            'goal.numeric' => 'Cel oszczędnościowy musi być liczbą.',
+            'goal.min' => 'Cel oszczędnościowy musi być większy niż :min.',
+            'end_date.required' => 'Planowana data zakończenia jest wymagana.',
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         try {
+            $validator = $this->validateUpdate($request);
+
+            // Sprawdź, czy walidacja zakończyła się sukcesem
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
             $user = Auth::user();
             $savingsPlan = SavingsPlan::where('id_savings_plan', $id)
                 ->where('id_user', $user->id_user)
@@ -250,12 +275,23 @@ class SavingsPlansController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name_savings_plan' => 'required|string',
-            'goal_savings_plan' => 'required|numeric',
-            'end_date_savings_plan' => 'required|date',
+            'name_savings_plan' => 'required|string|min:3|max:100',
+            'goal_savings_plan' => 'required|numeric|min:50',
+            'end_date_savings_plan' => 'required|date|after_or_equal:' . now()->format('Y-m-d'),
             'priority_id' => 'required|exists:priorities,id_priority'
+        ], [
+            'name_savings_plan.required' => 'Nazwa celu oszczędnościowego jest wymagana.',
+            'name_savings_plan.min' => 'Nazwa celu oszczędnościowego musi mieć przynajmniej :min znaki.',
+            'name_savings_plan.max' => 'Nazwa celu oszczędnościowego może mieć maksymalnie :max znaków.',
+            'goal_savings_plan.required' => 'Cel oszczędnościowy (PLN) jest wymagany.',
+            'goal_savings_plan.numeric' => 'Cel oszczędnościowy musi być liczbą.',
+            'goal_savings_plan.min' => 'Cel oszczędnościowy musi być większy niż :min.',
+            'end_date_savings_plan.required' => 'Planowana data zakończenia jest wymagana.',
+            'end_date_savings_plan.date' => 'Planowana data zakończenia musi być poprawną datą.',
+            'end_date_savings_plan.after_or_equal' => 'Planowana data zakończenia musi być dzisiaj lub w przyszłości.',
+            'priority_id.required' => 'Priorytet jest wymagany.',
+            'priority_id.exists' => 'Wybrany priorytet jest nieprawidłowy.'
         ]);
-
 
         $savingsPlan = SavingsPlan::create([
             'name_savings_plan' => $validatedData['name_savings_plan'],
