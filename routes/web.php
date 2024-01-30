@@ -32,6 +32,8 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/profile/index', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
 Route::get('/profile/edit', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
 Route::post('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+Route::get('/profile/editPassword', [App\Http\Controllers\ProfileController::class, 'editPassword'])->name('profile.editPassword');
+Route::post('/profile/changePassword', [App\Http\Controllers\ProfileController::class, 'changePassword'])->name('profile.changePassword');
 
 Route::get('/categoriesList', [CategoryController::class, 'list'])->name('category.list');
 Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);

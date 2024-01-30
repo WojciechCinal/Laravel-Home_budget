@@ -48,7 +48,7 @@
 
                         <div class="d-grid">
                             <a href="{{ route('profile.edit') }}" class="btn btn-primary fw-medium">Edytuj profil</a>
-                            <a href="" class="btn btn-warning my-2">Zmień hasło</a>
+                            <a href="{{route('profile.editPassword')}}" class="btn btn-warning my-2">Zmień hasło</a>
                             <a href="" class="btn btn-danger">Usuń konto</a>
                         </div>
 
