@@ -35,6 +35,7 @@ class ReportController extends Controller
             ->orderBy('date_transaction', 'asc')
             ->get();
 
+
         $categories = Category::where('id_user', Auth::id())
             ->whereIn('id_category', $selectedCategories)
             ->get();
@@ -144,6 +145,12 @@ class ReportController extends Controller
             }
 
             $data = $this->fetchDataForYearlyReport($startYear, $endYear, $selectedCategories);
+
+            if ($data['transactionsByYear']->isEmpty()) {
+                session()->forget('ReportMessages');
+                return redirect()->route('transactions.index')->with('message', 'Brak transakcji w wybranym okresie: ' . $startYear . 'r. - ' . $endYear . 'r.');
+            }
+
             return view('Report.yearReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateYearlyReport(): ' . $e->getMessage());
@@ -292,6 +299,14 @@ class ReportController extends Controller
 
             if ($endDate->gte($startDate)) {
                 $data = $this->fetchDataForMonthlyReport($selectedYear, $startMonth, $endMonth, $startDate, $endDate, $selectedCategories);
+
+                if ($data['transactionsByMonth']->isEmpty()) {
+                    session()->forget('ReportMessages');
+                    $startMonthName = Carbon::create($selectedYear, $startMonth)->translatedFormat('F');
+                    $endMonthName = Carbon::create($selectedYear, $endMonth)->translatedFormat('F');
+                    return redirect()->route('transactions.index')->with('message', 'Brak transakcji w wybranym okresie: ' . $selectedYear . 'r. ' . $startMonthName . ' - ' . $endMonthName . '.');
+                }
+
                 return view('Report.monthReport', $data);
             } else {
                 return redirect()->route('transactions.index')->with('error', 'Nieprawidłowy przedział dat.');
@@ -405,8 +420,8 @@ class ReportController extends Controller
     public function generateWeeklyReport(Request $request)
     {
         try {
-            $startWeek = $request->input('startWeek');
-            $endWeek = $request->input('endWeek');
+            $startWeek = Carbon::parse($request->input('startWeek'));
+            $endWeek = Carbon::parse($request->input('endWeek'));
             $selectedCategories = $request->input('categories');
 
             $startDate = CarbonImmutable::parse($startWeek);
@@ -417,6 +432,14 @@ class ReportController extends Controller
             }
 
             $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
+
+            if ($data['transactionsByWeek']->isEmpty()) {
+                session()->forget('ReportMessages');
+                $formattedStartWeek = 'Tydz. ' . $startWeek->week . ' ' . $startWeek->year . 'r.';
+                $formattedEndWeek = 'Tydz. ' . $endWeek->week . ' ' . $endWeek->year . 'r.';
+                return redirect()->route('transactions.index')->with('message', 'Brak transakcji w wybranym okresie: ' .  $formattedStartWeek . ' - ' . $formattedEndWeek . '.');
+            }
+
             return view('Report.weekReport', $data);
         } catch (\Exception $e) {
             Log::error('ReportController. Błąd w metodzie generateWeeklyReport(): ' . $e->getMessage());
@@ -426,8 +449,8 @@ class ReportController extends Controller
 
     public function weeklyReportPDF(Request $request)
     {
-        $startWeek = $request->input('startWeek');
-        $endWeek = $request->input('endWeek');
+        $startWeek = Carbon::parse($request->input('startWeek'));
+        $endWeek = Carbon::parse($request->input('endWeek'));
         $selectedCategories = $request->input('categories');
 
         $startDate = CarbonImmutable::parse($startWeek);
@@ -439,8 +462,10 @@ class ReportController extends Controller
 
         $data = $this->fetchDataForWeeklyReport($startDate, $endDate, $selectedCategories);
 
+        $formattedStartWeek = 'Tydz. ' . $startWeek->week . ' ' . $startWeek->year . 'r.';
+        $formattedEndWeek = 'Tydz. ' . $endWeek->week . ' ' . $endWeek->year . 'r.';
         $now = Carbon::now()->format('Y-m-d');
-        $name = "$now Budżetomierz - zestawienie tygodniowe $startWeek - $endWeek";
+        $name = "$now Budżetomierz - zestawienie tygodniowe $formattedStartWeek - $formattedEndWeek";
 
         $pdf = PDF::loadView('Report.weekReportPDF', $data)->setPaper('a4', 'portrait');
 

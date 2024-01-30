@@ -27,12 +27,19 @@ class RankingController extends Controller
 
         if ($rankingType === 'monthly') {
             $selectedMonth = $request->input('date');
+            if ($selectedMonth >= Carbon::now()->format('Y-m')) {
+                $formattedSelectedMonth = Carbon::parse($selectedMonth)->translatedFormat('F Y');
+                return redirect()->back()->with('message', 'Dla tego; '. $formattedSelectedMonth .' nie powstał jeszcze ranking.');
+            }
             $dateStart = Carbon::parse($selectedMonth)->startOfMonth();
             $dateEnd = Carbon::parse($selectedMonth)->endOfMonth();
             $month = Carbon::parse($selectedMonth)->translatedFormat('F - Y');
             $rankingName = "Ranking miesięczny: $month r.";
         } elseif ($rankingType === 'yearly') {
             $selectedYear = $request->input('date');
+            if ($selectedYear == Carbon::now()->year) {
+                return redirect()->back()->with('message', 'Dla roku '. $selectedYear.' nie powstał jeszcze ranking.');
+            }
             $dateStart = Carbon::createFromDate($selectedYear, 1, 1)->startOfYear();
             $dateEnd = Carbon::createFromDate($selectedYear, 1, 1)->endOfYear();
             $year = Carbon::createFromDate($selectedYear, 1, 1)->format('Y');

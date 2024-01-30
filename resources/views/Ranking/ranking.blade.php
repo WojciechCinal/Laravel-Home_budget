@@ -3,6 +3,9 @@
 @section('content')
     @include('Ranking.modal')
     <div class="container">
+        <div id="messages">
+            @include('layouts.messages')
+        </div>
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">
