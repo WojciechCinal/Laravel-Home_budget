@@ -56,4 +56,23 @@ class User extends Authenticatable
     {
         return $this->hasMany(ShoppingList::class, 'id_user');
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'id_user');
+    }
+
+    public function savingsPlans()
+    {
+        return $this->hasMany(SavingsPlan::class, 'id_user');
+    }
+
+    public function subcat()
+    {
+        return $this->hasMany(SubCategory::class, 'id_user');
+    }
+    public function cat()
+    {
+        return $this->hasMany(Category::class, 'id_user');
+    }
 }

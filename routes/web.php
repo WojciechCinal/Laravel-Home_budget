@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('start');
 
 Auth::routes();
 
@@ -34,6 +34,8 @@ Route::get('/profile/edit', [App\Http\Controllers\ProfileController::class, 'edi
 Route::post('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 Route::get('/profile/editPassword', [App\Http\Controllers\ProfileController::class, 'editPassword'])->name('profile.editPassword');
 Route::post('/profile/changePassword', [App\Http\Controllers\ProfileController::class, 'changePassword'])->name('profile.changePassword');
+Route::get('/profile/delete', [App\Http\Controllers\ProfileController::class, 'deleteProfileView'])->name('profile.deleteProfileView');
+Route::post('/profile/delete/{id}', [App\Http\Controllers\ProfileController::class, 'deleteProfile'])->name('profile.deleteProfile');
 
 Route::get('/categoriesList', [CategoryController::class, 'list'])->name('category.list');
 Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);

@@ -6,8 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
+use App\Models\Category;
+use App\Models\SubCategory;
+use App\Models\Transaction;
 use App\Models\User;
+use App\Models\SavingsPlan;
+use App\Models\ShoppingList;
 
 class ProfileController extends Controller
 {
@@ -86,7 +92,7 @@ class ProfileController extends Controller
             'current_password' => 'required|string',
             'new_password' => 'required|string|min:8',
             'confirm_password' => 'required|string|same:new_password',
-        ],$messages);
+        ], $messages);
 
         if (!Hash::check($data['current_password'], $user->password)) {
             return redirect()->back()->withErrors(['current_password' => 'Podane hasło jest nieprawidłowe.'])->withInput();
@@ -97,5 +103,58 @@ class ProfileController extends Controller
         ]);
 
         return redirect()->route('profile.index')->with('success', 'Hasło zostało zmienione pomyślnie.');
+    }
+
+    public function deleteAccount($id_user)
+    {
+       try {
+            Transaction::where('id_user', $id_user)->delete();
+
+            SavingsPlan::where('id_user', $id_user)->delete();
+
+            ShoppingList::where('id_user', $id_user)->delete();
+
+            SubCategory::where('id_user', $id_user)->delete();
+
+            Category::where('id_user', $id_user)->delete();
+
+            User::where('id_user', $id_user)->delete();
+
+            return redirect()->route('start')->with('success', 'Twoje konto zostało pomyślnie usunięte.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Wystąpił błąd podczas usuwania konta. Spróbuj ponownie.');
+        }
+    }
+
+    public function deleteProfileView()
+    {
+        return view('User.delete');
+    }
+
+    public function deleteProfile(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return redirect()->route('profile.delete')->with('error', 'Nie znaleziono użytkownika.');
+        }
+
+        $data = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if ($user->email !== $data['email']) {
+            return redirect()->route('profile.delete')->with('error', 'Podany e-mail nie pasuje do konta.');
+        }
+
+        if (!Hash::check($data['password'], $user->password)) {
+            return redirect()->route('profile.delete')->with('error', 'Podane hasło jest nieprawidłowe.');
+        }
+
+        $this->deleteAccount($user->id_user);
+        Auth::logout();
+
+        return redirect()->route('start')->with('success', 'Twoje konto zostało pomyślnie usunięte.');
     }
 }
