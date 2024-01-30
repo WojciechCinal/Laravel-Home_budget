@@ -91,12 +91,15 @@
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        <i class="bi bi-person-circle align-middle" style="font-size: 1rem;"></i>
                                         {{ Auth::user()->name }}
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                         <a class="dropdown-item"
-                                            href="{{ route('category.list') }}">{{ __('Moje kategorie') }}</a>
+                                        href="{{ route('profile.index') }}">Mój profil</a>
+                                        <a class="dropdown-item"
+                                            href="{{ route('category.list') }}">Moje kategorie</a>
 
                                         <a class="dropdown-item" href="{{ route('logout') }}"
                                             onclick="event.preventDefault();

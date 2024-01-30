@@ -29,6 +29,9 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::get('/profile/index', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+Route::get('/profile/edit', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+Route::post('/profile/update', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
 Route::get('/categoriesList', [CategoryController::class, 'list'])->name('category.list');
 Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);
@@ -81,5 +84,6 @@ Route::get('/generate/report/month', [ReportController::class, 'generateMonthlyR
 Route::get('/generate/report/month/pdf', [ReportController::class, 'monthlyReportPDF'] )->name('generate.monthly.report.pdf');
 Route::get('/generate/report/week', [ReportController::class, 'generateWeeklyReport'] )->name('generate.weekly.report');
 Route::get('/generate/report/week/pdf', [ReportController::class, 'WeeklyReportPDF'] )->name('generate.weekly.report.pdf');
+
 
 Route::get('/ranking', [RankingController::class, 'index'] )->name('ranking.index');
