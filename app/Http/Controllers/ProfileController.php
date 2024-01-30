@@ -75,7 +75,9 @@ class ProfileController extends Controller
         $user = User::find(Auth::id());
 
         $messages = [
-            'current_password.required' => 'Pole hasło jest wymagane.',
+            'current_password.required' => 'Podaj aktualne hasło.',
+            'new_password.required' => 'Podaj nowe hasło.',
+            'confirm_password.required' => 'Potwierdź nowe hasło.',
             'new_password.min' => 'Hasło musi mieć przynajmniej :min znaków.',
             'confirm_password.same' => 'Podane hasła są różne.',
         ];
