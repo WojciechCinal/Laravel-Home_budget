@@ -88,6 +88,18 @@
                                         Listy zakupów
                                     </a>
                                 </li>
+                                @if (Auth::user()->id_role === 1)
+                                    <li class="nav-item dropdown">
+                                        <a id="navbarDropdown" class="nav-link dropdown-toggle bg-info" href="#" role="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                            <i class="bi bi-person-gear align-middle" style="font-size: 1rem;"></i>
+                                            Panel ADMINISTRATORA
+                                        </a>
+                                @endif
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('admin.userList') }}">Lista użytkowników</a>
+                                </div>
+                                </li>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -96,10 +108,8 @@
                                     </a>
 
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item"
-                                        href="{{ route('profile.index') }}">Mój profil</a>
-                                        <a class="dropdown-item"
-                                            href="{{ route('category.list') }}">Moje kategorie</a>
+                                        <a class="dropdown-item" href="{{ route('profile.index') }}">Mój profil</a>
+                                        <a class="dropdown-item" href="{{ route('category.list') }}">Moje kategorie</a>
 
                                         <a class="dropdown-item" href="{{ route('logout') }}"
                                             onclick="event.preventDefault();

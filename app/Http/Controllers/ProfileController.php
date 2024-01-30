@@ -56,7 +56,6 @@ class ProfileController extends Controller
             'monthly_budget.regex' => 'Prawidłowy format to np: 4200.22',
         ]);
 
-        // Sprawdź, czy walidacja zakończyła się sukcesem
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
@@ -66,7 +65,6 @@ class ProfileController extends Controller
             'monthly_budget' => $data['monthly_budget'],
         ]);
 
-        // Przekieruj użytkownika z komunikatem o sukcesie
         return redirect()->route('profile.index')->with('success', 'Dane zostały zaktualizowane pomyślnie.');
     }
 
@@ -157,4 +155,11 @@ class ProfileController extends Controller
 
         return redirect()->route('start')->with('success', 'Twoje konto zostało pomyślnie usunięte.');
     }
+
+    public function userList()
+{
+    $users = User::all();
+
+    return view('Admin.userList', compact('users'));
+}
 }
