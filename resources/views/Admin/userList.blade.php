@@ -8,6 +8,16 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="mt-2">Lista użytkowników</h3>
+                        <form action="{{ route('admin.userList') }}" method="get">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control ms-3" placeholder="Wyszukaj użytkownika"
+                                    name="search" value="{{ request('search') }}">
+                                <div class="input-group-append">
+                                    <button class="btn btn-success mx-3" type="submit">
+                                        <i class="bi bi-search align-middle" style="font-size: 1rem;"></i> Szukaj</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
                     <div class="card-body">
@@ -80,6 +90,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="nav justify-content-center">
+                            {{ $users->appends(['search' => $search])->links() }}
+                        </div>
                     </div>
                 </div>
             </div>

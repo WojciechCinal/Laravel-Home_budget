@@ -23,6 +23,16 @@ class ProfileController extends Controller
         $this->middleware('auth');
     }
 
+    private function checkRole()
+    {
+        $user = User::where('id_user', Auth::id())->first();
+
+        if ($user->id_role == 1) {
+        } else {
+            return abort(403, 'Brak dostępu');
+        }
+    }
+
     public function index()
     {
         return view('User.profile');
@@ -157,16 +167,29 @@ class ProfileController extends Controller
         return redirect()->route('start')->with('success', 'Twoje konto zostało pomyślnie usunięte.');
     }
 
-    public function userList()
+    public function userList(Request $request)
     {
-        $users = User::all();
-        $roles = Role::all();
+        $this->checkRole();
 
-        return view('Admin.userList', compact('users', 'roles'));
+        $roles = Role::all();
+        $search = $request->input('search');
+
+        $users = User::when($search, function ($query) use ($search) {
+            return $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%');
+        })->paginate(20);
+
+        if ($users->isEmpty()) {
+            return redirect()->back()->with('error', $search . ' - Nie znaleziono rekordów.');
+        }
+
+        return view('Admin.userList', compact('users', 'roles','search'));
     }
 
     public function changeRole(Request $request, $userId)
     {
+        $this->checkRole();
+
         $newRoleId = $request->input('newRole');
 
         $user = User::find($userId);
