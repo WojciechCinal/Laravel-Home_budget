@@ -6,13 +6,13 @@
             <div class="col-md-10">
                 <div id="messages">@include('layouts.messages')</div>
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="mt-2">Lista użytkowników</h3>
+                    <div class="card-header d-flex justify-content-between">
+                        <h3 class="mt-3 ms-3">Lista użytkowników</h3>
                         <form action="{{ route('admin.userList') }}" method="get">
-                            <div class="input-group mb-3">
+                            <div class="input-group mt-2 mb-1">
                                 <input type="text" class="form-control ms-3" placeholder="Wyszukaj użytkownika"
                                     name="search" value="{{ request('search') }}">
-                                <div class="input-group-append">
+                                <div class="input-group-append me-3">
                                     <button class="btn btn-success mx-3" type="submit">
                                         <i class="bi bi-search align-middle" style="font-size: 1rem;"></i> Szukaj</button>
                                 </div>

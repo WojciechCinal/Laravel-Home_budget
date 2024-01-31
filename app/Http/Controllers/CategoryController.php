@@ -45,7 +45,8 @@ class CategoryController extends Controller
 
             if ($categories->isNotEmpty()) {
                 return view('category.categoryList', [
-                    'categories' => $categories
+                    'categories' => $categories,
+                    'search' => $searchTerm
                 ]);
             } else {
                 return redirect()->route('category.list')->with('message', "Brak rekordów dla frazy: $searchTerm.");

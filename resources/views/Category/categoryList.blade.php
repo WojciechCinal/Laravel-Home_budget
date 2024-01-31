@@ -71,6 +71,8 @@
                                                 <i class="bi bi-archive align-middle" style="font-size: 1rem;"></i>
                                                 Archiwizuj
                                             </a>
+                                        @elseif($category->is_active == false)
+                                        <div class="mt-1">Kategoria archiwalna</div>
                                         @else
                                             <button class="btn btn-warning btn-sm edit-category my-1"
                                                 style="min-width: 112px" data-id="{{ $category->id_category }}">
@@ -107,7 +109,7 @@
                             </tbody>
                         </table>
                         <div class="nav justify-content-center">
-                            {{ $categories->links() }}
+                            {{ $categories->appends(['search' => $search])->links() }}
                         </div>
                     </div>
                 </div>
