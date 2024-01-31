@@ -37,7 +37,9 @@ Route::post('/profile/changePassword', [App\Http\Controllers\ProfileController::
 Route::get('/profile/delete', [App\Http\Controllers\ProfileController::class, 'deleteProfileView'])->name('profile.deleteProfileView');
 Route::post('/profile/delete/{id}', [App\Http\Controllers\ProfileController::class, 'deleteProfile'])->name('profile.deleteProfile');
 
+
 Route::get('/admin/userList', [App\Http\Controllers\ProfileController::class, 'userList'])->name('admin.userList');
+Route::post('/admin/changeRole/{id}', [App\Http\Controllers\ProfileController::class, 'changeRole'])->name('changeUserRole');
 
 Route::get('/categoriesList', [CategoryController::class, 'list'])->name('category.list');
 Route::put('/categoryUpdate/{id}', [CategoryController::class, 'update']);

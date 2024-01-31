@@ -14,6 +14,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Models\SavingsPlan;
 use App\Models\ShoppingList;
+use App\Models\Role;
 
 class ProfileController extends Controller
 {
@@ -105,7 +106,7 @@ class ProfileController extends Controller
 
     public function deleteAccount($id_user)
     {
-       try {
+        try {
             Transaction::where('id_user', $id_user)->delete();
 
             SavingsPlan::where('id_user', $id_user)->delete();
@@ -157,9 +158,32 @@ class ProfileController extends Controller
     }
 
     public function userList()
-{
-    $users = User::all();
+    {
+        $users = User::all();
+        $roles = Role::all();
 
-    return view('Admin.userList', compact('users'));
-}
+        return view('Admin.userList', compact('users', 'roles'));
+    }
+
+    public function changeRole(Request $request, $userId)
+    {
+        $newRoleId = $request->input('newRole');
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['error' => 'Nie znaleziono użytkownika.'], 404);
+        }
+
+        $oldRoleName = $user->role->name_role;
+
+        $user->id_role = $newRoleId;
+        $user->save();
+
+        $user->load('role');
+
+        $newRoleName = $user->role->name_role;
+
+        return response()->json(['success' => 'Rola użytkownika została pomyślnie zmieniona.', 'newRoleName' => $newRoleName, 'oldRoleName' => $oldRoleName]);
+    }
 }

@@ -90,9 +90,9 @@
                                 </li>
                                 @if (Auth::user()->id_role === 1)
                                     <li class="nav-item dropdown">
-                                        <a id="navbarDropdown" class="nav-link dropdown-toggle bg-info" href="#" role="button"
+                                        <a id="navbarDropdown" class="nav-link dropdown-toggle bg-primary text-white bg-opacity-75" href="#" role="button"
                                             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                            <i class="bi bi-person-gear align-middle" style="font-size: 1rem;"></i>
+                                            <i class="bi bi-person-fill-gear align-middle" style="font-size: 1rem;"></i>
                                             Panel ADMINISTRATORA
                                         </a>
                                 @endif
