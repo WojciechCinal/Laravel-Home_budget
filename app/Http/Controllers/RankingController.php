@@ -29,7 +29,7 @@ class RankingController extends Controller
             $selectedMonth = $request->input('date');
             if ($selectedMonth >= Carbon::now()->format('Y-m')) {
                 $formattedSelectedMonth = Carbon::parse($selectedMonth)->translatedFormat('F Y');
-                return redirect()->back()->with('message', 'Dla tego; '. $formattedSelectedMonth .' nie powstał jeszcze ranking.');
+                return redirect()->back()->with('message', 'Dla '. $formattedSelectedMonth .' nie powstał jeszcze ranking.');
             }
             $dateStart = Carbon::parse($selectedMonth)->startOfMonth();
             $dateEnd = Carbon::parse($selectedMonth)->endOfMonth();
