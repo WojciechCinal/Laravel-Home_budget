@@ -14,13 +14,13 @@
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between align-items-center">
-                    @if (count($transactions) > 0)
-                        <a href="#" class="btn btn-primary btn-sm mx-2" data-bs-toggle="modal"
-                            data-bs-target="#generateReportModal">
-                            <i class="bi bi-file-earmark-bar-graph-fill align-middle" style="font-size: 1.5rem;"></i>
-                            Generuj raport
-                        </a>
-                    @endif
+
+                    <a href="#" class="btn btn-primary btn-sm mx-2" data-bs-toggle="modal"
+                        data-bs-target="#generateReportModal">
+                        <i class="bi bi-file-earmark-bar-graph-fill align-middle" style="font-size: 1.5rem;"></i>
+                        Generuj raport
+                    </a>
+
                     <a href="#" class="btn btn-info btn-sm mx-2" data-bs-toggle="modal"
                         data-bs-target="#generatePredictionModal">
                         <i class="bi bi-graph-up-arrow align-middle" style="font-size: 1.5rem;"></i> Prognoza wydatków
@@ -95,7 +95,7 @@
                                     </div>
                                 </div>
                                 <!-- Przycisk filtruj -->
-                                <div class="d-grid mt-2 mb-0">
+                                <div class="d-grid mt-2 mb-0 mx-3">
                                     <button type="submit" class="btn btn-primary">Filtruj</button>
                                 </div>
                             </form>
