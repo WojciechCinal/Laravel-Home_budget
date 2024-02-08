@@ -7,7 +7,6 @@
             </a>
         </li>
         <li class="nav-item"><a href="{{route('about')}}" class="nav-link px-2 text-muted">O aplikacji</a></li>
-        <li class="nav-item"><a href="{{route('faqs')}}" class="nav-link px-2 text-muted">FAQs</a></li>
     </ul>
     <div class="container">
         <p class=" text-center">W aplikacji wykorzystano ikony:</p>
